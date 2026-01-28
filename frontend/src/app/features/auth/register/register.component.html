@@ -1,29 +1,34 @@
-<div class="register-container">
-    <div class="register-card">
-        <div class="register-header">
-            <h2>Créer un compte</h2>
-            <p>Rejoignez-nous dès maintenant</p>
-        </div>
-        <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-            <div class="form-group">
+<div class="register-wrapper">
+    <p-card header="Créer un compte" subheader="Rejoignez-nous dès maintenant" [style]="{ width: '100%', maxWidth: '400px' }">
+        <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
+            <p-floatLabel>
+                <p-iconField>
+                    <p-inputIcon styleClass="pi pi-user" />
+                    <input pInputText id="name" [(ngModel)]="registerData.name" name="name" required class="w-full" />
+                </p-iconField>
                 <label for="name">Nom complet</label>
-                <input type="text" id="name" class="form-control" [(ngModel)]="registerData.name" name="name" required
-                    placeholder="Votre nom">
-            </div>
-            <div class="form-group">
+            </p-floatLabel>
+
+            <p-floatLabel>
+                <p-iconField>
+                    <p-inputIcon styleClass="pi pi-envelope" />
+                    <input pInputText id="email" [(ngModel)]="registerData.email" name="email" required email class="w-full" />
+                </p-iconField>
                 <label for="email">Email</label>
-                <input type="email" id="email" class="form-control" [(ngModel)]="registerData.email" name="email"
-                    required email placeholder="exemple@email.com">
-            </div>
-            <div class="form-group">
+            </p-floatLabel>
+
+            <p-floatLabel>
+                <p-password id="password" [(ngModel)]="registerData.password" name="password" [toggleMask]="true"
+                    [feedback]="true" [weakLabel]="'Faible'" [mediumLabel]="'Moyen'" [strongLabel]="'Fort'"
+                    promptLabel="Entrez un mot de passe" styleClass="w-full" inputStyleClass="w-full" required [minlength]="6"></p-password>
                 <label for="password">Mot de passe</label>
-                <input type="password" id="password" class="form-control" [(ngModel)]="registerData.password"
-                    name="password" required minlength="6" placeholder="Minimum 6 caractères">
+            </p-floatLabel>
+
+            <p-button label="S'inscrire" type="submit" [disabled]="!registerForm.form.valid" styleClass="w-full"></p-button>
+
+            <div class="footer-link">
+                <p>Déjà inscrit ? <a routerLink="/login">Se connecter</a></p>
             </div>
-            <button type="submit" class="btn-primary" [disabled]="!registerForm.form.valid">S'inscrire</button>
         </form>
-        <div class="register-footer">
-            <p>Déjà inscrit ? <a routerLink="/login">Se connecter</a></p>
-        </div>
-    </div>
+    </p-card>
 </div>

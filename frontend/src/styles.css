@@ -1,3 +1,5 @@
+@import "primeicons/primeicons.css";
+
 /* Global Styles */
 body,
 html {
@@ -8,6 +10,40 @@ html {
     background-color: #f4f7f6;
     color: #333;
 }
+
+:root {
+    --p-primary-50: #f2f2f2;
+    --p-primary-100: #e6e6e6;
+    --p-primary-200: #cccccc;
+    --p-primary-300: #b3b3b3;
+    --p-primary-400: #999999;
+    --p-primary-500: #000000;
+    --p-primary-600: #000000;
+    --p-primary-700: #000000;
+    --p-primary-800: #1a1a1a;
+    --p-primary-900: #2b2b2b;
+    --p-primary-950: #000000;
+    --p-primary-color: #000000;
+    --p-primary-contrast-color: #ffffff;
+    --p-primary-hover-color: #333333;
+    --p-primary-active-color: #555555;
+    
+    /* Force focused ring color to be black/gray instead of default primary */
+    --p-focus-ring-color: rgba(0, 0, 0, 0.2);
+    --p-focus-ring-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.2);
+
+    /* Explicitly override Button component tokens to ensure they are black */
+    --p-button-primary-background: #000000;
+    --p-button-primary-border-color: #000000;
+    --p-button-primary-color: #ffffff;
+    --p-button-primary-hover-background: #333333;
+    --p-button-primary-hover-border-color: #333333;
+    --p-button-primary-hover-color: #ffffff;
+    --p-button-primary-active-background: #555555;
+    --p-button-primary-active-border-color: #555555;
+    --p-button-primary-active-color: #ffffff;
+}
+
 
 * {
     box-sizing: border-box;
