@@ -1,28 +1,47 @@
 <div class="login-wrapper">
-    <p-card header="Bienvenue" subheader="Connectez-vous à votre compte" [style]="{ width: '100%', maxWidth: '400px' }">
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
-            <p-floatLabel>
-                <p-iconField>
-                    <p-inputIcon styleClass="pi pi-envelope" />
-                    <input pInputText id="email" [(ngModel)]="loginData.email" name="email" required email class="w-full" />
-                </p-iconField>
-                <label for="email">Email</label>
-            </p-floatLabel>
+    <p-card [style]="{ width: '100%', maxWidth: '420px', overflow: 'hidden' }">
+        <ng-template pTemplate="title">
+            <div class="text-center mt-3">
+                <span style="font-size: 1.5rem; font-weight: 600;">Bienvenue</span>
+                <p class="text-secondary text-sm font-normal mt-2">Connectez-vous à votre compte</p>
+            </div>
+        </ng-template>
 
-            <p-floatLabel>
-                <p-password id="password" [(ngModel)]="loginData.password" name="password" [toggleMask]="true"
-                    [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required>
-                    <ng-template pTemplate="header">
-                        <h6>Mot de passe</h6>
-                    </ng-template>
-                </p-password>
-                <label for="password">Mot de passe</label>
-            </p-floatLabel>
+        <p-toast></p-toast>
+        
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form flex flex-column gap-3">
+            <div class="field">
+                <p-floatLabel>
+                    <p-iconField iconPosition="left">
+                        <p-inputIcon styleClass="pi pi-envelope" />
+                        <input pInputText id="email" [(ngModel)]="loginData.email" name="email" required email class="w-full" />
+                    </p-iconField>
+                    <label for="email">Email</label>
+                </p-floatLabel>
+            </div>
 
-            <p-button label="Se connecter" type="submit" [disabled]="!loginForm.form.valid" styleClass="w-full"></p-button>
+            <div class="field">
+                <p-floatLabel>
+                    <p-iconField iconPosition="left">
+                        <p-inputIcon styleClass="pi pi-lock" />
+                        <p-password id="password" [(ngModel)]="loginData.password" name="password" [toggleMask]="true"
+                            [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required>
+                            <ng-template pTemplate="header">
+                                <h6>Mot de passe</h6>
+                            </ng-template>
+                        </p-password>
+                    </p-iconField>
+                    <label for="password">Mot de passe</label>
+                </p-floatLabel>
+            </div>
 
-            <div class="footer-link">
-                <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+            <div class="mt-2">
+                <p-button label="Se connecter" type="submit" [disabled]="!loginForm.form.valid || isLoading" [loading]="isLoading" styleClass="w-full"></p-button>
+            </div>
+
+            <div class="footer-link text-center mt-3">
+                <span class="text-600">Pas encore de compte ?</span> 
+                <a routerLink="/register" class="font-bold ml-1 cursor-pointer">S'inscrire</a>
             </div>
         </form>
     </p-card>

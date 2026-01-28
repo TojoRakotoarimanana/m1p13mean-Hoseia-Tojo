@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -9,6 +9,9 @@ import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { AuthService } from '../../../core/services/auth.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-register',
@@ -23,20 +26,49 @@ import { InputIconModule } from 'primeng/inputicon';
         ButtonModule,
         FloatLabelModule,
         IconFieldModule,
-        InputIconModule
+        InputIconModule,
+        ToastModule
     ],
+    providers: [MessageService],
     templateUrl: './register.component.html',
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
     registerData = {
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
     };
 
+    isLoading = false;
+
+    constructor(
+        private authService: AuthService,
+        private router: Router,
+        private messageService: MessageService
+    ) {}
+
     onSubmit() {
-        console.log('Register attempt:', this.registerData);
-        // TODO: Implement actual register logic
+        if (this.registerData.password !== this.registerData.confirmPassword) {
+            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas' });
+            return;
+        }
+
+        this.isLoading = true;
+        this.authService.register(this.registerData).subscribe({
+            next: (response) => {
+                this.isLoading = false;
+                this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Inscription réussie' });
+                setTimeout(() => {
+                    this.router.navigate(['/']);
+                }, 1000);
+            },
+            error: (error) => {
+                this.isLoading = false;
+                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Une erreur est survenue' });
+            }
+        });
     }
 }

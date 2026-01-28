@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
@@ -9,6 +9,9 @@ import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { AuthService } from '../../../core/services/auth.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-login',
@@ -23,8 +26,10 @@ import { InputIconModule } from 'primeng/inputicon';
         ButtonModule, 
         FloatLabelModule,
         IconFieldModule,
-        InputIconModule
+        InputIconModule,
+        ToastModule
     ],
+    providers: [MessageService],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })
@@ -33,9 +38,28 @@ export class LoginComponent {
         email: '',
         password: ''
     };
+    
+    isLoading = false;
+
+    constructor(
+        private authService: AuthService, 
+        private router: Router,
+        private messageService: MessageService
+    ) {}
 
     onSubmit() {
-        console.log('Login attempt:', this.loginData);
-        // TODO: Implement actual login logic
+        this.isLoading = true;
+        this.authService.login(this.loginData).subscribe({
+            next: (response) => {
+                this.isLoading = false;
+                this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion réussie' });
+                this.router.navigate(['/dashboard']);
+
+            },
+            error: (error) => {
+                this.isLoading = false;
+                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la connexion' });
+            }
+        });
     }
 }
