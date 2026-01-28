@@ -1,0 +1,36 @@
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+    background-color: transparent;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+/* Helper utility for w-full since PrimeFlex might not be installed */
+:host ::ng-deep .w-full {
+    width: 100% !important;
+}
+
+.footer-link {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--p-text-color-secondary);
+}
+
+.footer-link a {
+    color: var(--p-primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-link a:hover {
+    text-decoration: underline;
+}
