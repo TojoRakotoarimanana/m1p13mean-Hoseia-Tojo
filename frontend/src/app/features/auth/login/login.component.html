@@ -1,0 +1,24 @@
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Bienvenue</h2>
+            <p>Connectez-vous à votre compte</p>
+        </div>
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" [(ngModel)]="loginData.email" name="email" required
+                    email placeholder="exemple@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" class="form-control" [(ngModel)]="loginData.password"
+                    name="password" required placeholder="Votre mot de passe">
+            </div>
+            <button type="submit" class="btn-primary" [disabled]="!loginForm.form.valid">Se connecter</button>
+        </form>
+        <div class="login-footer">
+            <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+        </div>
+    </div>
+</div>
