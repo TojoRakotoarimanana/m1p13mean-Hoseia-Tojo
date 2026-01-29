@@ -14,6 +14,7 @@
     padding: 3rem 2.5rem;
     width: 100%;
     max-width: 400px;
+    border-top: 2px solid #0d9488;
 }
 
 .login-header {
@@ -33,9 +34,9 @@
 
 .login-subtitle {
     font-size: 0.875rem;
-    color: #666666;
+    color: #0d9488;
     margin: 0;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .login-form {
@@ -70,48 +71,27 @@
 }
 
 .footer-link {
-    color: #2563eb;
+    color: #0d9488;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .footer-link:hover {
-    color: #1d4ed8;
+    color: #0f766e;
 }
 
-.login-alternative {
-    margin-top: 1.5rem;
-    text-align: center;
+:host ::ng-deep .p-button {
+    background-color: #0d9488;
+    border-color: #0d9488;
 }
 
-.alternative-title {
-    font-size: 0.75rem;
-    color: #999999;
-    margin: 0 0 0.75rem 0;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+:host ::ng-deep .p-button:enabled:hover {
+    background-color: #0f766e;
+    border-color: #0f766e;
 }
 
-.alternative-links {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.alternative-link {
-    font-size: 0.8125rem;
-    color: #666666;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.alternative-link:hover {
-    color: #1a1a1a;
-}
-
-.alternative-separator {
-    color: #cccccc;
-    font-size: 0.75rem;
+:host ::ng-deep .p-button:enabled:active {
+    background-color: #115e59;
+    border-color: #115e59;
 }

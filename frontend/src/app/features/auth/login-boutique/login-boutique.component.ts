@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-login-boutique',
     standalone: true,
     imports: [
         CommonModule, 
@@ -30,10 +30,10 @@ import { ToastModule } from 'primeng/toast';
         ToastModule
     ],
     providers: [MessageService],
-    templateUrl: './login.component.html',
-    styleUrl: './login.component.css'
+    templateUrl: './login-boutique.component.html',
+    styleUrl: './login-boutique.component.css'
 })
-export class LoginComponent {
+export class LoginBoutiqueComponent {
     loginData = {
         email: '',
         password: ''
@@ -48,22 +48,26 @@ export class LoginComponent {
     ) {}
 
     onSubmit() {
-        this.isLoading = true;
-        this.authService.login(this.loginData).subscribe({
-            next: (response) => {
-                this.isLoading = false;
-                if (response.user.role === 'client') {
-                    this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion réussie' });
-                    this.router.navigate(['/shops']);
-                } else {
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email ou mot de passe incorrect.' });
-                    this.authService.logout();
+        if (this.loginData.email && this.loginData.password) {
+            this.isLoading = true;
+            this.authService.login(this.loginData).subscribe({
+                next: (response) => {
+                    this.isLoading = false;
+                    if (response.user.role === 'boutique') {
+                        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion réussie' });
+                        setTimeout(() => {
+                            this.router.navigate(['/my-shop']);
+                        }, 1000);
+                    } else {
+                        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email ou mot de passe incorrect.' });
+                        this.authService.logout();
+                    }
+                },
+                error: (error) => {
+                    this.isLoading = false;
+                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Une erreur est survenue' });
                 }
-            },
-            error: (error) => {
-                this.isLoading = false;
-                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la connexion' });
-            }
-        });
+            });
+        }
     }
 }

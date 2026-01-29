@@ -1,4 +1,4 @@
-.login-wrapper {
+.register-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,23 +7,24 @@
     padding: 2rem;
 }
 
-.login-card {
+.register-card {
     background: #ffffff;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     padding: 3rem 2.5rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
+    border-top: 2px solid #1f2937;
 }
 
-.login-header {
+.register-header {
     margin-bottom: 2.5rem;
     text-align: center;
     border-bottom: 1px solid #e5e5e5;
     padding-bottom: 1.5rem;
 }
 
-.login-title {
+.register-title {
     font-size: 1.75rem;
     font-weight: 400;
     color: #1a1a1a;
@@ -31,14 +32,14 @@
     letter-spacing: -0.02em;
 }
 
-.login-subtitle {
+.register-subtitle {
     font-size: 0.875rem;
-    color: #666666;
+    color: #1f2937;
     margin: 0;
-    font-weight: 400;
+    font-weight: 500;
 }
 
-.login-form {
+.register-form {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -56,7 +57,7 @@
     margin-bottom: 0.5rem;
 }
 
-.login-footer {
+.register-footer {
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid #e5e5e5;
@@ -70,48 +71,27 @@
 }
 
 .footer-link {
-    color: #2563eb;
+    color: #1f2937;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .footer-link:hover {
-    color: #1d4ed8;
+    color: #111827;
 }
 
-.login-alternative {
-    margin-top: 1.5rem;
-    text-align: center;
+:host ::ng-deep .p-button {
+    background-color: #dc2626;
+    border-color: #dc2626;
 }
 
-.alternative-title {
-    font-size: 0.75rem;
-    color: #999999;
-    margin: 0 0 0.75rem 0;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+:host ::ng-deep .p-button:enabled:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
 }
 
-.alternative-links {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.alternative-link {
-    font-size: 0.8125rem;
-    color: #666666;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.alternative-link:hover {
-    color: #1a1a1a;
-}
-
-.alternative-separator {
-    color: #cccccc;
-    font-size: 0.75rem;
+:host ::ng-deep .p-button:enabled:active {
+    background-color: #991b1b;
+    border-color: #991b1b;
 }
