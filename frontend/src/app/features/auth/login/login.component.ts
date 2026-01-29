@@ -52,9 +52,13 @@ export class LoginComponent {
         this.authService.login(this.loginData).subscribe({
             next: (response) => {
                 this.isLoading = false;
-                this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion réussie' });
-                this.router.navigate(['/dashboard']);
-
+                if (response.user.role === 'client') {
+                    this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion réussie' });
+                    this.router.navigate(['/shops']);
+                } else {
+                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email ou mot de passe incorrect.' });
+                    this.authService.logout();
+                }
             },
             error: (error) => {
                 this.isLoading = false;

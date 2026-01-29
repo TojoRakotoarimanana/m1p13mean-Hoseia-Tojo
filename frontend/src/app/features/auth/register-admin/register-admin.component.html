@@ -1,0 +1,49 @@
+<div class="register-wrapper">
+    <div class="register-card">
+        <div class="register-header">
+            <h1 class="register-title">Créer un compte</h1>
+            <p class="register-subtitle">Administration</p>
+        </div>
+
+        <p-toast></p-toast>
+        <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
+            <div class="flex gap-3">
+                <div class="field flex-1">
+                    <label for="firstName" class="field-label">Prénom</label>
+                    <input pInputText id="firstName" [(ngModel)]="registerData.firstName" name="firstName" required class="w-full" />
+                </div>
+
+                <div class="field flex-1">
+                    <label for="lastName" class="field-label">Nom</label>
+                    <input pInputText id="lastName" [(ngModel)]="registerData.lastName" name="lastName" required class="w-full" />
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="email" class="field-label">Email Admin</label>
+                <input pInputText id="email" [(ngModel)]="registerData.email" name="email" required email class="w-full" />
+            </div>
+
+            <div class="field">
+                <label for="password" class="field-label">Mot de passe</label>
+                <p-password id="password" [(ngModel)]="registerData.password" name="password" [toggleMask]="true"
+                    [feedback]="true" [weakLabel]="'Faible'" [mediumLabel]="'Moyen'" [strongLabel]="'Fort'"
+                    promptLabel="Mot de passe" styleClass="w-full" inputStyleClass="w-full" required [minlength]="6"></p-password>
+            </div>
+
+            <div class="field">
+                <label for="confirmPassword" class="field-label">Confirmer le mot de passe</label>
+                <p-password id="confirmPassword" [(ngModel)]="registerData.confirmPassword" name="confirmPassword" [toggleMask]="true"
+                    [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+            </div>
+
+            <div class="mt-2">
+                <p-button label="Créer le compte" type="submit" [disabled]="!registerForm.form.valid || isLoading" [loading]="isLoading" styleClass="w-full"></p-button>
+            </div>
+
+            <div class="register-footer">
+                <p class="footer-text">Déjà administrateur ? <a routerLink="/login-admin" class="footer-link">Se connecter</a></p>
+            </div>
+        </form>
+    </div>
+</div>

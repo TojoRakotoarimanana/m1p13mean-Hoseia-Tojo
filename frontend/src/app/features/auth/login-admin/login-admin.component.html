@@ -1,0 +1,32 @@
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="login-header">
+            <h1 class="login-title">Connexion</h1>
+            <p class="login-subtitle">Administration</p>
+        </div>
+
+        <p-toast></p-toast>
+        
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+            <div class="field">
+                <label for="email" class="field-label">Identifiant Admin</label>
+                <input pInputText id="email" [(ngModel)]="loginData.email" name="email" required email class="w-full" />
+            </div>
+
+            <div class="field">
+                <label for="password" class="field-label">Mot de passe</label>
+                <p-password id="password" [(ngModel)]="loginData.password" name="password" [toggleMask]="true"
+                    [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required>
+                </p-password>
+            </div>
+
+            <div class="mt-2">
+                <p-button label="Se connecter" type="submit" [disabled]="!loginForm.form.valid || isLoading" [loading]="isLoading" styleClass="w-full"></p-button>
+            </div>
+            
+            <div class="login-footer">
+                <p class="footer-text">Pas encore administrateur ? <a routerLink="/register-admin" class="footer-link">Créer un compte</a></p>
+            </div>
+        </form>
+    </div>
+</div>

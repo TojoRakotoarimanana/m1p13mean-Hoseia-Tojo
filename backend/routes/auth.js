@@ -11,6 +11,15 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.post('/register-boutique', async (req, res) => {
+  try {
+    const result = await AuthService.registerBoutique(req.body);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de l\'inscription boutique.' });
+  }
+});
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;

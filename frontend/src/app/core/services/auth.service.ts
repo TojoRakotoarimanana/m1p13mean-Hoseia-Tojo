@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Injectable({
@@ -10,6 +10,9 @@ export class AuthService {
   private apiUrl = 'http://localhost:3000/api/auth';
   private tokenKey = 'auth_token';
   private userKey = 'auth_user';
+
+  private userSubject = new BehaviorSubject<any>(this.getUserFromStorage());
+  public user$ = this.userSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -21,6 +24,10 @@ export class AuthService {
         }
       })
     );
+  }
+
+  registerBoutique(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register-boutique`, data);
   }
 
   login(credentials: any): Observable<any> {
@@ -36,11 +43,13 @@ export class AuthService {
   private setSession(authResult: any) {
     localStorage.setItem(this.tokenKey, authResult.token);
     localStorage.setItem(this.userKey, JSON.stringify(authResult.user));
+    this.userSubject.next(authResult.user);
   }
 
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
+    this.userSubject.next(null);
   }
 
   isLoggedIn(): boolean {
@@ -52,6 +61,10 @@ export class AuthService {
   }
 
   getUser(): any {
+    return this.userSubject.value;
+  }
+
+  private getUserFromStorage(): any {
     const user = localStorage.getItem(this.userKey);
     return user ? JSON.parse(user) : null;
   }

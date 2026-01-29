@@ -2,35 +2,116 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh;
-    padding: 20px;
-    background-color: transparent;
+    min-height: 100vh;
+    background-color: #fafafa;
+    padding: 2rem;
+}
+
+.login-card {
+    background: #ffffff;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 1.5rem;
+}
+
+.login-title {
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.login-subtitle {
+    font-size: 0.875rem;
+    color: #666666;
+    margin: 0;
+    font-weight: 400;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    margin-top: 1.5rem;
+    gap: 1.25rem;
 }
 
-/* Helper utility for w-full since PrimeFlex might not be installed */
-:host ::ng-deep .w-full {
-    width: 100% !important;
+.field {
+    margin-bottom: 0;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e5e5;
+    text-align: center;
+}
+
+.footer-text {
+    font-size: 0.875rem;
+    color: #666666;
+    margin: 0;
 }
 
 .footer-link {
-    text-align: center;
-    margin-top: 1rem;
-    color: var(--p-text-color-secondary);
-}
-
-.footer-link a {
-    color: var(--p-primary-color);
+    color: #2563eb;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 500;
+    transition: color 0.2s;
 }
 
-.footer-link a:hover {
-    text-decoration: underline;
+.footer-link:hover {
+    color: #1d4ed8;
+}
+
+.login-alternative {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.alternative-title {
+    font-size: 0.75rem;
+    color: #999999;
+    margin: 0 0 0.75rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.alternative-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alternative-link {
+    font-size: 0.8125rem;
+    color: #666666;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.alternative-link:hover {
+    color: #1a1a1a;
+}
+
+.alternative-separator {
+    color: #cccccc;
+    font-size: 0.75rem;
 }

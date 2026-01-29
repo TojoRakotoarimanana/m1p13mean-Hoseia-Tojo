@@ -1,0 +1,102 @@
+<div class="register-wrapper">
+  <div class="register-card">
+    <div class="register-header">
+      <h1 class="register-title">Inscription Boutique</h1>
+      <p class="register-subtitle">Votre demande sera validée par un administrateur</p>
+    </div>
+
+    <p-toast></p-toast>
+
+    <p-steps [model]="steps" [activeIndex]="stepIndex" styleClass="steps"></p-steps>
+
+    <div class="step-body" *ngIf="stepIndex === 0">
+      <div class="flex gap-3">
+        <div class="field flex-1">
+          <label for="firstName" class="field-label">Prénom</label>
+          <input pInputText id="firstName" [(ngModel)]="userData.firstName" name="firstName" class="w-full" />
+        </div>
+        <div class="field flex-1">
+          <label for="lastName" class="field-label">Nom</label>
+          <input pInputText id="lastName" [(ngModel)]="userData.lastName" name="lastName" class="w-full" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email" class="field-label">Email</label>
+        <input pInputText id="email" [(ngModel)]="userData.email" name="email" required class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="phone" class="field-label">Téléphone</label>
+        <input pInputText id="phone" [(ngModel)]="userData.phone" name="phone" class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="password" class="field-label">Mot de passe</label>
+        <p-password id="password" [(ngModel)]="userData.password" name="password" [toggleMask]="true"
+          [feedback]="true" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword" class="field-label">Confirmer le mot de passe</label>
+        <p-password id="confirmPassword" [(ngModel)]="userData.confirmPassword" name="confirmPassword" [toggleMask]="true"
+          [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+      </div>
+    </div>
+
+    <div class="step-body" *ngIf="stepIndex === 1">
+      <div class="field">
+        <label for="shopName" class="field-label">Nom de la boutique</label>
+        <input pInputText id="shopName" [(ngModel)]="shopData.name" name="shopName" class="w-full" />
+      </div>
+
+      <div class="field">
+        <label class="field-label">Catégorie</label>
+        <p-select
+          [options]="categories"
+          optionLabel="name"
+          optionValue="_id"
+          [(ngModel)]="shopData.category"
+          placeholder="Sélectionner une catégorie"
+          styleClass="w-full">
+        </p-select>
+      </div>
+
+      <div class="field">
+        <label for="shopDescription" class="field-label">Description</label>
+        <input pInputText id="shopDescription" [(ngModel)]="shopData.description" name="shopDescription" class="w-full" />
+      </div>
+    </div>
+
+    <div class="step-body" *ngIf="stepIndex === 2">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label class="field-label">Contact téléphone</label>
+          <input pInputText [(ngModel)]="contactData.phone" class="w-full" />
+        </div>
+        <div class="col-12 md:col-6">
+          <label class="field-label">Contact email</label>
+          <input pInputText [(ngModel)]="contactData.email" class="w-full" />
+        </div>
+      </div>
+
+      <div class="hours-grid">
+        <div class="hours-row" *ngFor="let day of days">
+          <span class="day-label">{{ day | titlecase }}</span>
+          <input pInputText [(ngModel)]="hoursData[day].open" placeholder="Ouverture" class="w-full" />
+          <input pInputText [(ngModel)]="hoursData[day].close" placeholder="Fermeture" class="w-full" />
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <p-button label="Retour" severity="secondary" (onClick)="previousStep()" [disabled]="stepIndex === 0"></p-button>
+      <p-button *ngIf="stepIndex < 2" label="Suivant" (onClick)="nextStep()"></p-button>
+      <p-button *ngIf="stepIndex === 2" label="Envoyer" (onClick)="submit()" [loading]="isLoading"></p-button>
+    </div>
+
+    <div class="register-footer">
+      <p class="footer-text">Déjà inscrit ? <a routerLink="/login-boutique" class="footer-link">Se connecter</a></p>
+    </div>
+  </div>
+</div>

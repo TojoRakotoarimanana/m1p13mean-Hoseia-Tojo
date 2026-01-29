@@ -1,1 +1,12 @@
-<router-outlet />
+<p-toast></p-toast>
+<div class="app-layout" [class.with-sidebar]="authService.isLoggedIn()">
+    <app-navbar></app-navbar>
+    <div class="main-content">
+        @if (authService.isLoggedIn()) {
+            <app-breadcrumb></app-breadcrumb>
+        }
+        <div class="page-content">
+            <router-outlet />
+        </div>
+    </div>
+</div>
