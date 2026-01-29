@@ -1,82 +1,87 @@
+// navbar.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MenubarModule } from 'primeng/menubar'; // Or just buttons toolbar
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
+// PrimeNG Imports
+import { CardModule } from 'primeng/card';
+import { AvatarModule } from 'primeng/avatar';
+import { ChipModule } from 'primeng/chip';
 import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
+import { RippleModule } from 'primeng/ripple';
+
 import { AuthService } from '../../services/auth.service';
-import { MenuItem } from 'primeng/api';
+
+interface MenuItem {
+  label: string;
+  icon: string;
+  routerLink: string;
+}
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, MenubarModule, ButtonModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    CardModule,
+    AvatarModule,
+    ChipModule,
+    ButtonModule,
+    DividerModule,
+    RippleModule
+  ],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  items: MenuItem[] | undefined;
-  user: any;
+  user: any = null;
+  items: MenuItem[] = [];
 
-  constructor(public authService: AuthService, private router: Router) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
 
-  ngOnInit() {
-    this.authService.user$.subscribe(user => {
-        this.user = user;
-        this.updateMenu();
-    });
+  ngOnInit(): void {
+    this.loadUser();
+    this.loadMenuItems();
   }
 
-  updateMenu() {
-    if (!this.user) {
-        this.items = [];
-        return;
-    }
+  loadUser(): void {
+    // Récupérer l'utilisateur depuis le service d'authentification
+    this.user = this.authService.getUser();
+  }
 
-    this.items = [
-        {
-            label: 'Tableau de bord',
-            icon: 'pi pi-home',
-            routerLink: '/dashboard',
-             visible: this.user.role === 'admin' // Or everyone? Let's say Admin mainly uses Dashboard for overview? Or maybe Client has a dashboard?
-             // Actually currently dashboard has buttons for everyone.
-             // Let's keep /dashboard for everyone for now.
-             // But user request specifically about Admin having all menus.
-        },
-        {
-            label: 'Boutiques',
-            icon: 'pi pi-shop',
-            routerLink: '/shops'
-        }
-    ];
+  loadMenuItems(): void {
+    const role = this.user?.role;
 
-    if (this.user.role === 'admin') {
-        this.items.push(
-            {
-                label: 'Catégories',
-                icon: 'pi pi-tags',
-                routerLink: '/categories'
-            },
-            {
-                label: 'Demandes (Utilisateurs)',
-                icon: 'pi pi-user-plus',
-                routerLink: '/admin/register-boutique-requests'
-            },
-            {
-                label: 'Demandes (Boutiques)',
-                icon: 'pi pi-inbox',
-                routerLink: '/admin/shop-requests'
-            }
-        );
-    } else if (this.user.role === 'boutique') {
-        this.items.push({
-            label: 'Ma Boutique',
-            icon: 'pi pi-store',
-            routerLink: '/my-shop'
-        });
+    // Menu selon le rôle
+    if (role === 'admin') {
+      this.items = [
+        { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
+        { label: 'Boutiques', icon: 'pi pi-shop', routerLink: '/shops' },
+        { label: 'Catégories', icon: 'pi pi-tags', routerLink: '/categories' },
+        { label: 'Demandes Boutiques', icon: 'pi pi-file-edit', routerLink: '/admin/register-boutique-requests' },
+        { label: 'Demandes Shops', icon: 'pi pi-shopping-bag', routerLink: '/admin/shop-requests' }
+      ];
+    } else if (role === 'boutique') {
+      this.items = [
+        { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
+        { label: 'Ma Boutique', icon: 'pi pi-building', routerLink: '/my-shop' },
+        { label: 'Boutiques', icon: 'pi pi-shop', routerLink: '/shops' }
+      ];
+    } else if (role === 'client') {
+      this.items = [
+        { label: 'Accueil', icon: 'pi pi-home', routerLink: '/dashboard' },
+        { label: 'Boutiques', icon: 'pi pi-shop', routerLink: '/shops' }
+      ];
     }
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

@@ -12,19 +12,24 @@ import { CategoriesComponent } from './features/categories/categories.component'
 import { RegisterBoutiqueRequestsComponent } from './features/register-boutique-requests/register-boutique-requests.component';
 import { ShopRequestsComponent } from './features/shop-requests/shop-requests.component';
 import { MyShopComponent } from './features/my-shop/my-shop.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+    // Routes publiques (authentification)
     { path: 'login', component: LoginComponent },
     { path: 'login-boutique', component: LoginBoutiqueComponent },
     { path: 'login-admin', component: LoginAdminComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'register-admin', component: RegisterAdminComponent },
     { path: 'register-boutique', component: RegisterBoutiqueComponent },
-    { path: 'dashboard', component: DashboardComponent },
-    { path: 'shops', component: ShopsComponent },
-    { path: 'categories', component: CategoriesComponent },
-    { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent },
-    { path: 'admin/shop-requests', component: ShopRequestsComponent },
-    { path: 'my-shop', component: MyShopComponent },
+    
+    // Routes protégées
+    { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+    { path: 'shops', component: ShopsComponent, canActivate: [authGuard] },
+    { path: 'categories', component: CategoriesComponent, canActivate: [authGuard] },
+    { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [authGuard] },
+    { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [authGuard] },
+    { path: 'my-shop', component: MyShopComponent, canActivate: [authGuard] },
+    
     { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
