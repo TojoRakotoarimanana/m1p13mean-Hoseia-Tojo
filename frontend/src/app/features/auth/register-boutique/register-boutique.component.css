@@ -1,0 +1,55 @@
+.register-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+  background-color: transparent;
+}
+
+.step-body {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.footer-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hours-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.hours-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.day-label {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+:host ::ng-deep .w-full {
+  width: 100% !important;
+}
+
+:host ::ng-deep .steps {
+  margin-top: 1rem;
+}

@@ -23,6 +23,10 @@ export class AuthService {
     );
   }
 
+  registerBoutique(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register-boutique`, data);
+  }
+
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((response: any) => {

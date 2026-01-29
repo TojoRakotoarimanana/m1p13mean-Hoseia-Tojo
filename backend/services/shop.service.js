@@ -1,4 +1,4 @@
-const { Shop } = require('../models');
+const { Shop, User } = require('../models');
 
 class ShopService {
   async list(query) {
@@ -46,6 +46,33 @@ class ShopService {
       totalPages: Math.ceil(total / limitNumber),
       items
     };
+  }
+
+  async listPending() {
+    return Shop.find({ status: 'pending' })
+      .populate('userId', 'firstName lastName email')
+      .populate('category', 'name')
+      .sort({ createdAt: -1 });
+  }
+
+  async getByUser(userId) {
+    if (!userId) {
+      const error = new Error('userId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findOne({ userId, status: 'active', isActive: true })
+      .populate('userId', 'firstName lastName email')
+      .populate('category', 'name description');
+
+    if (!shop) {
+      const error = new Error('Aucune boutique active trouvée.');
+      error.status = 404;
+      throw error;
+    }
+
+    return shop;
   }
 
   async getById(shopId) {
@@ -151,6 +178,56 @@ class ShopService {
 
     return {
       message: 'Boutique suspendue.',
+      shop
+    };
+  }
+
+  async approve(shopId, location) {
+    if (!shopId) {
+      const error = new Error('shopId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { status: 'active', isActive: true, location },
+      { new: true }
+    );
+
+    if (!shop) {
+      const error = new Error('Boutique introuvable.');
+      error.status = 404;
+      throw error;
+    }
+
+    return {
+      message: 'Boutique validée et activée.',
+      shop
+    };
+  }
+
+  async reject(shopId) {
+    if (!shopId) {
+      const error = new Error('shopId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { status: 'rejected', isActive: false },
+      { new: true }
+    );
+
+    if (!shop) {
+      const error = new Error('Boutique introuvable.');
+      error.status = 404;
+      throw error;
+    }
+
+    return {
+      message: 'Boutique refusée.',
       shop
     };
   }

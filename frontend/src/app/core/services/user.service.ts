@@ -13,4 +13,16 @@ export class UserService {
   list(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
+
+  listPendingBoutiques(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/boutiques/pending`);
+  }
+
+  approveBoutique(userId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/boutiques/${userId}/approve`, {});
+  }
+
+  rejectBoutique(userId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/boutiques/${userId}/reject`, {});
+  }
 }
