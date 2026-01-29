@@ -1,0 +1,145 @@
+<div class="register-wrapper">
+  <p-card [style]="{ width: '100%', maxWidth: '720px' }">
+    <ng-template pTemplate="title">
+      <div class="text-center mt-3">
+        <span style="font-size: 1.5rem; font-weight: 600;">Inscription Boutique</span>
+        <p class="text-secondary text-sm font-normal mt-2">Votre demande sera validée par un admin</p>
+      </div>
+    </ng-template>
+
+    <p-toast></p-toast>
+
+    <p-steps [model]="steps" [activeIndex]="stepIndex" styleClass="steps"></p-steps>
+
+    <div class="step-body" *ngIf="stepIndex === 0">
+      <div class="flex gap-3">
+        <div class="field flex-1">
+          <p-floatLabel>
+            <p-iconField iconPosition="left">
+              <p-inputIcon styleClass="pi pi-user" />
+              <input pInputText id="firstName" [(ngModel)]="userData.firstName" name="firstName" class="w-full" />
+            </p-iconField>
+            <label for="firstName">Prénom</label>
+          </p-floatLabel>
+        </div>
+        <div class="field flex-1">
+          <p-floatLabel>
+            <p-iconField iconPosition="left">
+              <p-inputIcon styleClass="pi pi-user" />
+              <input pInputText id="lastName" [(ngModel)]="userData.lastName" name="lastName" class="w-full" />
+            </p-iconField>
+            <label for="lastName">Nom</label>
+          </p-floatLabel>
+        </div>
+      </div>
+
+      <div class="field">
+        <p-floatLabel>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-envelope" />
+            <input pInputText id="email" [(ngModel)]="userData.email" name="email" required class="w-full" />
+          </p-iconField>
+          <label for="email">Email</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="field">
+        <p-floatLabel>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-phone" />
+            <input pInputText id="phone" [(ngModel)]="userData.phone" name="phone" class="w-full" />
+          </p-iconField>
+          <label for="phone">Téléphone</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="field">
+        <p-floatLabel>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-lock" />
+            <p-password id="password" [(ngModel)]="userData.password" name="password" [toggleMask]="true"
+              [feedback]="true" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+          </p-iconField>
+          <label for="password">Mot de passe</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="field">
+        <p-floatLabel>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-lock" />
+            <p-password id="confirmPassword" [(ngModel)]="userData.confirmPassword" name="confirmPassword" [toggleMask]="true"
+              [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+          </p-iconField>
+          <label for="confirmPassword">Confirmer le mot de passe</label>
+        </p-floatLabel>
+      </div>
+    </div>
+
+    <div class="step-body" *ngIf="stepIndex === 1">
+      <div class="field">
+        <p-floatLabel>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-shop" />
+            <input pInputText id="shopName" [(ngModel)]="shopData.name" name="shopName" class="w-full" />
+          </p-iconField>
+          <label for="shopName">Nom de la boutique</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Catégorie</label>
+        <p-select
+          [options]="categories"
+          optionLabel="name"
+          optionValue="_id"
+          [(ngModel)]="shopData.category"
+          placeholder="Sélectionner une catégorie"
+          styleClass="w-full">
+        </p-select>
+      </div>
+
+      <div class="field">
+        <p-floatLabel>
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-align-left" />
+            <input pInputText id="shopDescription" [(ngModel)]="shopData.description" name="shopDescription" class="w-full" />
+          </p-iconField>
+          <label for="shopDescription">Description</label>
+        </p-floatLabel>
+      </div>
+    </div>
+
+    <div class="step-body" *ngIf="stepIndex === 2">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label class="field-label">Contact téléphone</label>
+          <input pInputText [(ngModel)]="contactData.phone" class="w-full" />
+        </div>
+        <div class="col-12 md:col-6">
+          <label class="field-label">Contact email</label>
+          <input pInputText [(ngModel)]="contactData.email" class="w-full" />
+        </div>
+      </div>
+
+      <div class="hours-grid">
+        <div class="hours-row" *ngFor="let day of days">
+          <span class="day-label">{{ day | titlecase }}</span>
+          <input pInputText [(ngModel)]="hoursData[day].open" placeholder="Ouverture" class="w-full" />
+          <input pInputText [(ngModel)]="hoursData[day].close" placeholder="Fermeture" class="w-full" />
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <p-button label="Retour" severity="secondary" (onClick)="previousStep()" [disabled]="stepIndex === 0"></p-button>
+      <p-button *ngIf="stepIndex < 2" label="Suivant" (onClick)="nextStep()"></p-button>
+      <p-button *ngIf="stepIndex === 2" label="Envoyer" (onClick)="submit()" [loading]="isLoading"></p-button>
+    </div>
+
+    <div class="footer-link text-center mt-3">
+      <span class="text-600">Déjà inscrit ?</span>
+      <a routerLink="/login" class="font-bold ml-1 cursor-pointer">Se connecter</a>
+    </div>
+  </p-card>
+</div>

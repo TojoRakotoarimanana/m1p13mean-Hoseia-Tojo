@@ -1,0 +1,60 @@
+<div class="admin-wrapper">
+  <div class="header flex justify-content-between align-items-center mb-4">
+    <h1>Demandes boutiques (boutiques)</h1>
+  </div>
+
+  <p-card>
+    <p-table [value]="pendingShops" [loading]="loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nom</th>
+          <th>Utilisateur</th>
+          <th>Catégorie</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-shop>
+        <tr>
+          <td>{{ shop.name }}</td>
+          <td>{{ shop.userId?.email }}</td>
+          <td>{{ shop.category?.name || shop.category }}</td>
+          <td>{{ shop.status }}</td>
+          <td class="actions">
+            <p-button icon="pi pi-check" severity="success" (onClick)="openApprove(shop)"></p-button>
+            <p-button icon="pi pi-times" severity="danger" (onClick)="reject(shop)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5">Aucune demande en attente.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
+
+<p-dialog [(visible)]="approveDialog" [modal]="true" [style]="{ width: '420px' }" header="Valider la boutique">
+  <div class="dialog-body">
+    <div class="field">
+      <label class="field-label">Étage</label>
+      <input pInputText [(ngModel)]="locationForm.floor" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Zone</label>
+      <input pInputText [(ngModel)]="locationForm.zone" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Numéro</label>
+      <input pInputText [(ngModel)]="locationForm.shopNumber" class="w-full" />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Annuler" severity="secondary" (onClick)="approveDialog = false"></p-button>
+    <p-button label="Valider" (onClick)="approve()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

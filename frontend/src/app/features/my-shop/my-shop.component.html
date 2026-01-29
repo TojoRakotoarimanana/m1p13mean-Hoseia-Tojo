@@ -1,0 +1,64 @@
+<div class="my-shop-wrapper">
+  <h1>Ma boutique</h1>
+
+  <p-card *ngIf="shop" [style]="{ width: '100%' }">
+    <div class="shop-header">
+      <div>
+        <h2>{{ shop.name }}</h2>
+        <p class="muted">{{ shop.category?.name }}</p>
+      </div>
+      <p-tag [value]="shop.status" [severity]="shop.status === 'active' ? 'success' : 'warn'"></p-tag>
+    </div>
+
+    <div class="actions" *ngIf="!isEditing">
+      <p-button label="Modifier contact & horaires" icon="pi pi-pencil" (onClick)="startEdit()"></p-button>
+    </div>
+
+    <div class="actions" *ngIf="isEditing">
+      <p-button label="Annuler" severity="secondary" (onClick)="cancelEdit()"></p-button>
+      <p-button label="Enregistrer" icon="pi pi-save" (onClick)="saveChanges()" [loading]="isSaving"></p-button>
+    </div>
+
+    <div class="grid">
+      <div class="col">
+        <h4>Description</h4>
+        <p>{{ shop.description || 'Aucune description' }}</p>
+      </div>
+      <div class="col">
+        <h4>Contact</h4>
+        <div *ngIf="!isEditing">
+          <p>{{ shop.contact?.phone || '-' }}</p>
+          <p>{{ shop.contact?.email || '-' }}</p>
+        </div>
+        <div *ngIf="isEditing" class="edit-block">
+          <input pInputText [(ngModel)]="editContact.phone" placeholder="Téléphone" class="w-full" />
+          <input pInputText [(ngModel)]="editContact.email" placeholder="Email" class="w-full" />
+        </div>
+      </div>
+      <div class="col">
+        <h4>Localisation</h4>
+        <p>Étage: {{ shop.location?.floor || '-' }}</p>
+        <p>Zone: {{ shop.location?.zone || '-' }}</p>
+        <p>Numéro: {{ shop.location?.shopNumber || '-' }}</p>
+      </div>
+    </div>
+
+    <div class="hours">
+      <h4>Horaires</h4>
+      <div class="hours-row" *ngFor="let day of days">
+        <span class="day">{{ day | titlecase }}</span>
+        <ng-container *ngIf="!isEditing">
+          <span>{{ shop.hours?.[day]?.open || '-' }} - {{ shop.hours?.[day]?.close || '-' }}</span>
+        </ng-container>
+        <ng-container *ngIf="isEditing">
+          <input pInputText [(ngModel)]="editHours[day].open" placeholder="Ouverture" class="w-full" />
+          <input pInputText [(ngModel)]="editHours[day].close" placeholder="Fermeture" class="w-full" />
+        </ng-container>
+      </div>
+    </div>
+  </p-card>
+
+  <p *ngIf="!loading && notFound" class="empty">Aucune boutique approuvée trouvée.</p>
+</div>
+
+<p-toast></p-toast>

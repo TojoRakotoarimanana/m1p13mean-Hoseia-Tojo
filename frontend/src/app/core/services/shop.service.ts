@@ -20,6 +20,14 @@ export class ShopService {
     return this.http.get(this.apiUrl, { params: httpParams });
   }
 
+  listPending(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/pending`);
+  }
+
+  getByUser(userId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/my-shop/${userId}`);
+  }
+
   getById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
@@ -34,6 +42,14 @@ export class ShopService {
 
   suspend(id: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/suspend`, {});
+  }
+
+  approve(id: string, location: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/approve`, { location });
+  }
+
+  reject(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/reject`, {});
   }
 
   remove(id: string, deletedByUserId?: string): Observable<any> {
