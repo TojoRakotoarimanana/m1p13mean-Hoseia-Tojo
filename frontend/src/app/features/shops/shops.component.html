@@ -1,0 +1,167 @@
+<div class="shops-wrapper">
+  <div class="header flex justify-content-between align-items-center mb-4">
+    <h1>Boutiques</h1>
+    <div class="actions">
+      <p-button label="Nouvelle boutique" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+    </div>
+  </div>
+
+  <p-card [style]="{ width: '100%', marginBottom: '1.5rem' }">
+    <div class="filters grid">
+      <div class="col-12 md:col-4">
+        <label class="field-label">Catégorie</label>
+        <input pInputText [(ngModel)]="filters.category" placeholder="ID catégorie" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Statut</label>
+        <input pInputText [(ngModel)]="filters.status" placeholder="pending / active / suspended" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Étage</label>
+        <input pInputText [(ngModel)]="filters.floor" placeholder="Ex: 1" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Zone</label>
+        <input pInputText [(ngModel)]="filters.zone" placeholder="Ex: A" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Numéro</label>
+        <input pInputText [(ngModel)]="filters.shopNumber" placeholder="Ex: 12" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4 filter-actions">
+        <p-button label="Filtrer" icon="pi pi-filter" (onClick)="onFilter()" severity="secondary"></p-button>
+      </div>
+    </div>
+  </p-card>
+
+  <p-card>
+    <p-table [value]="shops" [loading]="loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nom</th>
+          <th>Utilisateur</th>
+          <th>Catégorie</th>
+          <th>Statut</th>
+          <th>Emplacement</th>
+          <th>Contact</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-shop>
+        <tr>
+          <td>{{ shop.name }}</td>
+          <td>
+            {{ shop.userId?.firstName }} {{ shop.userId?.lastName }}
+            <div class="text-secondary text-sm">{{ shop.userId?.email }}</div>
+          </td>
+          <td>{{ shop.category?.name || shop.category }}</td>
+          <td>
+            <p-tag [value]="shop.status" [severity]="getStatusSeverity(shop.status)"></p-tag>
+          </td>
+          <td>
+            {{ shop.location?.floor || '-' }} / {{ shop.location?.zone || '-' }} / {{ shop.location?.shopNumber || '-' }}
+          </td>
+          <td>
+            {{ shop.contact?.phone || '-' }}<br />
+            {{ shop.contact?.email || '' }}
+          </td>
+          <td class="actions">
+            <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editShop(shop)"></p-button>
+            <p-button icon="pi pi-ban" severity="warn" (onClick)="suspendShop(shop)" [disabled]="shop.status === 'suspended'"></p-button>
+            <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteShop(shop)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">Aucune boutique trouvée.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-paginator
+      [rows]="limit"
+      [totalRecords]="total"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="onPageChange($event)">
+    </p-paginator>
+  </p-card>
+</div>
+
+<p-dialog [(visible)]="shopDialog" [modal]="true" [style]="{ width: '520px' }" [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">
+  <div class="dialog-body">
+    <div class="field">
+      <label class="field-label">Utilisateur</label>
+      <p-select
+        [options]="users"
+        optionLabel="displayName"
+        optionValue="_id"
+        [(ngModel)]="shopForm.userId"
+        placeholder="Sélectionner un utilisateur"
+        styleClass="w-full">
+      </p-select>
+    </div>
+    <div class="field">
+      <label class="field-label">Nom</label>
+      <input pInputText [(ngModel)]="shopForm.name" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Catégorie</label>
+      <p-select
+        [options]="categories"
+        optionLabel="displayName"
+        optionValue="_id"
+        [(ngModel)]="shopForm.category"
+        placeholder="Sélectionner une catégorie"
+        styleClass="w-full">
+      </p-select>
+    </div>
+    <div class="field">
+      <label class="field-label">Description</label>
+      <input pInputText [(ngModel)]="shopForm.description" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Statut</label>
+      <p-select
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="shopForm.status"
+        styleClass="w-full">
+      </p-select>
+    </div>
+
+    <div class="grid">
+      <div class="col-12 md:col-4">
+        <label class="field-label">Étage</label>
+        <input pInputText [(ngModel)]="shopForm.location.floor" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Zone</label>
+        <input pInputText [(ngModel)]="shopForm.location.zone" class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Numéro</label>
+        <input pInputText [(ngModel)]="shopForm.location.shopNumber" class="w-full" />
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col-12 md:col-6">
+        <label class="field-label">Téléphone</label>
+        <input pInputText [(ngModel)]="shopForm.contact.phone" class="w-full" />
+      </div>
+      <div class="col-12 md:col-6">
+        <label class="field-label">Email</label>
+        <input pInputText [(ngModel)]="shopForm.contact.email" class="w-full" />
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Annuler" severity="secondary" (onClick)="shopDialog = false"></p-button>
+    <p-button label="Enregistrer" (onClick)="saveShop()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
