@@ -1,14 +1,6 @@
 <div class="dashboard-wrapper">
     <div class="header flex justify-content-between align-items-center mb-4">
         <h1>Dashboard</h1>
-        <div class="actions">
-            <p-button label="Boutiques" icon="pi pi-shop" routerLink="/shops" severity="secondary"></p-button>
-            <p-button *ngIf="user?.role === 'boutique'" label="Ma boutique" icon="pi pi-store" routerLink="/my-shop" severity="secondary"></p-button>
-            <p-button label="Catégories" icon="pi pi-tags" routerLink="/categories" severity="secondary"></p-button>
-            <p-button label="Demandes utilisateurs" icon="pi pi-user-plus" routerLink="/admin/register-boutique-requests" severity="secondary"></p-button>
-            <p-button label="Demandes boutiques" icon="pi pi-inbox" routerLink="/admin/shop-requests" severity="secondary"></p-button>
-            <p-button label="Déconnexion" icon="pi pi-sign-out" (onClick)="logout()" severity="secondary"></p-button>
-        </div>
     </div>
 
     <p-card header="Bienvenue" [style]="{ width: '100%', marginBottom: '2em' }">

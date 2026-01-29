@@ -1,0 +1,16 @@
+<div class="card" *ngIf="authService.isLoggedIn()">
+    <p-menubar [model]="items">
+        <ng-template pTemplate="start">
+           <img src="https://primefaces.org/cdn/primeng/images/primeng.svg" height="40" class="mr-2" />
+           <span class="font-bold text-xl mr-4">Centre Commercial</span>
+        </ng-template>
+        <ng-template pTemplate="end">
+            <div class="flex align-items-center gap-2">
+                <span class="text-sm mr-2" *ngIf="user">
+                    {{ user.firstName }} ({{ user.role }})
+                </span>
+                <p-button label="Déconnexion" icon="pi pi-power-off" styleClass="p-button-sm p-button-danger p-button-text" (onClick)="logout()"></p-button>
+            </div>
+        </ng-template>
+    </p-menubar>
+</div>

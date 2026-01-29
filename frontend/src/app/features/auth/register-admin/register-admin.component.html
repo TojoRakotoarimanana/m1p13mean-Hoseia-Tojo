@@ -2,7 +2,7 @@
     <div class="register-card">
         <div class="register-header">
             <h1 class="register-title">Créer un compte</h1>
-            <p class="register-subtitle">Espace Client</p>
+            <p class="register-subtitle">Administration</p>
         </div>
 
         <p-toast></p-toast>
@@ -20,7 +20,7 @@
             </div>
 
             <div class="field">
-                <label for="email" class="field-label">Email</label>
+                <label for="email" class="field-label">Email Admin</label>
                 <input pInputText id="email" [(ngModel)]="registerData.email" name="email" required email class="w-full" />
             </div>
 
@@ -38,11 +38,11 @@
             </div>
 
             <div class="mt-2">
-                <p-button label="S'inscrire" type="submit" [disabled]="!registerForm.form.valid || isLoading" [loading]="isLoading" styleClass="w-full"></p-button>
+                <p-button label="Créer le compte" type="submit" [disabled]="!registerForm.form.valid || isLoading" [loading]="isLoading" styleClass="w-full"></p-button>
             </div>
 
             <div class="register-footer">
-                <p class="footer-text">Déjà inscrit ? <a routerLink="/login" class="footer-link">Se connecter</a></p>
+                <p class="footer-text">Déjà administrateur ? <a routerLink="/login-admin" class="footer-link">Se connecter</a></p>
             </div>
         </form>
     </div>

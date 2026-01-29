@@ -1,11 +1,9 @@
 <div class="register-wrapper">
-  <p-card [style]="{ width: '100%', maxWidth: '720px' }">
-    <ng-template pTemplate="title">
-      <div class="text-center mt-3">
-        <span style="font-size: 1.5rem; font-weight: 600;">Inscription Boutique</span>
-        <p class="text-secondary text-sm font-normal mt-2">Votre demande sera validée par un admin</p>
-      </div>
-    </ng-template>
+  <div class="register-card">
+    <div class="register-header">
+      <h1 class="register-title">Inscription Boutique</h1>
+      <p class="register-subtitle">Votre demande sera validée par un administrateur</p>
+    </div>
 
     <p-toast></p-toast>
 
@@ -14,77 +12,42 @@
     <div class="step-body" *ngIf="stepIndex === 0">
       <div class="flex gap-3">
         <div class="field flex-1">
-          <p-floatLabel>
-            <p-iconField iconPosition="left">
-              <p-inputIcon styleClass="pi pi-user" />
-              <input pInputText id="firstName" [(ngModel)]="userData.firstName" name="firstName" class="w-full" />
-            </p-iconField>
-            <label for="firstName">Prénom</label>
-          </p-floatLabel>
+          <label for="firstName" class="field-label">Prénom</label>
+          <input pInputText id="firstName" [(ngModel)]="userData.firstName" name="firstName" class="w-full" />
         </div>
         <div class="field flex-1">
-          <p-floatLabel>
-            <p-iconField iconPosition="left">
-              <p-inputIcon styleClass="pi pi-user" />
-              <input pInputText id="lastName" [(ngModel)]="userData.lastName" name="lastName" class="w-full" />
-            </p-iconField>
-            <label for="lastName">Nom</label>
-          </p-floatLabel>
+          <label for="lastName" class="field-label">Nom</label>
+          <input pInputText id="lastName" [(ngModel)]="userData.lastName" name="lastName" class="w-full" />
         </div>
       </div>
 
       <div class="field">
-        <p-floatLabel>
-          <p-iconField iconPosition="left">
-            <p-inputIcon styleClass="pi pi-envelope" />
-            <input pInputText id="email" [(ngModel)]="userData.email" name="email" required class="w-full" />
-          </p-iconField>
-          <label for="email">Email</label>
-        </p-floatLabel>
+        <label for="email" class="field-label">Email</label>
+        <input pInputText id="email" [(ngModel)]="userData.email" name="email" required class="w-full" />
       </div>
 
       <div class="field">
-        <p-floatLabel>
-          <p-iconField iconPosition="left">
-            <p-inputIcon styleClass="pi pi-phone" />
-            <input pInputText id="phone" [(ngModel)]="userData.phone" name="phone" class="w-full" />
-          </p-iconField>
-          <label for="phone">Téléphone</label>
-        </p-floatLabel>
+        <label for="phone" class="field-label">Téléphone</label>
+        <input pInputText id="phone" [(ngModel)]="userData.phone" name="phone" class="w-full" />
       </div>
 
       <div class="field">
-        <p-floatLabel>
-          <p-iconField iconPosition="left">
-            <p-inputIcon styleClass="pi pi-lock" />
-            <p-password id="password" [(ngModel)]="userData.password" name="password" [toggleMask]="true"
-              [feedback]="true" styleClass="w-full" inputStyleClass="w-full" required></p-password>
-          </p-iconField>
-          <label for="password">Mot de passe</label>
-        </p-floatLabel>
+        <label for="password" class="field-label">Mot de passe</label>
+        <p-password id="password" [(ngModel)]="userData.password" name="password" [toggleMask]="true"
+          [feedback]="true" styleClass="w-full" inputStyleClass="w-full" required></p-password>
       </div>
 
       <div class="field">
-        <p-floatLabel>
-          <p-iconField iconPosition="left">
-            <p-inputIcon styleClass="pi pi-lock" />
-            <p-password id="confirmPassword" [(ngModel)]="userData.confirmPassword" name="confirmPassword" [toggleMask]="true"
-              [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
-          </p-iconField>
-          <label for="confirmPassword">Confirmer le mot de passe</label>
-        </p-floatLabel>
+        <label for="confirmPassword" class="field-label">Confirmer le mot de passe</label>
+        <p-password id="confirmPassword" [(ngModel)]="userData.confirmPassword" name="confirmPassword" [toggleMask]="true"
+          [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
       </div>
     </div>
 
     <div class="step-body" *ngIf="stepIndex === 1">
       <div class="field">
-        <p-floatLabel>
-          <p-iconField iconPosition="left">
-            <p-inputIcon styleClass="pi pi-shop" />
-            <input pInputText id="shopName" [(ngModel)]="shopData.name" name="shopName" class="w-full" />
-          </p-iconField>
-          <label for="shopName">Nom de la boutique</label>
-        </p-floatLabel>
+        <label for="shopName" class="field-label">Nom de la boutique</label>
+        <input pInputText id="shopName" [(ngModel)]="shopData.name" name="shopName" class="w-full" />
       </div>
 
       <div class="field">
@@ -100,13 +63,8 @@
       </div>
 
       <div class="field">
-        <p-floatLabel>
-          <p-iconField iconPosition="left">
-            <p-inputIcon styleClass="pi pi-align-left" />
-            <input pInputText id="shopDescription" [(ngModel)]="shopData.description" name="shopDescription" class="w-full" />
-          </p-iconField>
-          <label for="shopDescription">Description</label>
-        </p-floatLabel>
+        <label for="shopDescription" class="field-label">Description</label>
+        <input pInputText id="shopDescription" [(ngModel)]="shopData.description" name="shopDescription" class="w-full" />
       </div>
     </div>
 
@@ -137,9 +95,8 @@
       <p-button *ngIf="stepIndex === 2" label="Envoyer" (onClick)="submit()" [loading]="isLoading"></p-button>
     </div>
 
-    <div class="footer-link text-center mt-3">
-      <span class="text-600">Déjà inscrit ?</span>
-      <a routerLink="/login" class="font-bold ml-1 cursor-pointer">Se connecter</a>
+    <div class="register-footer">
+      <p class="footer-text">Déjà inscrit ? <a routerLink="/login-boutique" class="footer-link">Se connecter</a></p>
     </div>
-  </p-card>
+  </div>
 </div>
