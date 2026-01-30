@@ -12,6 +12,10 @@ import { CategoriesComponent } from './features/categories/categories.component'
 import { RegisterBoutiqueRequestsComponent } from './features/register-boutique-requests/register-boutique-requests.component';
 import { ShopRequestsComponent } from './features/shop-requests/shop-requests.component';
 import { MyShopComponent } from './features/my-shop/my-shop.component';
+import { MyProductsComponent } from './features/products/my-products/my-products.component';
+import { ProductFormComponent } from './features/products/product-form/product-form.component';
+import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
+import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -30,6 +34,11 @@ export const routes: Routes = [
     { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [authGuard] },
     { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [authGuard] },
     { path: 'my-shop', component: MyShopComponent, canActivate: [authGuard] },
+    { path: 'my-products', component: MyProductsComponent, canActivate: [authGuard] },
+    { path: 'my-products/new', component: ProductFormComponent, canActivate: [authGuard] },
+    { path: 'my-products/:id/edit', component: ProductFormComponent, canActivate: [authGuard] },
+    { path: 'my-products/stock', component: StockManagementComponent, canActivate: [authGuard] },
+    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [authGuard] },
     
     { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];

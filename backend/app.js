@@ -11,6 +11,7 @@ var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var shopsRouter = require('./routes/shops');
 var categoriesRouter = require('./routes/categories');
+var productsRouter = require('./routes/products');
 
 var app = express();
 
@@ -33,6 +34,7 @@ app.use('/users', usersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/shops', shopsRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/products', productsRouter);
 
 // Database connection
 mongoose.connect('mongodb://localhost:27017/m1p13mean')

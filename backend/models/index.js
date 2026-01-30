@@ -101,6 +101,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true, min: 0 },
   originalPrice: { type: Number, min: 0 },
   discount: { type: Number, default: 0, min: 0, max: 100 },
+  promoEndDate: { type: Date },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   images: [String],
   stock: {
@@ -109,6 +110,22 @@ const productSchema = new mongoose.Schema({
   },
   isPromotion: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
+  promotionHistory: [
+    {
+      discount: { type: Number, min: 0, max: 100 },
+      startDate: { type: Date },
+      endDate: { type: Date },
+      action: { type: String, enum: ['enabled', 'disabled'], default: 'enabled' },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ],
+  priceHistory: [
+    {
+      oldPrice: { type: Number, min: 0 },
+      newPrice: { type: Number, min: 0 },
+      changedAt: { type: Date, default: Date.now }
+    }
+  ],
   specifications: { type: Map, of: String },
   statistics: {
     views: { type: Number, default: 0 },

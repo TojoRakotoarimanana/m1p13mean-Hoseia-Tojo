@@ -71,6 +71,7 @@ export class NavbarComponent implements OnInit {
       this.items = [
         { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
         { label: 'Ma Boutique', icon: 'pi pi-building', routerLink: '/my-shop' },
+        { label: 'Mes Produits', icon: 'pi pi-box', routerLink: '/my-products' },
         { label: 'Boutiques', icon: 'pi pi-shop', routerLink: '/shops' }
       ];
     } else if (role === 'client') {
