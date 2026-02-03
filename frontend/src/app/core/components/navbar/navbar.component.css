@@ -187,6 +187,13 @@
     gap: 2px;
 }
 
+/* Navigation Group (for items with submenus) */
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
 .nav-item {
     display: flex;
     align-items: center;
@@ -201,6 +208,15 @@
     font-weight: 400;
     position: relative;
     letter-spacing: -0.01em;
+}
+
+/* Parent item (has submenu) */
+.nav-parent {
+    font-weight: 500;
+}
+
+.nav-parent.expanded {
+    background: #f5f5f7;
 }
 
 .nav-item:hover {
@@ -224,6 +240,18 @@
     flex: 1;
 }
 
+/* Chevron for expandable items */
+.nav-chevron {
+    font-size: 12px;
+    color: #86868b;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.nav-chevron.rotated {
+    transform: rotate(180deg);
+}
+
 .nav-arrow {
     font-size: 14px;
     color: #86868b;
@@ -241,6 +269,47 @@
     opacity: 1;
     transform: translateX(0);
     color: #1d1d1f;
+}
+
+/* Submenu container */
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.25s ease;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 0;
+}
+
+.submenu.expanded {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+/* Submenu items */
+.nav-subitem {
+    padding-left: 44px;
+    font-size: 14px;
+    font-weight: 400;
+    background: transparent;
+}
+
+.nav-subitem:hover {
+    background: #f5f5f7;
+}
+
+.nav-subitem.active {
+    background: #e8e8ed;
+    font-weight: 500;
+}
+
+.nav-subitem .nav-icon {
+    font-size: 16px;
+    opacity: 0.8;
 }
 
 /* ============================================
@@ -322,6 +391,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

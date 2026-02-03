@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { StepsModule } from 'primeng/steps';
 import { SelectModule } from 'primeng/select';
+import { CheckboxModule } from 'primeng/checkbox';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { CategoryService } from '../../../core/services/category.service';
@@ -33,7 +34,8 @@ import { CategoryService } from '../../../core/services/category.service';
     InputIconModule,
     ToastModule,
     StepsModule,
-    SelectModule
+    SelectModule,
+    CheckboxModule
   ],
   providers: [MessageService],
   templateUrl: './register-boutique.component.html',
@@ -52,6 +54,19 @@ export class RegisterBoutiqueComponent {
     'saturday',
     'sunday'
   ];
+
+  readonly dayLabels: Record<string, string> = {
+    'monday': 'Lundi',
+    'tuesday': 'Mardi',
+    'wednesday': 'Mercredi',
+    'thursday': 'Jeudi',
+    'friday': 'Vendredi',
+    'saturday': 'Samedi',
+    'sunday': 'Dimanche'
+  };
+
+  // Generate time options (00:00 to 23:30 in 30-minute intervals)
+  timeOptions: Array<{ label: string, value: string }> = [];
 
   steps = [
     { label: 'Utilisateur' },
@@ -82,13 +97,13 @@ export class RegisterBoutiqueComponent {
   };
 
   hoursData = {
-    monday: { open: '', close: '' },
-    tuesday: { open: '', close: '' },
-    wednesday: { open: '', close: '' },
-    thursday: { open: '', close: '' },
-    friday: { open: '', close: '' },
-    saturday: { open: '', close: '' },
-    sunday: { open: '', close: '' }
+    monday: { open: '09:00', close: '18:00', closed: false },
+    tuesday: { open: '09:00', close: '18:00', closed: false },
+    wednesday: { open: '09:00', close: '18:00', closed: false },
+    thursday: { open: '09:00', close: '18:00', closed: false },
+    friday: { open: '09:00', close: '18:00', closed: false },
+    saturday: { open: '09:00', close: '18:00', closed: false },
+    sunday: { open: '', close: '', closed: true }
   };
 
   constructor(
@@ -97,7 +112,17 @@ export class RegisterBoutiqueComponent {
     private router: Router,
     private messageService: MessageService
   ) {
+    this.generateTimeOptions();
     this.loadCategories();
+  }
+
+  generateTimeOptions() {
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        this.timeOptions.push({ label: timeStr, value: timeStr });
+      }
+    }
   }
 
   loadCategories() {
@@ -127,6 +152,37 @@ export class RegisterBoutiqueComponent {
 
   previousStep() {
     this.stepIndex = Math.max(this.stepIndex - 1, 0);
+  }
+
+  // Copy Monday hours to all weekdays
+  copyToWeekdays() {
+    const mondayHours = this.hoursData.monday;
+    ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].forEach((day) => {
+      this.hoursData[day as keyof typeof this.hoursData] = { ...mondayHours };
+    });
+    this.messageService.add({ severity: 'success', summary: 'Copié', detail: 'Horaires du lundi copiés sur les jours de semaine' });
+  }
+
+  // Copy to all days including Sunday
+  copyToAllDays() {
+    const mondayHours = this.hoursData.monday;
+    this.days.forEach((day) => {
+      if (day !== 'monday') {
+        this.hoursData[day] = { ...mondayHours };
+      }
+    });
+    this.messageService.add({ severity: 'success', summary: 'Copié', detail: 'Horaires du lundi copiés sur tous les jours' });
+  }
+
+  // Toggle closed status for a day
+  toggleClosed(day: keyof typeof this.hoursData) {
+    if (this.hoursData[day].closed) {
+      this.hoursData[day].open = '';
+      this.hoursData[day].close = '';
+    } else {
+      this.hoursData[day].open = '09:00';
+      this.hoursData[day].close = '18:00';
+    }
   }
 
   submit() {
