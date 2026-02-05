@@ -9,6 +9,7 @@ import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
+import { NotificationService } from '../../../core/services/notification.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -59,8 +60,9 @@ export class ProductFormComponent implements OnInit {
     private authService: AuthService,
     private shopService: ShopService,
     private messageService: MessageService,
-    private route: ActivatedRoute,
+    private notificationService: NotificationService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -85,7 +87,7 @@ export class ProductFormComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de charger les catégories.' });
+        this.notificationService.error('Impossible de charger les catégories.', 'Erreur');
       }
     });
   }
@@ -99,7 +101,7 @@ export class ProductFormComponent implements OnInit {
         this.shopId = shop._id;
       },
       error: () => {
-        this.messageService.add({ severity: 'warn', summary: 'Info', detail: 'Aucune boutique active trouvée.' });
+        this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
       }
     });
   }
@@ -125,7 +127,7 @@ export class ProductFormComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Produit introuvable.' });
+        this.notificationService.error('Produit introuvable.', 'Erreur');
       }
     });
   }
@@ -149,12 +151,12 @@ export class ProductFormComponent implements OnInit {
 
   saveProduct() {
     if (!this.productForm.name || this.productForm.price === '' || this.productForm.price === null) {
-      this.messageService.add({ severity: 'warn', summary: 'Champs requis', detail: 'Nom et prix sont obligatoires.' });
+      this.notificationService.warn('Nom et prix sont obligatoires.', 'Champs requis');
       return;
     }
 
     if (!this.shopId && !this.isEdit) {
-      this.messageService.add({ severity: 'warn', summary: 'Boutique', detail: 'Boutique introuvable.' });
+      this.notificationService.warn('Boutique introuvable.', 'Boutique');
       return;
     }
 
@@ -182,12 +184,12 @@ export class ProductFormComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.loading = false;
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: this.isEdit ? 'Produit mis à jour.' : 'Produit créé.' });
+        this.notificationService.success(this.isEdit ? 'Produit mis à jour.' : 'Produit créé.', 'Succès');
         this.router.navigate(['/my-products']);
       },
       error: (error) => {
         this.loading = false;
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la sauvegarde' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la sauvegarde', 'Erreur');
       }
     });
   }

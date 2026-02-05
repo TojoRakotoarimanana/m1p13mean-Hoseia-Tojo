@@ -1,1 +1,9 @@
 Isolation des routes admin, boutique, client ( backend , frontend)
+
+utilise ceci TieredMenuModule pour le menu du frontend , c'est un module de Primeng
+
+rectifie un peu le desig du BreadcrumModule import { BreadcrumbModule } from 'primeng/breadcrumb'; pour qu'il suit aussi un chemin bien definit et detailer
+
+maintenant utilise ceci pour tout les messages d'information import { ToastModule } from 'primeng/toast';
+
+sur le sidebar il ne devrait pas y avoir de l'info utilisateur mais cela doit etre sur le app heaader

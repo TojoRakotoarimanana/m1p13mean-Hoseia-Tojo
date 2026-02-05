@@ -8,10 +8,10 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
 import { PaginatorModule } from 'primeng/paginator';
 
+import { NotificationService } from '../../core/services/notification.service';
 import { ShopService } from '../../core/services/shop.service';
 import { UserService } from '../../core/services/user.service';
 import { CategoryService } from '../../core/services/category.service';
@@ -32,7 +32,6 @@ import { CategoryService } from '../../core/services/category.service';
     TagModule,
     PaginatorModule
   ],
-  providers: [MessageService],
   templateUrl: './shops.component.html',
   styleUrl: './shops.component.css'
 })
@@ -69,7 +68,7 @@ export class ShopsComponent implements OnInit {
     private shopService: ShopService,
     private userService: UserService,
     private categoryService: CategoryService,
-    private messageService: MessageService,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -90,7 +89,7 @@ export class ShopsComponent implements OnInit {
       },
       error: () => {
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de charger les utilisateurs' });
+        this.notificationService.error('Impossible de charger les utilisateurs', 'Erreur');
       }
     });
   }
@@ -106,7 +105,7 @@ export class ShopsComponent implements OnInit {
       },
       error: () => {
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de charger les catégories' });
+        this.notificationService.error('Impossible de charger les catégories', 'Erreur');
       }
     });
   }
@@ -129,7 +128,7 @@ export class ShopsComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors du chargement' });
+        this.notificationService.error(error.error?.message || 'Erreur lors du chargement', 'Erreur');
       }
     });
   }
@@ -168,7 +167,7 @@ export class ShopsComponent implements OnInit {
 
   saveShop() {
     if (!this.shopForm.name || !this.shopForm.userId || !this.shopForm.category) {
-      this.messageService.add({ severity: 'warn', summary: 'Champs requis', detail: 'userId, name, category sont obligatoires.' });
+      this.notificationService.warn('userId, name, category sont obligatoires.', 'Champs requis');
       return;
     }
 
@@ -180,12 +179,12 @@ export class ShopsComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: this.isEdit ? 'Boutique mise à jour.' : 'Boutique créée.' });
+        this.notificationService.success(this.isEdit ? 'Boutique mise à jour.' : 'Boutique créée.', 'Succès');
         this.shopDialog = false;
         this.loadShops();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la sauvegarde' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la sauvegarde', 'Erreur');
       }
     });
   }
@@ -193,11 +192,11 @@ export class ShopsComponent implements OnInit {
   suspendShop(shop: any) {
     this.shopService.suspend(shop._id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Boutique suspendue.' });
+        this.notificationService.success('Boutique suspendue.', 'Succès');
         this.loadShops();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la suspension' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la suspension', 'Erreur');
       }
     });
   }
@@ -207,11 +206,11 @@ export class ShopsComponent implements OnInit {
 
     this.shopService.remove(shop._id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Boutique supprimée.' });
+        this.notificationService.success('Boutique supprimée.', 'Succès');
         this.loadShops();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la suppression' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la suppression', 'Erreur');
       }
     });
   }

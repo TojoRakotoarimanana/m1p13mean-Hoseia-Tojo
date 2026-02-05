@@ -7,11 +7,12 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { TagModule } from 'primeng/tag';
+
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 
+import { NotificationService } from '../../core/services/notification.service';
 import { CategoryService } from '../../core/services/category.service';
 
 @Component({
@@ -30,7 +31,6 @@ import { CategoryService } from '../../core/services/category.service';
     PaginatorModule,
     SelectModule
   ],
-  providers: [MessageService],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.css'
 })
@@ -49,7 +49,7 @@ export class CategoriesComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
-    private messageService: MessageService,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -68,7 +68,7 @@ export class CategoriesComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors du chargement' });
+        this.notificationService.error(error.error?.message || 'Erreur lors du chargement', 'Erreur');
       }
     });
   }
@@ -87,7 +87,7 @@ export class CategoriesComponent implements OnInit {
 
   saveCategory() {
     if (!this.categoryForm.name || !this.categoryForm.type) {
-      this.messageService.add({ severity: 'warn', summary: 'Champs requis', detail: 'name et type sont obligatoires.' });
+      this.notificationService.warn('name et type sont obligatoires.', 'Champs requis');
       return;
     }
 
@@ -99,12 +99,12 @@ export class CategoriesComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: this.isEdit ? 'Catégorie mise à jour.' : 'Catégorie créée.' });
+        this.notificationService.success(this.isEdit ? 'Catégorie mise à jour.' : 'Catégorie créée.', 'Succès');
         this.categoryDialog = false;
         this.loadCategories();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la sauvegarde' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la sauvegarde', 'Erreur');
       }
     });
   }
@@ -114,11 +114,11 @@ export class CategoriesComponent implements OnInit {
 
     this.categoryService.remove(category._id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Catégorie supprimée.' });
+        this.notificationService.success('Catégorie supprimée.', 'Succès');
         this.loadCategories();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la suppression' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la suppression', 'Erreur');
       }
     });
   }

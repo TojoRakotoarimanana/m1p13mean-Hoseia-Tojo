@@ -12,8 +12,8 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { MessageService } from 'primeng/api';
 
+import { NotificationService } from '../../../core/services/notification.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -37,7 +37,6 @@ import { ShopService } from '../../../core/services/shop.service';
     DialogModule,
     InputNumberModule
   ],
-  providers: [MessageService],
   templateUrl: './my-products.component.html',
   styleUrl: './my-products.component.css'
 })
@@ -87,7 +86,7 @@ export class MyProductsComponent implements OnInit {
     private categoryService: CategoryService,
     private authService: AuthService,
     private shopService: ShopService,
-    private messageService: MessageService,
+    private notificationService: NotificationService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -107,7 +106,7 @@ export class MyProductsComponent implements OnInit {
       },
       error: (error) => {
         this.historyLoading = false;
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur chargement historique' });
+        this.notificationService.error(error.error?.message || 'Erreur chargement historique', 'Erreur');
       }
     });
   }
@@ -142,11 +141,11 @@ export class MyProductsComponent implements OnInit {
 
     this.productService.updatePromotion(product._id, payload).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Promotion arrêtée.' });
+        this.notificationService.success('Promotion arrêtée.', 'Succès');
         this.loadProducts();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur promo' });
+        this.notificationService.error(error.error?.message || 'Erreur promo', 'Erreur');
       }
     });
   }
@@ -155,7 +154,7 @@ export class MyProductsComponent implements OnInit {
     if (!this.promoTarget) return;
 
     if (enable && (!this.promoValue || this.promoValue <= 0)) {
-      this.messageService.add({ severity: 'warn', summary: 'Remise', detail: 'Veuillez saisir un pourcentage valide.' });
+      this.notificationService.warn('Veuillez saisir un pourcentage valide.', 'Remise');
       return;
     }
 
@@ -171,13 +170,13 @@ export class MyProductsComponent implements OnInit {
 
     this.productService.updatePromotion(this.promoTarget._id, payload).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: enable ? 'Promotion activée.' : 'Promotion arrêtée.' });
+        this.notificationService.success(enable ? 'Promotion activée.' : 'Promotion arrêtée.', 'Succès');
         this.promoDialog = false;
         this.promoTarget = null;
         this.loadProducts();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur promo' });
+        this.notificationService.error(error.error?.message || 'Erreur promo', 'Erreur');
       }
     });
   }
@@ -192,7 +191,7 @@ export class MyProductsComponent implements OnInit {
         this.loadProducts();
       },
       error: () => {
-        this.messageService.add({ severity: 'warn', summary: 'Info', detail: 'Aucune boutique active trouvée.' });
+        this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
       }
     });
   }
@@ -207,7 +206,7 @@ export class MyProductsComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de charger les catégories.' });
+        this.notificationService.error('Impossible de charger les catégories.', 'Erreur');
       }
     });
   }
@@ -241,7 +240,7 @@ export class MyProductsComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur de chargement' });
+        this.notificationService.error(error.error?.message || 'Erreur de chargement', 'Erreur');
       }
     });
   }
@@ -278,11 +277,11 @@ export class MyProductsComponent implements OnInit {
 
     this.productService.remove(product._id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Produit supprimé.' });
+        this.notificationService.success('Produit supprimé.', 'Succès');
         this.loadProducts();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la suppression' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la suppression', 'Erreur');
       }
     });
   }
@@ -290,10 +289,10 @@ export class MyProductsComponent implements OnInit {
   updateStock(product: any) {
     this.productService.updateStock(product._id, { quantity: product.stock?.quantity }).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Stock mis à jour.' });
+        this.notificationService.success('Stock mis à jour.', 'Succès');
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur stock' });
+        this.notificationService.error(error.error?.message || 'Erreur stock', 'Erreur');
       }
     });
   }

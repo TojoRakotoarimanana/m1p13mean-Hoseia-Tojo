@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
+import { NotificationService } from '../../../core/services/notification.service';
 import { ProductService } from '../../../core/services/product.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ShopService } from '../../../core/services/shop.service';
@@ -30,6 +31,7 @@ export class StockManagementComponent implements OnInit {
     private authService: AuthService,
     private shopService: ShopService,
     private messageService: MessageService,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -43,7 +45,7 @@ export class StockManagementComponent implements OnInit {
         this.loadProducts();
       },
       error: () => {
-        this.messageService.add({ severity: 'warn', summary: 'Info', detail: 'Aucune boutique active.' });
+        this.notificationService.warn('Aucune boutique active.', 'Info');
       }
     });
   }
@@ -61,7 +63,7 @@ export class StockManagementComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur de chargement' });
+        this.notificationService.error(error.error?.message || 'Erreur de chargement', 'Erreur');
       }
     });
   }
@@ -72,10 +74,10 @@ export class StockManagementComponent implements OnInit {
       lowStockAlert: product.stock?.lowStockAlert
     }).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Stock mis à jour.' });
+        this.notificationService.success('Stock mis à jour.', 'Succès');
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur stock' });
+        this.notificationService.error(error.error?.message || 'Erreur stock', 'Erreur');
       }
     });
   }

@@ -4,15 +4,14 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 
+import { NotificationService } from '../../core/services/notification.service';
 import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-register-boutique-requests',
   standalone: true,
   imports: [CommonModule, CardModule, TableModule, ButtonModule, ToastModule],
-  providers: [MessageService],
   templateUrl: './register-boutique-requests.component.html',
   styleUrl: './register-boutique-requests.component.css'
 })
@@ -22,7 +21,7 @@ export class RegisterBoutiqueRequestsComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private messageService: MessageService,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -41,7 +40,7 @@ export class RegisterBoutiqueRequestsComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         this.cdr.detectChanges();
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors du chargement' });
+        this.notificationService.error(error.error?.message || 'Erreur lors du chargement', 'Erreur');
       }
     });
   }
@@ -49,11 +48,11 @@ export class RegisterBoutiqueRequestsComponent implements OnInit {
   approve(user: any) {
     this.userService.approveBoutique(user._id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Utilisateur validé.' });
+        this.notificationService.success('Utilisateur validé.', 'Succès');
         this.loadPending();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la validation' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la validation', 'Erreur');
       }
     });
   }
@@ -63,11 +62,11 @@ export class RegisterBoutiqueRequestsComponent implements OnInit {
 
     this.userService.rejectBoutique(user._id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Demande refusée.' });
+        this.notificationService.success('Demande refusée.', 'Succès');
         this.loadPending();
       },
       error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors du refus' });
+        this.notificationService.error(error.error?.message || 'Erreur lors du refus', 'Erreur');
       }
     });
   }

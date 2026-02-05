@@ -12,17 +12,10 @@ import { ChipModule } from 'primeng/chip';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { RippleModule } from 'primeng/ripple';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 
 import { AuthService } from '../../services/auth.service';
-
-interface MenuItem {
-  label: string;
-  icon: string;
-  routerLink?: string;
-  items?: MenuItem[];
-  expanded?: boolean;
-  separator?: boolean;
-}
 
 @Component({
   selector: 'app-navbar',
@@ -30,15 +23,15 @@ interface MenuItem {
   imports: [
     CommonModule,
     RouterModule,
-    CardModule,
+    DividerModule, // kept as it might be used elsewhere
+    RippleModule,
+    MenuModule,
+    ButtonModule,
     AvatarModule,
     ChipModule,
-    ButtonModule,
-    DividerModule,
-    RippleModule
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   user: any = null;
@@ -47,12 +40,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   constructor(
     public authService: AuthService,
-    private router: Router
-  ) { }
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     // S'abonner aux changements d'utilisateur en temps réel
-    this.userSubscription = this.authService.user$.subscribe(user => {
+    this.userSubscription = this.authService.user$.subscribe((user) => {
       this.user = user;
       this.loadMenuItems();
     });
@@ -64,87 +57,132 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.userSubscription.unsubscribe();
     }
   }
-
+  navigateTo(path: string): void {
+    this.router.navigate([path]);
+  }
   loadMenuItems(): void {
     const role = this.user?.role;
 
-    // Menu selon le rôle avec sous-menus
+    // Menu selon le rôle
     if (role === 'admin') {
       this.items = [
         {
-          label: 'Dashboard',
-          icon: 'pi pi-home',
-          routerLink: '/dashboard'
-        },
-        {
           label: 'Gestion',
           icon: 'pi pi-cog',
-          expanded: false,
           items: [
-            { label: 'Boutiques', icon: 'pi pi-shop', routerLink: '/shops' },
-            { label: 'Catégories', icon: 'pi pi-tags', routerLink: '/categories' }
-          ]
+            {
+              label: 'Boutiques',
+              icon: 'pi pi-shop',
+              command: () => this.router.navigate(['/shops']),
+            },
+            {
+              label: 'Catégories',
+              icon: 'pi pi-tags',
+              command: () => this.router.navigate(['/categories']),
+            },
+          ],
         },
         {
           label: 'Demandes',
           icon: 'pi pi-inbox',
-          expanded: false,
           items: [
-            { label: 'Propriétaires Boutiques', icon: 'pi pi-file-edit', routerLink: '/admin/register-boutique-requests' },
-            { label: 'Créations Shops', icon: 'pi pi-shopping-bag', routerLink: '/admin/shop-requests' }
-          ]
-        }
+            {
+              label: 'Propriétaires Boutiques',
+              icon: 'pi pi-file-edit',
+              command: () => this.router.navigate(['/admin/register-boutique-requests']),
+            },
+            {
+              label: 'Demandes Shops',
+              icon: 'pi pi-shopping-bag',
+              command: () => this.router.navigate(['/admin/shop-requests']),
+            },
+          ],
+        },
+        {
+          separator: true,
+        },
+        {
+          label: 'Déconnexion',
+          icon: 'pi pi-power-off',
+          styleClass: 'logout-menu-item',
+          command: () => this.logout(),
+        },
       ];
     } else if (role === 'boutique') {
       this.items = [
         {
           label: 'Dashboard',
           icon: 'pi pi-home',
-          routerLink: '/dashboard'
+          command: () => this.router.navigate(['/dashboard']),
+        },
+        {
+          separator: true,
         },
         {
           label: 'Mon Espace',
           icon: 'pi pi-briefcase',
-          expanded: false,
           items: [
-            { label: 'Ma Boutique', icon: 'pi pi-building', routerLink: '/my-shop' },
-            { label: 'Mes Produits', icon: 'pi pi-box', routerLink: '/my-products' }
-          ]
+            {
+              label: 'Ma Boutique',
+              icon: 'pi pi-building',
+              command: () => this.router.navigate(['/my-shop']),
+            },
+            {
+              label: 'Mes Produits',
+              icon: 'pi pi-box',
+              command: () => this.router.navigate(['/my-products']),
+            },
+          ],
         },
         {
           label: 'Explorer',
           icon: 'pi pi-compass',
-          expanded: false,
           items: [
-            { label: 'Toutes les Boutiques', icon: 'pi pi-shop', routerLink: '/shops' }
-          ]
-        }
+            {
+              label: 'Toutes les Boutiques',
+              icon: 'pi pi-shop',
+              command: () => this.router.navigate(['/shops']),
+            },
+          ],
+        },
+        {
+          separator: true,
+        },
+        {
+          label: 'Déconnexion',
+          icon: 'pi pi-power-off',
+          styleClass: 'logout-menu-item',
+          command: () => this.logout(),
+        },
       ];
     } else if (role === 'client') {
       this.items = [
         {
           label: 'Accueil',
           icon: 'pi pi-home',
-          routerLink: '/dashboard'
+          command: () => this.router.navigate(['/dashboard']),
         },
         {
-          label: 'Shopping',
-          icon: 'pi pi-shopping-cart',
-          expanded: false,
-          items: [
-            { label: 'Boutiques', icon: 'pi pi-shop', routerLink: '/shops' }
-          ]
-        }
+          separator: true,
+        },
+        {
+          label: 'Boutiques',
+          icon: 'pi pi-shop',
+          command: () => this.router.navigate(['/shops']),
+        },
+        {
+          separator: true,
+        },
+        {
+          label: 'Déconnexion',
+          icon: 'pi pi-power-off',
+          styleClass: 'logout-menu-item',
+          command: () => this.logout(),
+        },
       ];
     }
   }
-
-  toggleSubmenu(item: MenuItem): void {
-    if (item.items) {
-      item.expanded = !item.expanded;
-    }
-  }
-
+  
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);

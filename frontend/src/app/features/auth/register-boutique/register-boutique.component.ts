@@ -10,13 +10,13 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { StepsModule } from 'primeng/steps';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-register-boutique',
@@ -29,15 +29,14 @@ import { CategoryService } from '../../../core/services/category.service';
     InputTextModule,
     PasswordModule,
     ButtonModule,
+    ToastModule,
     FloatLabelModule,
     IconFieldModule,
     InputIconModule,
-    ToastModule,
     StepsModule,
     SelectModule,
     CheckboxModule
   ],
-  providers: [MessageService],
   templateUrl: './register-boutique.component.html',
   styleUrl: './register-boutique.component.css'
 })
@@ -110,7 +109,7 @@ export class RegisterBoutiqueComponent {
     private authService: AuthService,
     private categoryService: CategoryService,
     private router: Router,
-    private messageService: MessageService
+    private notificationService: NotificationService
   ) {
     this.generateTimeOptions();
     this.loadCategories();
@@ -131,19 +130,19 @@ export class RegisterBoutiqueComponent {
         this.categories = categories || [];
       },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de charger les catégories' });
+        this.notificationService.error('Impossible de charger les catégories', 'Erreur');
       }
     });
   }
 
   nextStep() {
     if (this.stepIndex === 0 && !this.isUserStepValid()) {
-      this.messageService.add({ severity: 'warn', summary: 'Champs requis', detail: 'Veuillez compléter vos informations.' });
+      this.notificationService.warn('Veuillez compléter vos informations', 'Champs requis');
       return;
     }
 
     if (this.stepIndex === 1 && !this.isShopStepValid()) {
-      this.messageService.add({ severity: 'warn', summary: 'Champs requis', detail: 'Veuillez compléter les informations boutique.' });
+      this.notificationService.warn('Veuillez compléter les informations boutique', 'Champs requis');
       return;
     }
 
@@ -160,7 +159,7 @@ export class RegisterBoutiqueComponent {
     ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].forEach((day) => {
       this.hoursData[day as keyof typeof this.hoursData] = { ...mondayHours };
     });
-    this.messageService.add({ severity: 'success', summary: 'Copié', detail: 'Horaires du lundi copiés sur les jours de semaine' });
+    this.notificationService.success('Horaires du lundi copiés sur les jours de semaine', 'Copié');
   }
 
   // Copy to all days including Sunday
@@ -171,7 +170,7 @@ export class RegisterBoutiqueComponent {
         this.hoursData[day] = { ...mondayHours };
       }
     });
-    this.messageService.add({ severity: 'success', summary: 'Copié', detail: 'Horaires du lundi copiés sur tous les jours' });
+    this.notificationService.success('Horaires du lundi copiés sur tous les jours', 'Copié');
   }
 
   // Toggle closed status for a day
@@ -187,12 +186,12 @@ export class RegisterBoutiqueComponent {
 
   submit() {
     if (!this.isUserStepValid() || !this.isShopStepValid()) {
-      this.messageService.add({ severity: 'warn', summary: 'Champs requis', detail: 'Veuillez compléter toutes les informations.' });
+      this.notificationService.warn('Veuillez compléter toutes les informations', 'Champs requis');
       return;
     }
 
     if (this.userData.password !== this.userData.confirmPassword) {
-      this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas.' });
+      this.notificationService.error('Les mots de passe ne correspondent pas', 'Erreur de validation');
       return;
     }
 
@@ -217,12 +216,12 @@ export class RegisterBoutiqueComponent {
     this.authService.registerBoutique(payload).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: response.message || 'Demande envoyée.' });
+        this.notificationService.success(response.message || 'Votre demande a été envoyée avec succès', 'Inscription réussie');
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (error) => {
         this.isLoading = false;
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de l\'inscription' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de l\'inscription', 'Erreur');
       }
     });
   }

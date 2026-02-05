@@ -17,15 +17,32 @@ import { ProductFormComponent } from './features/products/product-form/product-f
 import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
 import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
 import { authGuard } from './core/guards/auth.guard';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
+
+const redirectIfLoggedIn: any = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  
+  if (authService.isLoggedIn()) {
+    router.navigate(['/dashboard']);
+    return false;
+  }
+  return true;
+};
 
 export const routes: Routes = [
+    // Route racine - redirige selon l'état de connexion
+    { path: '', canActivate: [redirectIfLoggedIn], component: LoginComponent },
+    
     // Routes publiques (authentification)
-    { path: 'login', component: LoginComponent },
-    { path: 'login-boutique', component: LoginBoutiqueComponent },
-    { path: 'login-admin', component: LoginAdminComponent },
-    { path: 'register', component: RegisterComponent },
-    { path: 'register-admin', component: RegisterAdminComponent },
-    { path: 'register-boutique', component: RegisterBoutiqueComponent },
+    { path: 'login', canActivate: [redirectIfLoggedIn], component: LoginComponent },
+    { path: 'login-boutique', canActivate: [redirectIfLoggedIn], component: LoginBoutiqueComponent },
+    { path: 'login-admin', canActivate: [redirectIfLoggedIn], component: LoginAdminComponent },
+    { path: 'register', canActivate: [redirectIfLoggedIn], component: RegisterComponent },
+    { path: 'register-admin', canActivate: [redirectIfLoggedIn], component: RegisterAdminComponent },
+    { path: 'register-boutique', canActivate: [redirectIfLoggedIn], component: RegisterBoutiqueComponent },
     
     // Routes protégées
     { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
@@ -38,7 +55,5 @@ export const routes: Routes = [
     { path: 'my-products/new', component: ProductFormComponent, canActivate: [authGuard] },
     { path: 'my-products/:id/edit', component: ProductFormComponent, canActivate: [authGuard] },
     { path: 'my-products/stock', component: StockManagementComponent, canActivate: [authGuard] },
-    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [authGuard] },
-    
-    { path: '', redirectTo: 'login', pathMatch: 'full' }
+    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [authGuard] }
 ];

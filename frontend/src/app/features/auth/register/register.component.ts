@@ -9,9 +9,9 @@ import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { AuthService } from '../../../core/services/auth.service';
-import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
     selector: 'app-register',
@@ -29,7 +29,6 @@ import { ToastModule } from 'primeng/toast';
         InputIconModule,
         ToastModule
     ],
-    providers: [MessageService],
     templateUrl: './register.component.html',
     styleUrl: './register.component.css'
 })
@@ -47,12 +46,12 @@ export class RegisterComponent {
     constructor(
         private authService: AuthService,
         private router: Router,
-        private messageService: MessageService
+        private notificationService: NotificationService
     ) {}
 
     onSubmit() {
         if (this.registerData.password !== this.registerData.confirmPassword) {
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas' });
+            this.notificationService.error('Les mots de passe ne correspondent pas', 'Erreur de validation');
             return;
         }
 
@@ -60,14 +59,14 @@ export class RegisterComponent {
         this.authService.register(this.registerData).subscribe({
             next: (response) => {
                 this.isLoading = false;
-                this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Inscription réussie' });
+                this.notificationService.success('Inscription réussie, redirection en cours...', 'Bienvenue');
                 setTimeout(() => {
                     this.router.navigate(['/']);
-                }, 1000);
+                }, 1500);
             },
             error: (error) => {
                 this.isLoading = false;
-                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Une erreur est survenue' });
+                this.notificationService.error(error.error?.message || 'Une erreur est survenue', 'Erreur d\'inscription');
             }
         });
     }

@@ -7,6 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+
+import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ShopService } from '../../core/services/shop.service';
 
@@ -40,6 +42,7 @@ export class MyShopComponent implements OnInit {
     private authService: AuthService,
     private shopService: ShopService,
     private cdr: ChangeDetectorRef,
+    private notificationService: NotificationService,
     private messageService: MessageService
   ) {}
 
@@ -97,12 +100,12 @@ export class MyShopComponent implements OnInit {
         this.shop = result.shop ?? { ...this.shop, ...payload };
         this.isSaving = false;
         this.isEditing = false;
-        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Informations mises à jour.' });
+        this.notificationService.success('Informations mises à jour.', 'Succès');
         this.cdr.detectChanges();
       },
       error: (error) => {
         this.isSaving = false;
-        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la mise à jour' });
+        this.notificationService.error(error.error?.message || 'Erreur lors de la mise à jour', 'Erreur');
         this.cdr.detectChanges();
       }
     });
