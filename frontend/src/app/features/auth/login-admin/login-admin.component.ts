@@ -9,27 +9,26 @@ import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { AuthService } from '../../../core/services/auth.service';
-import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
     selector: 'app-login-admin',
     standalone: true,
     imports: [
-        CommonModule, 
-        FormsModule, 
-        RouterLink, 
-        CardModule, 
-        InputTextModule, 
-        PasswordModule, 
-        ButtonModule, 
+        CommonModule,
+        FormsModule,
+        RouterLink,
+        CardModule,
+        InputTextModule,
+        PasswordModule,
+        ButtonModule,
         FloatLabelModule,
         IconFieldModule,
         InputIconModule,
         ToastModule
     ],
-    providers: [MessageService],
     templateUrl: './login-admin.component.html',
     styleUrl: './login-admin.component.css'
 })
@@ -38,13 +37,13 @@ export class LoginAdminComponent {
         email: '',
         password: ''
     };
-    
+
     isLoading = false;
 
     constructor(
-        private authService: AuthService, 
+        private authService: AuthService,
         private router: Router,
-        private messageService: MessageService
+        private notificationService: NotificationService
     ) {}
 
     onSubmit() {
@@ -54,18 +53,16 @@ export class LoginAdminComponent {
                 next: (response) => {
                     this.isLoading = false;
                     if (response.user.role === 'admin') {
-                        this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion administrateur réussie' });
-                        setTimeout(() => {
-                            this.router.navigate(['/admin/shop-requests']);
-                        }, 1000);
+                        this.notificationService.success('Connexion administrateur réussie', 'Bienvenue Admin');
+                            this.router.navigate(['/dashboard']);
                     } else {
-                        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email ou mot de passe incorrect.' });
+                        this.notificationService.error('Email ou mot de passe incorrect.', 'Erreur de connexion');
                         this.authService.logout();
                     }
                 },
                 error: (error) => {
                     this.isLoading = false;
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Une erreur est survenue' });
+                    this.notificationService.error(error.error?.message || 'Une erreur est survenue', 'Erreur');
                 }
             });
         }

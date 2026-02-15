@@ -253,6 +253,99 @@ class ShopService {
       shop
     };
   }
+
+  async listAll() {
+    try {
+      const shops = await Shop.find()
+        .populate('userId', 'firstName lastName email')
+        .populate('category', 'name')
+        .sort({ createdAt: -1 });
+
+      return {
+        total: shops.length,
+        shops
+      };
+    } catch (error) {
+      throw new Error('Erreur lors de la récupération des boutiques.');
+    }
+  }
+
+  async suspend(shopId) {
+    if (!shopId) {
+      const error = new Error('shopId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { status: 'suspended', isActive: false },
+      { new: true }
+    );
+
+    if (!shop) {
+      const error = new Error('Boutique introuvable.');
+      error.status = 404;
+      throw error;
+    }
+
+    return {
+      message: 'Boutique suspendue avec succès.',
+      shop
+    };
+  }
+
+  async validateAdmin(shopId) {
+    if (!shopId) {
+      const error = new Error('shopId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { status: 'active', isActive: true },
+      { new: true }
+    ).populate('userId', 'firstName lastName email')
+     .populate('category', 'name');
+
+    if (!shop) {
+      const error = new Error('Boutique introuvable.');
+      error.status = 404;
+      throw error;
+    }
+
+    return {
+      message: 'Boutique validée et activée avec succès.',
+      shop
+    };
+  }
+
+  async rejectAdmin(shopId) {
+    if (!shopId) {
+      const error = new Error('shopId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { status: 'rejected', isActive: false },
+      { new: true }
+    ).populate('userId', 'firstName lastName email')
+     .populate('category', 'name');
+
+    if (!shop) {
+      const error = new Error('Boutique introuvable.');
+      error.status = 404;
+      throw error;
+    }
+
+    return {
+      message: 'Boutique rejetée.',
+      shop
+    };
+  }
 }
 
 module.exports = new ShopService();

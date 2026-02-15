@@ -1,33 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const AuthService = require('../services/auth.service');
+const AuthController = require('../controllers/auth.controller');
 
-router.post('/register', async (req, res) => {
-  try {
-    const result = await AuthService.register(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de l\'inscription.' });
-  }
-});
-
-router.post('/register-boutique', async (req, res) => {
-  try {
-    const result = await AuthService.registerBoutique(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de l\'inscription boutique.' });
-  }
-});
-
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const result = await AuthService.login(email, password);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la connexion.' });
-  }
-});
+router.post('/register', AuthController.register);
+router.post('/register-boutique', AuthController.registerBoutique);
+router.post('/login', AuthController.login);
 
 module.exports = router;

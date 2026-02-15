@@ -9,9 +9,9 @@ import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { AuthService } from '../../../core/services/auth.service';
-import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
     selector: 'app-login',
@@ -29,7 +29,6 @@ import { ToastModule } from 'primeng/toast';
         InputIconModule,
         ToastModule
     ],
-    providers: [MessageService],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })
@@ -44,7 +43,7 @@ export class LoginComponent {
     constructor(
         private authService: AuthService, 
         private router: Router,
-        private messageService: MessageService
+        private notificationService: NotificationService
     ) {}
 
     onSubmit() {
@@ -53,16 +52,16 @@ export class LoginComponent {
             next: (response) => {
                 this.isLoading = false;
                 if (response.user.role === 'client') {
-                    this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Connexion réussie' });
+                    this.notificationService.success('Connexion réussie', 'Bienvenue');
                     this.router.navigate(['/shops']);
                 } else {
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Email ou mot de passe incorrect.' });
+                    this.notificationService.error('Email ou mot de passe incorrect.', 'Erreur de connexion');
                     this.authService.logout();
                 }
             },
             error: (error) => {
                 this.isLoading = false;
-                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Erreur lors de la connexion' });
+                this.notificationService.error(error.error?.message || 'Erreur lors de la connexion', 'Erreur');
             }
         });
     }

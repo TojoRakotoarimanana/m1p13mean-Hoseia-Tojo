@@ -1,95 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const ShopService = require('../services/shop.service');
+const ShopController = require('../controllers/shop.controller');
 
-router.get('/', async (req, res) => {
-  try {
-    const result = await ShopService.list(req.query);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la récupération.' });
-  }
-});
-
-router.get('/pending', async (req, res) => {
-  try {
-    const result = await ShopService.listPending();
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la récupération.' });
-  }
-});
-
-router.get('/my-shop/:userId', async (req, res) => {
-  try {
-    const result = await ShopService.getByUser(req.params.userId);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la récupération.' });
-  }
-});
-
-router.get('/:id', async (req, res) => {
-  try {
-    const result = await ShopService.getById(req.params.id);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la récupération.' });
-  }
-});
-
-router.post('/', async (req, res) => {
-  try {
-    const result = await ShopService.create(req.body);
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la création.' });
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  try {
-    const result = await ShopService.update(req.params.id, req.body);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la mise à jour.' });
-  }
-});
-
-router.post('/:id/suspend', async (req, res) => {
-  try {
-    const result = await ShopService.suspend(req.params.id);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la suspension.' });
-  }
-});
-
-router.post('/:id/approve', async (req, res) => {
-  try {
-    const result = await ShopService.approve(req.params.id, req.body.location);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la validation.' });
-  }
-});
-
-router.post('/:id/reject', async (req, res) => {
-  try {
-    const result = await ShopService.reject(req.params.id);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors du refus.' });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const result = await ShopService.remove(req.params.id, req.body.deletedByUserId);
-    res.json(result);
-  } catch (error) {
-    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la suppression.' });
-  }
-});
+router.get('/', ShopController.list);
+router.get('/pending', ShopController.listPending);
+router.get('/my-shop/:userId', ShopController.getByUser);
+router.get('/:id', ShopController.getById);
+router.post('/', ShopController.create);
+router.put('/:id', ShopController.update);
+router.post('/:id/suspend', ShopController.suspend);
+router.post('/:id/approve', ShopController.approve);
+router.post('/:id/reject', ShopController.reject);
+router.delete('/:id', ShopController.remove);
 
 module.exports = router;

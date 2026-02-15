@@ -1,0 +1,97 @@
+<div class="stats-wrapper">
+  <div class="header flex justify-content-between align-items-center mb-4">
+    <h1>Statistiques produits</h1>
+  </div>
+
+  <div class="stats-grid" *ngIf="stats">
+    <p-card>
+      <h3>Total produits</h3>
+      <p class="value">{{ stats.total }}</p>
+    </p-card>
+    <p-card>
+      <h3>Produits actifs</h3>
+      <p class="value">{{ stats.active }}</p>
+    </p-card>
+    <p-card>
+      <h3>En promotion</h3>
+      <p class="value">{{ stats.promotion }}</p>
+    </p-card>
+    <p-card>
+      <h3>Stock bas</h3>
+      <p class="value">{{ stats.lowStock }}</p>
+    </p-card>
+  </div>
+
+  <div class="tables">
+    <p-card>
+      <h3>Produits les plus vendus</h3>
+      <p-table [value]="topSold">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Produit</th>
+            <th>Vendus</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.statistics?.sold || 0 }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2">Aucune donnée.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <p-card>
+      <h3>Produits les plus consultés</h3>
+      <p-table [value]="topViewed">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Produit</th>
+            <th>Vues</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.statistics?.views || 0 }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2">Aucune donnée.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <p-card>
+      <h3>Performance promotions</h3>
+      <p-table [value]="promoProducts">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Produit</th>
+            <th>Promotion</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>
+              <p-tag [value]="product.isPromotion ? 'Oui' : 'Non'" [severity]="product.isPromotion ? 'success' : 'secondary'"></p-tag>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2">Aucune promo.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>

@@ -33,14 +33,14 @@
 
       <div class="field">
         <label for="password" class="field-label">Mot de passe</label>
-        <p-password id="password" [(ngModel)]="userData.password" name="password" [toggleMask]="true"
-          [feedback]="true" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+        <p-password id="password" [(ngModel)]="userData.password" name="password" [toggleMask]="true" [feedback]="true"
+          styleClass="w-full" inputStyleClass="w-full" required></p-password>
       </div>
 
       <div class="field">
         <label for="confirmPassword" class="field-label">Confirmer le mot de passe</label>
-        <p-password id="confirmPassword" [(ngModel)]="userData.confirmPassword" name="confirmPassword" [toggleMask]="true"
-          [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+        <p-password id="confirmPassword" [(ngModel)]="userData.confirmPassword" name="confirmPassword"
+          [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
       </div>
     </div>
 
@@ -52,19 +52,15 @@
 
       <div class="field">
         <label class="field-label">Catégorie</label>
-        <p-select
-          [options]="categories"
-          optionLabel="name"
-          optionValue="_id"
-          [(ngModel)]="shopData.category"
-          placeholder="Sélectionner une catégorie"
-          styleClass="w-full">
+        <p-select [options]="categories" optionLabel="name" optionValue="_id" [(ngModel)]="shopData.category"
+          placeholder="Sélectionner une catégorie" styleClass="w-full">
         </p-select>
       </div>
 
       <div class="field">
         <label for="shopDescription" class="field-label">Description</label>
-        <input pInputText id="shopDescription" [(ngModel)]="shopData.description" name="shopDescription" class="w-full" />
+        <input pInputText id="shopDescription" [(ngModel)]="shopData.description" name="shopDescription"
+          class="w-full" />
       </div>
     </div>
 
@@ -80,11 +76,46 @@
         </div>
       </div>
 
-      <div class="hours-grid">
-        <div class="hours-row" *ngFor="let day of days">
-          <span class="day-label">{{ day | titlecase }}</span>
-          <input pInputText [(ngModel)]="hoursData[day].open" placeholder="Ouverture" class="w-full" />
-          <input pInputText [(ngModel)]="hoursData[day].close" placeholder="Fermeture" class="w-full" />
+      <div class="hours-section">
+        <div class="hours-header">
+          <h3 class="hours-title">Horaires d'ouverture</h3>
+          <div class="quick-actions">
+            <p-button label="Copier sur jours ouvrables" icon="pi pi-copy" size="small" [text]="true"
+              (onClick)="copyToWeekdays()">
+            </p-button>
+            <p-button label="Copier sur tous les jours" icon="pi pi-clone" size="small" [text]="true"
+              (onClick)="copyToAllDays()">
+            </p-button>
+          </div>
+        </div>
+
+        <div class="hours-grid">
+          <div class="hours-row" *ngFor="let day of days">
+            <div class="day-info">
+              <span class="day-label">{{ dayLabels[day] }}</span>
+              <p-checkbox [(ngModel)]="hoursData[day].closed" [binary]="true" label="Fermé"
+                (onChange)="toggleClosed(day)">
+              </p-checkbox>
+            </div>
+
+            <div class="time-selectors" [class.disabled]="hoursData[day].closed">
+              <div class="time-field">
+                <label class="time-label">Ouverture</label>
+                <p-select [options]="timeOptions" [(ngModel)]="hoursData[day].open" placeholder="--:--"
+                  [disabled]="hoursData[day].closed" styleClass="w-full" [filter]="true">
+                </p-select>
+              </div>
+
+              <span class="time-separator">→</span>
+
+              <div class="time-field">
+                <label class="time-label">Fermeture</label>
+                <p-select [options]="timeOptions" [(ngModel)]="hoursData[day].close" placeholder="--:--"
+                  [disabled]="hoursData[day].closed" styleClass="w-full" [filter]="true">
+                </p-select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

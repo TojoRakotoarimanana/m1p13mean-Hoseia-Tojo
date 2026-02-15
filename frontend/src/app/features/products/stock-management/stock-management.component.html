@@ -1,0 +1,43 @@
+<div class="stock-wrapper">
+  <div class="header flex justify-content-between align-items-center mb-4">
+    <h1>Gestion des stocks</h1>
+  </div>
+
+  <p-card>
+    <p-table [value]="products" [loading]="loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Produit</th>
+          <th>Stock</th>
+          <th>Seuil</th>
+          <th>Alerte</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr [class.low-stock]="isLowStock(product)">
+          <td>{{ product.name }}</td>
+          <td>
+            <input pInputText type="number" [(ngModel)]="product.stock.quantity" class="w-full" />
+          </td>
+          <td>
+            <input pInputText type="number" [(ngModel)]="product.stock.lowStockAlert" class="w-full" />
+          </td>
+          <td>
+            <span>{{ isLowStock(product) ? 'Stock bas' : 'OK' }}</span>
+          </td>
+          <td>
+            <p-button icon="pi pi-save" (onClick)="saveStock(product)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5">Aucun produit.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
+
+<p-toast></p-toast>

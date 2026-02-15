@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-/**
- * Common Soft Delete Plugin
- */
 function softDeletePlugin(schema) {
   schema.add({
     deletedAt: { type: Date, default: null },
@@ -24,7 +21,6 @@ function softDeletePlugin(schema) {
   });
 }
 
-// --- User Model ---
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
@@ -38,7 +34,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(softDeletePlugin);
 
-// Hash password
 userSchema.pre('save', async function() {
   if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
@@ -51,7 +46,6 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 
 const User = mongoose.model('User', userSchema);
 
-// --- Category Model ---
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true, trim: true },
   description: { type: String, trim: true },
@@ -63,7 +57,6 @@ const categorySchema = new mongoose.Schema({
 categorySchema.plugin(softDeletePlugin);
 const Category = mongoose.model('Category', categorySchema);
 
-// --- Shop Model ---
 const shopSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true, trim: true },
@@ -93,7 +86,6 @@ const shopSchema = new mongoose.Schema({
 shopSchema.plugin(softDeletePlugin);
 const Shop = mongoose.model('Shop', shopSchema);
 
-// --- Product Model ---
 const productSchema = new mongoose.Schema({
   shopId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop', required: true },
   name: { type: String, required: true, trim: true },
@@ -101,6 +93,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true, min: 0 },
   originalPrice: { type: Number, min: 0 },
   discount: { type: Number, default: 0, min: 0, max: 100 },
+  promoEndDate: { type: Date },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   images: [String],
   stock: {
@@ -109,6 +102,22 @@ const productSchema = new mongoose.Schema({
   },
   isPromotion: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
+  promotionHistory: [
+    {
+      discount: { type: Number, min: 0, max: 100 },
+      startDate: { type: Date },
+      endDate: { type: Date },
+      action: { type: String, enum: ['enabled', 'disabled'], default: 'enabled' },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ],
+  priceHistory: [
+    {
+      oldPrice: { type: Number, min: 0 },
+      newPrice: { type: Number, min: 0 },
+      changedAt: { type: Date, default: Date.now }
+    }
+  ],
   specifications: { type: Map, of: String },
   statistics: {
     views: { type: Number, default: 0 },
@@ -120,7 +129,6 @@ productSchema.index({ name: 'text', description: 'text' });
 productSchema.plugin(softDeletePlugin);
 const Product = mongoose.model('Product', productSchema);
 
-// --- Order Model ---
 const orderSchema = new mongoose.Schema({
   orderNumber: { type: String, unique: true, required: true },
   customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -154,7 +162,6 @@ const orderSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-// Auto-generate order number
 orderSchema.pre('save', async function() {
   if (!this.orderNumber) {
     this.orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
@@ -164,7 +171,6 @@ orderSchema.pre('save', async function() {
 orderSchema.plugin(softDeletePlugin);
 const Order = mongoose.model('Order', orderSchema);
 
-// --- Cart Model ---
 const cartSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   items: [{
@@ -185,7 +191,6 @@ cartSchema.methods.calculateTotal = function() {
 cartSchema.plugin(softDeletePlugin);
 const Cart = mongoose.model('Cart', cartSchema);
 
-// --- Notification Model ---
 const notificationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   type: { type: String, enum: ['order', 'shop', 'system', 'promotion'], required: true },
@@ -199,7 +204,6 @@ const notificationSchema = new mongoose.Schema({
 notificationSchema.plugin(softDeletePlugin);
 const Notification = mongoose.model('Notification', notificationSchema);
 
-// --- Mall Settings Model ---
 const mallSettingsSchema = new mongoose.Schema({
   name: { type: String, required: true, default: 'Centre Commercial' },
   description: String,

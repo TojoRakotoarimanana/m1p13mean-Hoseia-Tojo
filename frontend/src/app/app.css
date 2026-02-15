@@ -18,11 +18,12 @@
 
 .app-layout.with-sidebar .main-content {
     margin-left: 280px;
+    margin-top: 64px;
     background: #f9fafb;
 }
 
 .page-content {
-    padding: 0 2rem 2rem 2rem;
+    padding: 2rem;
 }
 
 .app-layout:not(.with-sidebar) .main-content {

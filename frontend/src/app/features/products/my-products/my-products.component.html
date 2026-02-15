@@ -1,0 +1,224 @@
+<div class="products-wrapper">
+  <div class="header flex justify-content-between align-items-center mb-4">
+    <h1>Mes produits</h1>
+    <div class="actions">
+      <p-button label="Stock" icon="pi pi-box" severity="secondary" (onClick)="manageStock()"></p-button>
+      <p-button label="Stats" icon="pi pi-chart-bar" severity="secondary" (onClick)="viewStats()"></p-button>
+      <p-button label="Nouveau produit" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+    </div>
+  </div>
+
+  <p-card [style]="{ width: '100%', marginBottom: '1.5rem' }">
+    <div class="filters grid">
+      <div class="col-12 md:col-4">
+        <label class="field-label">Recherche</label>
+        <input pInputText [(ngModel)]="filters.search" placeholder="Nom, description..." class="w-full" />
+      </div>
+      <div class="col-12 md:col-4">
+        <label class="field-label">Catégorie</label>
+        <p-select
+          [options]="categories"
+          optionLabel="displayName"
+          optionValue="_id"
+          [(ngModel)]="filters.category"
+          placeholder="Toutes"
+          styleClass="w-full">
+        </p-select>
+      </div>
+      <div class="col-12 md:col-2">
+        <label class="field-label">Promotion</label>
+        <p-select
+          [options]="promotionOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="filters.promotion"
+          styleClass="w-full">
+        </p-select>
+      </div>
+      <div class="col-12 md:col-2">
+        <label class="field-label">Stock</label>
+        <p-select
+          [options]="stockOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="filters.stockStatus"
+          styleClass="w-full">
+        </p-select>
+      </div>
+      <div class="col-12 md:col-2 filter-actions">
+        <p-button label="Filtrer" icon="pi pi-filter" severity="secondary" (onClick)="onFilter()"></p-button>
+      </div>
+    </div>
+  </p-card>
+
+  <p-card>
+    <p-table [value]="products" [loading]="loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Produit</th>
+          <th>Catégorie</th>
+          <th>Prix</th>
+          <th>Stock</th>
+          <th>Promo</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td>
+            <div class="product-info">
+              <img
+                class="product-thumb"
+                [src]="product.images?.[0] ? imageBaseUrl + product.images[0] : 'assets/images/placeholder-product.png'"
+                [alt]="product.name" />
+              <div>
+                <div class="product-name">{{ product.name }}</div>
+                <div class="text-secondary text-sm">{{ product.description || '-' }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ product.category?.name || '-' }}</td>
+          <td>
+            <div *ngIf="product.isPromotion" class="price-stack">
+              <span class="price-original">{{ product.originalPrice | number:'1.0-2' }} Ar</span>
+              <span class="price-promo">{{ product.price | number:'1.0-2' }} Ar</span>
+            </div>
+            <div *ngIf="!product.isPromotion">
+              {{ product.price | number:'1.0-2' }} Ar
+            </div>
+          </td>
+          <td>
+            <p-tag
+              [value]="product.stock?.quantity"
+              [severity]="getStockSeverity(product)">
+            </p-tag>
+            <div class="text-secondary text-sm">Alerte: {{ product.stock?.lowStockAlert }}</div>
+          </td>
+          <td>
+            <p-tag
+              [value]="product.isPromotion ? ('Oui (' + (product.discount || 0) + '%)') : 'Non'"
+              [severity]="product.isPromotion ? 'success' : 'secondary'">
+            </p-tag>
+          </td>
+          <td class="actions">
+            <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editProduct(product)"></p-button>
+            <p-button
+              [icon]="product.isPromotion ? 'pi pi-stop-circle' : 'pi pi-bolt'"
+              [severity]="product.isPromotion ? 'warn' : 'success'"
+              (onClick)="product.isPromotion ? stopPromotion(product) : openPromotion(product)">
+            </p-button>
+            <p-button icon="pi pi-history" severity="secondary" (onClick)="openHistory(product)"></p-button>
+            <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteProduct(product)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">Aucun produit trouvé.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-paginator
+      [rows]="limit"
+      [totalRecords]="total"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="onPageChange($event)">
+    </p-paginator>
+  </p-card>
+</div>
+
+<p-dialog
+  header="Promotion"
+  [(visible)]="promoDialog"
+  [modal]="true"
+  [style]="{ width: '360px' }">
+  <div class="field">
+    <label class="field-label">Pourcentage de remise</label>
+    <p-inputNumber
+      [(ngModel)]="promoValue"
+      [min]="0"
+      [max]="100"
+      suffix="%"
+      styleClass="w-full">
+    </p-inputNumber>
+  </div>
+  <div class="field">
+    <label class="field-label">Date limite</label>
+    <input pInputText type="date" [(ngModel)]="promoEndDate" class="w-full" />
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Annuler" severity="secondary" (onClick)="promoDialog = false"></p-button>
+    <p-button
+      *ngIf="promoTarget?.isPromotion"
+      label="Arrêter la promo"
+      severity="warn"
+      (onClick)="applyPromotion(false)">
+    </p-button>
+    <p-button
+      *ngIf="!promoTarget?.isPromotion"
+      label="Activer la promo"
+      severity="success"
+      (onClick)="applyPromotion(true)">
+    </p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Historique"
+  [(visible)]="historyDialog"
+  [modal]="true"
+  [style]="{ width: '720px' }"
+  (onHide)="closeHistory()">
+  <div *ngIf="historyLoading">Chargement...</div>
+  <div *ngIf="!historyLoading">
+    <h4>Historique promotions</h4>
+    <p-table [value]="historyTarget?.promotionHistory || []">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Action</th>
+          <th>Remise</th>
+          <th>Début</th>
+          <th>Fin</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.action }}</td>
+          <td>{{ row.discount }}%</td>
+          <td>{{ row.startDate | date:'short' }}</td>
+          <td>{{ row.endDate ? (row.endDate | date:'short') : '-' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="4">Aucun historique promo.</td></tr>
+      </ng-template>
+    </p-table>
+
+    <h4 class="mt-4">Historique prix</h4>
+    <p-table [value]="historyTarget?.priceHistory || []">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Ancien prix</th>
+          <th>Nouveau prix</th>
+          <th>Date</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.oldPrice | number:'1.0-2' }} Ar</td>
+          <td>{{ row.newPrice | number:'1.0-2' }} Ar</td>
+          <td>{{ row.changedAt | date:'short' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="3">Aucun historique prix.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Fermer" severity="secondary" (onClick)="closeHistory()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

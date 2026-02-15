@@ -9,16 +9,16 @@ import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { AuthService } from '../../../core/services/auth.service';
-import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
     selector: 'app-register-admin',
     standalone: true,
     imports: [
-        CommonModule, 
-        FormsModule, 
+        CommonModule,
+        FormsModule,
         RouterLink,
         CardModule,
         InputTextModule,
@@ -29,7 +29,6 @@ import { ToastModule } from 'primeng/toast';
         InputIconModule,
         ToastModule
     ],
-    providers: [MessageService],
     templateUrl: './register-admin.component.html',
     styleUrl: './register-admin.component.css'
 })
@@ -40,7 +39,7 @@ export class RegisterAdminComponent {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'admin' // Force role to admin
+        role: 'admin'
     };
 
     isLoading = false;
@@ -48,29 +47,25 @@ export class RegisterAdminComponent {
     constructor(
         private authService: AuthService,
         private router: Router,
-        private messageService: MessageService
+        private notificationService: NotificationService
     ) {}
 
     onSubmit() {
         if (this.registerData.password !== this.registerData.confirmPassword) {
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Les mots de passe ne correspondent pas' });
+            this.notificationService.error('Les mots de passe ne correspondent pas', 'Erreur de validation');
             return;
         }
 
         this.isLoading = true;
-        // Ideally this should use a specific registerAdmin endpoint or handle role check in backend
-        // For now using standard register but with 'admin' role
         this.authService.register(this.registerData).subscribe({
             next: (response) => {
                 this.isLoading = false;
-                this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Compte administrateur créé' });
-                setTimeout(() => {
+                this.notificationService.success('Compte administrateur créé avec succès', 'Redirection...');
                     this.router.navigate(['/login-admin']);
-                }, 1000);
             },
             error: (error) => {
                 this.isLoading = false;
-                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: error.error?.message || 'Une erreur est survenue' });
+                this.notificationService.error(error.error?.message || 'Une erreur est survenue', 'Erreur d\'inscription');
             }
         });
     }
