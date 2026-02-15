@@ -17,13 +17,13 @@ import { NotificationService } from '../../../core/services/notification.service
     selector: 'app-login-boutique',
     standalone: true,
     imports: [
-        CommonModule, 
-        FormsModule, 
-        RouterLink, 
-        CardModule, 
-        InputTextModule, 
-        PasswordModule, 
-        ButtonModule, 
+        CommonModule,
+        FormsModule,
+        RouterLink,
+        CardModule,
+        InputTextModule,
+        PasswordModule,
+        ButtonModule,
         FloatLabelModule,
         IconFieldModule,
         InputIconModule,
@@ -37,11 +37,11 @@ export class LoginBoutiqueComponent {
         email: '',
         password: ''
     };
-    
+
     isLoading = false;
 
     constructor(
-        private authService: AuthService, 
+        private authService: AuthService,
         private router: Router,
         private notificationService: NotificationService
     ) {}
@@ -54,9 +54,7 @@ export class LoginBoutiqueComponent {
                     this.isLoading = false;
                     if (response.user.role === 'boutique') {
                         this.notificationService.success('Connexion réussie', 'Bienvenue');
-                        setTimeout(() => {
                             this.router.navigate(['/dasboard']);
-                        }, 1000);
                     } else {
                         this.notificationService.error('Email ou mot de passe incorrect.', 'Erreur de connexion');
                         this.authService.logout();

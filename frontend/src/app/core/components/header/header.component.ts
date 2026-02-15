@@ -4,7 +4,6 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-// PrimeNG Imports
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
@@ -60,14 +59,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.loadUserMenu();
     });
 
-    // Subscribe to route changes
     this.routeSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.updatePageTitle();
       });
     
-    // Initial page title
     this.updatePageTitle();
   }
 

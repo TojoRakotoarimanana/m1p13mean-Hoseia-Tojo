@@ -17,8 +17,8 @@ import { NotificationService } from '../../../core/services/notification.service
     selector: 'app-register',
     standalone: true,
     imports: [
-        CommonModule, 
-        FormsModule, 
+        CommonModule,
+        FormsModule,
         RouterLink,
         CardModule,
         InputTextModule,
@@ -60,9 +60,7 @@ export class RegisterComponent {
             next: (response) => {
                 this.isLoading = false;
                 this.notificationService.success('Inscription réussie, redirection en cours...', 'Bienvenue');
-                setTimeout(() => {
                     this.router.navigate(['/']);
-                }, 1500);
             },
             error: (error) => {
                 this.isLoading = false;

@@ -14,8 +14,9 @@ var categoriesRouter = require('./routes/categories');
 var productsRouter = require('./routes/products');
 
 var app = express();
+var corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:4200';
+var mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/mean';
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -24,9 +25,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:4200',
+    origin: corsOrigin,
     credentials: true
-})); // Enable CORS for Angular frontend
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
@@ -36,23 +37,18 @@ app.use('/api/shops', shopsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
 
-// Database connection
-mongoose.connect('mongodb://localhost:27017/m1p13mean')
+mongoose.connect(mongoUri)
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // return JSON error
   res.status(err.status || 500);
   res.json({
     message: err.message,

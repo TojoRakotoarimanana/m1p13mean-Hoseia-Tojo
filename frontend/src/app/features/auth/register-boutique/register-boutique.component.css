@@ -89,9 +89,6 @@
   color: #0f766e;
 }
 
-/* ============================================
-   HOURS SECTION - PROFESSIONAL DESIGN
-   ============================================ */
 .hours-section {
   margin-top: 1.5rem;
   padding: 1.5rem;
@@ -192,7 +189,6 @@
   text-align: center;
 }
 
-/* Responsive */
 @media (max-width: 640px) {
   .hours-header {
     flex-direction: column;
@@ -234,7 +230,6 @@
   border-color: #115e59;
 }
 
-/* Checkbox styling */
 :host ::ng-deep .p-checkbox {
   display: inline-flex;
   align-items: center;

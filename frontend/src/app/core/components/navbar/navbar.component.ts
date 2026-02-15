@@ -1,11 +1,9 @@
-// navbar.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-// PrimeNG Imports
 import { CardModule } from 'primeng/card';
 import { AvatarModule } from 'primeng/avatar';
 import { ChipModule } from 'primeng/chip';
@@ -23,7 +21,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [
     CommonModule,
     RouterModule,
-    DividerModule, // kept as it might be used elsewhere
+    DividerModule,
     RippleModule,
     MenuModule,
     ButtonModule,
@@ -44,7 +42,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // S'abonner aux changements d'utilisateur en temps réel
     this.userSubscription = this.authService.user$.subscribe((user) => {
       this.user = user;
       this.loadMenuItems();
@@ -52,7 +49,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Nettoyer l'abonnement pour éviter les fuites mémoire
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
@@ -63,7 +59,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   loadMenuItems(): void {
     const role = this.user?.role;
 
-    // Menu selon le rôle
     if (role === 'admin') {
       this.items = [
         {

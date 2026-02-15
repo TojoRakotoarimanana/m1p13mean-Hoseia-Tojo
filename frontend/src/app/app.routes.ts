@@ -33,10 +33,8 @@ const redirectIfLoggedIn: any = () => {
 };
 
 export const routes: Routes = [
-    // Route racine - redirige selon l'état de connexion
     { path: '', canActivate: [redirectIfLoggedIn], component: LoginComponent },
     
-    // Routes publiques (authentification)
     { path: 'login', canActivate: [redirectIfLoggedIn], component: LoginComponent },
     { path: 'login-boutique', canActivate: [redirectIfLoggedIn], component: LoginBoutiqueComponent },
     { path: 'login-admin', canActivate: [redirectIfLoggedIn], component: LoginAdminComponent },
@@ -44,7 +42,6 @@ export const routes: Routes = [
     { path: 'register-admin', canActivate: [redirectIfLoggedIn], component: RegisterAdminComponent },
     { path: 'register-boutique', canActivate: [redirectIfLoggedIn], component: RegisterBoutiqueComponent },
     
-    // Routes protégées
     { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
     { path: 'shops', component: ShopsComponent, canActivate: [authGuard] },
     { path: 'categories', component: CategoriesComponent, canActivate: [authGuard] },

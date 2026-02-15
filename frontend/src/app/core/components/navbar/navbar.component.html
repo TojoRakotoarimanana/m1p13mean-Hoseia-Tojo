@@ -1,7 +1,5 @@
-<!-- SIDEBAR -->
 @if (authService.isLoggedIn()) {
   <div class="sidebar">
-    <!-- Header with Logo -->
     <div class="sidebar-header" (click)="navigateTo('/dashboard')">
       <div class="logo-container">
         <i class="pi pi-shopping-bag logo-icon"></i>
@@ -12,12 +10,10 @@
       </div>
     </div>
 
-    <!-- Navigation Menu -->
     <nav class="sidebar-nav">
       <p-menu [model]="items"></p-menu>
     </nav>
     
-    <!-- User Section with Logout -->
     <div class="sidebar-footer">
       @if (user) {
         <div class="user-profile">

@@ -64,7 +64,6 @@ export class RegisterBoutiqueComponent {
     'sunday': 'Dimanche'
   };
 
-  // Generate time options (00:00 to 23:30 in 30-minute intervals)
   timeOptions: Array<{ label: string, value: string }> = [];
 
   steps = [
@@ -153,7 +152,6 @@ export class RegisterBoutiqueComponent {
     this.stepIndex = Math.max(this.stepIndex - 1, 0);
   }
 
-  // Copy Monday hours to all weekdays
   copyToWeekdays() {
     const mondayHours = this.hoursData.monday;
     ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].forEach((day) => {
@@ -162,7 +160,6 @@ export class RegisterBoutiqueComponent {
     this.notificationService.success('Horaires du lundi copiés sur les jours de semaine', 'Copié');
   }
 
-  // Copy to all days including Sunday
   copyToAllDays() {
     const mondayHours = this.hoursData.monday;
     this.days.forEach((day) => {
@@ -173,7 +170,6 @@ export class RegisterBoutiqueComponent {
     this.notificationService.success('Horaires du lundi copiés sur tous les jours', 'Copié');
   }
 
-  // Toggle closed status for a day
   toggleClosed(day: keyof typeof this.hoursData) {
     if (this.hoursData[day].closed) {
       this.hoursData[day].open = '';
@@ -217,7 +213,7 @@ export class RegisterBoutiqueComponent {
       next: (response) => {
         this.isLoading = false;
         this.notificationService.success(response.message || 'Votre demande a été envoyée avec succès', 'Inscription réussie');
-        setTimeout(() => this.router.navigate(['/login']), 1500);
+        this.router.navigate(['/login'])
       },
       error: (error) => {
         this.isLoading = false;

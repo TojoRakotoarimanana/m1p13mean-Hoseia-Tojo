@@ -17,8 +17,8 @@ import { NotificationService } from '../../../core/services/notification.service
     selector: 'app-register-admin',
     standalone: true,
     imports: [
-        CommonModule, 
-        FormsModule, 
+        CommonModule,
+        FormsModule,
         RouterLink,
         CardModule,
         InputTextModule,
@@ -39,7 +39,7 @@ export class RegisterAdminComponent {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'admin' // Force role to admin
+        role: 'admin'
     };
 
     isLoading = false;
@@ -57,15 +57,11 @@ export class RegisterAdminComponent {
         }
 
         this.isLoading = true;
-        // Ideally this should use a specific registerAdmin endpoint or handle role check in backend
-        // For now using standard register but with 'admin' role
         this.authService.register(this.registerData).subscribe({
             next: (response) => {
                 this.isLoading = false;
                 this.notificationService.success('Compte administrateur créé avec succès', 'Redirection...');
-                setTimeout(() => {
                     this.router.navigate(['/login-admin']);
-                }, 1500);
             },
             error: (error) => {
                 this.isLoading = false;
