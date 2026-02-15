@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var mongoose = require('mongoose');
+var createError = require('http-errors');
 require('dotenv').config();
 
 var indexRouter = require('./routes/index');
@@ -12,6 +13,7 @@ var authRouter = require('./routes/auth');
 var shopsRouter = require('./routes/shops');
 var categoriesRouter = require('./routes/categories');
 var productsRouter = require('./routes/products');
+var adminRouter = require('./routes/admin');
 
 var app = express();
 var corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:4200';
@@ -36,6 +38,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/shops', shopsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/admin', adminRouter);
 
 mongoose.connect(mongoUri)
   .then(() => console.log('Connexion à MongoDB réussie !'))

@@ -1,22 +1,180 @@
 <div class="dashboard-wrapper">
-    <div class="header flex justify-content-between align-items-center mb-4">
-        <h1>Dashboard</h1>
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 class="dashboard-title">Dashboard</h1>
+        <p class="dashboard-subtitle" *ngIf="user">
+          {{ user.firstName }} {{ user.lastName }}
+        </p>
+      </div>
+      <div class="header-date">
+        <i class="pi pi-calendar"></i>
+        <span>{{ currentDate | date:'dd MMM yyyy':'':'fr' }}</span>
+      </div>
     </div>
+  </div>
 
-    <p-card header="Bienvenue" [style]="{ width: '100%', marginBottom: '2em' }">
-        <p class="m-0" *ngIf="user">
-            Bonjour <strong>{{ user.firstName }} {{ user.lastName }}</strong> ! Vous êtes connecté en tant que <strong>{{ user.role }}</strong>.
-        </p>
-        <p class="m-0" *ngIf="!user">
-            Bonjour !
-        </p>
-    </p-card>
-
-    <div class="grid">
-        <div class="col-12">
-            <p-card header="Mes Activités">
-                <p>Le contenu du tableau de bord s'affichera ici.</p>
-            </p-card>
+  <div class="stats-grid">
+    <div class="stat-card revenue-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading && stats" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Revenu Total</p>
+          <h2 class="stat-value">{{ formatCurrency(stats.revenue.total) }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge" [ngClass]="stats.revenue.weeklyGrowth >= 0 ? 'positive' : 'negative'">
+              <i [class]="stats.revenue.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
+              {{ stats.revenue.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.revenue.weeklyGrowth }}%
+            </span>
+            <span class="stat-subtext">depuis la semaine dernière</span>
+          </div>
         </div>
+      </div>
     </div>
+
+    <div class="stat-card orders-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading && stats" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Commandes Totales</p>
+          <h2 class="stat-value">{{ formatNumber(stats.orders.total) }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge" [ngClass]="stats.orders.weeklyGrowth >= 0 ? 'positive' : 'negative'">
+              <i [class]="stats.orders.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
+              {{ stats.orders.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.orders.weeklyGrowth }}%
+            </span>
+            <span class="stat-subtext">depuis la semaine dernière</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card shops-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading && stats" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Boutiques</p>
+          <h2 class="stat-value">{{ formatNumber(stats.shops.total) }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge neutral">
+              {{ stats.shops.active }} actives
+            </span>
+            <span class="stat-subtext" *ngIf="stats.shops.pending > 0">
+              {{ stats.shops.pending }} en attente
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card users-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading && stats" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Utilisateurs</p>
+          <h2 class="stat-value">{{ formatNumber(stats.users.total) }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge" [ngClass]="stats.users.weeklyGrowth >= 0 ? 'positive' : 'negative'">
+              <i [class]="stats.users.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
+              {{ stats.users.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.users.weeklyGrowth }}%
+            </span>
+            <span class="stat-subtext">depuis la semaine dernière</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card products-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading && stats" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Produits Actifs</p>
+          <h2 class="stat-value">{{ formatNumber(stats.products.total) }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge" [ngClass]="stats.products.weeklyGrowth >= 0 ? 'positive' : 'negative'">
+              <i [class]="stats.products.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
+              {{ stats.products.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.products.weeklyGrowth }}%
+            </span>
+            <span class="stat-subtext">depuis la semaine dernière</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card categories-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading && stats" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Catégories Actives</p>
+          <h2 class="stat-value">{{ formatNumber(stats.categories.total) }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge neutral">
+              de boutiques
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="activities-section">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <div class="header-title">
+            <h3>Activités Récentes</h3>
+          </div>
+          <p-button 
+            label="Actualiser" 
+            icon="pi pi-refresh" 
+            [outlined]="true"
+            size="small"
+            (onClick)="loadDashboardData()">
+          </p-button>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="content">
+        <div *ngIf="activitiesLoading" class="loading-state">
+          <p-skeleton *ngFor="let item of [1,2,3,4,5]" width="100%" height="50px" styleClass="mb-2"></p-skeleton>
+        </div>
+
+        <div *ngIf="!activitiesLoading && activities.length === 0" class="empty-state">
+          <i class="pi pi-inbox"></i>
+          <p>Aucune activité récente</p>
+        </div>
+
+        <p-table 
+          *ngIf="!activitiesLoading && activities.length > 0"
+          [value]="activities" 
+          [paginator]="false"
+          responsiveLayout="scroll">
+          <ng-template pTemplate="body" let-activity>
+            <tr class="activity-row">
+              <td style="width: 40px;">
+                <div class="activity-icon-wrapper">
+                  <i [class]="getActivityIcon(activity.type)"></i>
+                </div>
+              </td>
+              <td>
+                <div class="activity-content">
+                  <p class="activity-title">{{ activity.title }}</p>
+                  <p class="activity-description">{{ activity.description }}</p>
+                </div>
+              </td>
+              <td style="width: 120px; text-align: center;">
+                <p-tag 
+                  [value]="activity.status" 
+                  [severity]="getStatusSeverity(activity.status)">
+                </p-tag>
+              </td>
+              <td style="width: 130px; text-align: right;">
+                <span class="activity-time">{{ getRelativeTime(activity.timestamp) }}</span>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-card>
+  </div>
 </div>
