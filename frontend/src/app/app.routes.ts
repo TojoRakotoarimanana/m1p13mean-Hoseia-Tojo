@@ -17,6 +17,7 @@ import { ProductFormComponent } from './features/products/product-form/product-f
 import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
 import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
 import { HomeClientComponent } from './features/home/home-client.component';
+import { ShopsListComponent } from './features/shops/shops-list.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard, clientGuard, boutiqueGuard, boutiqueOrAdminGuard } from './core/guards/role.guard';
 import { inject } from '@angular/core';
@@ -65,11 +66,14 @@ export const routes: Routes = [
     // Page d'accueil client
     { path: 'home', component: HomeClientComponent, canActivate: [clientGuard] },
     
+    // Routes client publiques  
+    { path: 'shops', component: ShopsListComponent, canActivate: [clientGuard] },
+    
     // Dashboard admin uniquement
     { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },
     
     // Routes admin
-    { path: 'shops', component: ShopsComponent, canActivate: [adminGuard] },
+    { path: 'admin/shops', component: ShopsComponent, canActivate: [adminGuard] },
     { path: 'categories', component: CategoriesComponent, canActivate: [adminGuard] },
     { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [adminGuard] },
     { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [adminGuard] },

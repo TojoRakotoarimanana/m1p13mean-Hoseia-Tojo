@@ -7,6 +7,7 @@ import { TagModule } from 'primeng/tag';
 import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { CarouselModule } from 'primeng/carousel';
 import { FormsModule } from '@angular/forms';
 import { CatalogService, Product, Shop } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
@@ -24,7 +25,8 @@ import { AuthService } from '../../core/services/auth.service';
     TagModule,
     SkeletonModule,
     InputTextModule,
-    SelectModule
+    SelectModule,
+    CarouselModule
   ],
   templateUrl: './home-client.component.html',
   styleUrl: './home-client.component.css'
@@ -47,6 +49,25 @@ export class HomeClientComponent implements OnInit {
   selectedCategory: any = null;
   
   currentUser: any;
+
+  // Carousel options
+  carouselResponsiveOptions = [
+    {
+      breakpoint: '1199px',
+      numVisible: 3,
+      numScroll: 1
+    },
+    {
+      breakpoint: '991px',
+      numVisible: 2,
+      numScroll: 1
+    },
+    {
+      breakpoint: '767px',
+      numVisible: 1,
+      numScroll: 1
+    }
+  ];
 
   constructor(
     private catalogService: CatalogService,
@@ -121,17 +142,24 @@ export class HomeClientComponent implements OnInit {
 
   onSearch(): void {
     if (this.searchTerm.trim()) {
-      // Rediriger vers une page de résultats avec le terme de recherche
-      // Pour l'instant, on fait une recherche simple
-      this.catalogService.search(this.searchTerm, { type: 'products', limit: 20 }).subscribe({
-        next: (response) => {
-          console.log('Résultats de recherche:', response);
-          // TODO: Naviguer vers une page de résultats
-        },
-        error: (error) => {
-          console.error('Erreur lors de la recherche:', error);
-        }
-      });
+      this.performGlobalSearch();
+    }
+  }
+
+  async performGlobalSearch() {
+    if (!this.searchTerm.trim()) return;
+    
+    try {
+      // Recherche dans le catalogue
+      const searchResults = await this.catalogService.search(this.searchTerm.trim()).toPromise();
+      
+      // Mettre à jour les résultats avec la recherche
+      this.featuredProducts = searchResults?.products || [];
+      this.featuredShops = searchResults?.shops || [];
+      
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Erreur lors de la recherche globale:', error);
     }
   }
 

@@ -11,13 +11,13 @@
         <!-- Barre de recherche -->
         <div class="search-container">
           <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
+            <i class="pi pi-search search-icon"></i>
             <input 
               type="text" 
               pInputText 
-              placeholder="Rechercher..." 
+              placeholder="Recherche globale : produits, boutiques..." 
               [(ngModel)]="searchTerm"
-              class="search-input"
+              class="search-input global-search"
               (keyup.enter)="onSearch()"
             />
           </span>
@@ -25,11 +25,17 @@
             [(ngModel)]="selectedCategory"
             [options]="categories" 
             optionLabel="name" 
-            placeholder="Catégorie"
+            placeholder="Filtrer par catégorie"
             [showClear]="true"
             (onChange)="onCategoryFilter($event.value)"
             class="category-select"
           ></p-select>
+          <p-button 
+            label="Rechercher" 
+            icon="pi pi-search" 
+            (onClick)="onSearch()"
+            class="search-btn primary-search"
+          ></p-button>
         </div>
       </div>
     </div>
@@ -102,14 +108,158 @@
     </div>
   </div>
 
-  <!-- Section Promotions -->
+  <!-- Carousel de promotions -->
   <div class="content-section" *ngIf="promotions.length > 0">
     <p-card>
       <ng-template pTemplate="header">
         <div class="card-header">
           <div class="header-title">
-            <i class="pi pi-percentage"></i>
-            <h3>Promotions en cours</h3>
+            <i class="pi pi-star-fill"></i>
+            <h3>🔥 Promotions Exceptionnelles</h3>
+          </div>
+          <div class="promotion-timer">
+            <span class="timer-badge">
+              <i class="pi pi-clock"></i>
+              Offres limitées !
+            </span>
+          </div>
+        </div>
+      </ng-template>
+
+      <div *ngIf="loadingPromotions" class="carousel-skeleton">
+        <div class="skeleton-slides">
+          <div *ngFor="let item of [1,2,3,4]" class="skeleton-slide">
+            <p-skeleton height="250px" class="mb-2"></p-skeleton>
+            <p-skeleton width="80%" height="1.2rem" class="mb-2"></p-skeleton>
+            <p-skeleton width="60%" height="1rem"></p-skeleton>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loadingPromotions">
+        <p-carousel 
+          [value]="promotions" 
+          [numVisible]="4" 
+          [numScroll]="1" 
+          [circular]="true"
+          [autoplayInterval]="5000"
+          [responsiveOptions]="carouselResponsiveOptions"
+          [showIndicators]="true"
+          [showNavigators]="true"
+          styleClass="custom-carousel promotion-carousel"
+        >
+          <ng-template pTemplate="item" let-product>
+            <div class="carousel-item" (click)="onViewProduct(product)">
+              <div class="promotion-card">
+                <div class="promotion-image-container">
+                  <img 
+                    [src]="getProductImageUrl(product)" 
+                    [alt]="product.name"
+                    class="promotion-image"
+                    (error)="$event.target.src='assets/images/no-image.png'"
+                  />
+                  <div class="promotion-overlay">
+                    <div class="discount-circle">
+                      -{{ product.discount }}%
+                    </div>
+                    <div class="promotion-flash">
+                      <i class="pi pi-bolt"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="promotion-info">
+                  <h4 class="promotion-title">{{ product.name }}</h4>
+                  <div class="promotion-pricing">
+                    <span class="promo-current-price">{{ getDiscountedPrice(product) }}€</span>
+                    <span class="promo-original-price">{{ product.originalPrice || product.price }}€</span>
+                  </div>
+                  <div class="promotion-shop">{{ product.shopId.name }}</div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Section Boutiques du centre -->
+  <div class="content-section">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <div class="header-title">
+            <i class="pi pi-building"></i>
+            <h3>🏬 Boutiques du Centre</h3>
+          </div>
+          <p-button 
+            label="Voir toutes les boutiques" 
+            icon="pi pi-arrow-right" 
+            [text]="true"
+            routerLink="/shops"
+            class="view-all-btn"
+          ></p-button>
+        </div>
+      </ng-template>
+
+      <div *ngIf="loadingShops" class="shops-grid-skeleton">
+        <div *ngFor="let item of [1,2,3,4,5,6]" class="shop-skeleton">
+          <p-skeleton height="120px" class="mb-2"></p-skeleton>
+          <p-skeleton width="70%" height="1.5rem" class="mb-2"></p-skeleton>
+          <p-skeleton width="50%" height="1rem"></p-skeleton>
+        </div>
+      </div>
+
+      <div *ngIf="!loadingShops" class="shops-spotlight">
+        <div 
+          *ngFor="let shop of featuredShops.slice(0, 6)" 
+          class="shop-spotlight-card"
+          (click)="onViewShop(shop)"
+        >
+          <div class="shop-spotlight-header">
+            <div class="shop-logo-small">
+              <img 
+                *ngIf="shop.logo" 
+                [src]="getShopLogoUrl(shop)" 
+                [alt]="shop.name"
+                class="logo-image-small"
+                (error)="$event.target.style.display='none'"
+              />
+              <div *ngIf="!shop.logo" class="logo-placeholder-small">
+                {{ shop.name.charAt(0).toUpperCase() }}
+              </div>
+            </div>
+            <div class="shop-badge-featured">
+              <i class="pi pi-star-fill"></i>
+              Partenaire
+            </div>
+          </div>
+          <div class="shop-spotlight-info">
+            <h4 class="shop-spotlight-name">{{ shop.name }}</h4>
+            <p class="shop-spotlight-category">{{ shop.category.name }}</p>
+            <div class="shop-spotlight-stats">
+              <span class="stat-products">{{ shop.statistics.totalProducts }} produits</span>
+              <span class="stat-location" *ngIf="shop.location.floor">{{ shop.location.floor }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Section Produits en promotion -->
+  <div class="content-section" *ngIf="promotions.length > 0">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <div class="header-title">
+            <i class="pi pi-tag"></i>
+            <h3>💥 Tous les Produits en Promotion</h3>
+          </div>
+          <div class="promotion-count">
+            <span class="count-badge">
+              {{ promotions.length }} offres actives
+            </span>
           </div>
         </div>
       </ng-template>
@@ -163,8 +313,14 @@
         <div class="card-header">
           <div class="header-title">
             <i class="pi pi-box"></i>
-            <h3>Produits populaires</h3>
+            <h3>⭐ Produits Populaires</h3>
           </div>
+          <p-button 
+            label="Voir tous les produits" 
+            icon="pi pi-arrow-right" 
+            [text]="true"
+            class="view-all-btn"
+          ></p-button>
         </div>
       </ng-template>
 
@@ -218,8 +374,15 @@
         <div class="card-header">
           <div class="header-title">
             <i class="pi pi-building"></i>
-            <h3>Boutiques partenaires</h3>
+            <h3>🏪 Nos Boutiques Partenaires</h3>
           </div>
+          <p-button 
+            label="Explorer toutes les boutiques" 
+            icon="pi pi-arrow-right" 
+            [text]="true"
+            routerLink="/shops"
+            class="view-all-btn"
+          ></p-button>
         </div>
       </ng-template>
 

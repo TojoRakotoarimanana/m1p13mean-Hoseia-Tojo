@@ -1,0 +1,244 @@
+<!-- Dashboard Wrapper -->
+<div class="dashboard-wrapper">
+  <!-- Header avec recherche et filtres -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 class="dashboard-title">Boutiques du Centre Commercial</h1>
+        <p class="dashboard-subtitle">Découvrez toutes nos boutiques partenaires</p>
+      </div>
+      
+      <!-- Barre de recherche et filtres -->
+      <div class="header-actions">
+        <div class="search-container">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input 
+              type="text" 
+              pInputText 
+              placeholder="Rechercher une boutique..." 
+              [(ngModel)]="searchTerm"
+              class="search-input"
+              (keyup.enter)="onSearch()"
+            />
+          </span>
+          <p-select 
+            [(ngModel)]="selectedCategory"
+            [options]="categories" 
+            optionLabel="name" 
+            placeholder="Catégorie"
+            [showClear]="true"
+            (onChange)="onCategoryFilter($event.value)"
+            class="category-select"
+          ></p-select>
+          <p-button 
+            label="Rechercher" 
+            icon="pi pi-search" 
+            (onClick)="onSearch()"
+            class="search-btn"
+          ></p-button>
+          <p-button 
+            label="Effacer" 
+            icon="pi pi-times" 
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="clearFilters()"
+            class="clear-btn"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Total Boutiques</p>
+          <h2 class="stat-value">{{ shops.length }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge positive">
+              <i class="pi pi-building"></i>
+              Actives
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loading" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Résultats Affichés</p>
+          <h2 class="stat-value">{{ filteredShops.length }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge neutral">
+              <i class="pi pi-filter"></i>
+              Filtrés
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <p-skeleton *ngIf="loadingCategories" width="100%" height="90px"></p-skeleton>
+      <div *ngIf="!loadingCategories" class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Catégories</p>
+          <h2 class="stat-value">{{ categories.length - 1 }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge neutral">
+              <i class="pi pi-tags"></i>
+              Types
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-content">
+        <div class="stat-details">
+          <p class="stat-label">Page</p>
+          <h2 class="stat-value">{{ getCurrentPage() }}</h2>
+          <div class="stat-footer">
+            <span class="stat-badge neutral">
+              <i class="pi pi-list"></i>
+              {{ rows }} par page
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des boutiques -->
+  <div class="content-section">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <div class="header-title">
+            <i class="pi pi-building"></i>
+            <h3>Liste des Boutiques</h3>
+          </div>
+          <!-- Info résultats -->
+          <div class="results-info" *ngIf="!loading">
+            <span class="results-count">
+              {{ filteredShops.length }} boutique(s) trouvée(s)
+              <span *ngIf="searchTerm || (selectedCategory && selectedCategory._id)">
+                sur {{ shops.length }} au total
+              </span>
+            </span>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Message si aucun résultat -->
+      <div *ngIf="!loading && filteredShops.length === 0" class="no-results">
+        <div class="no-results-content">
+          <i class="pi pi-search no-results-icon"></i>
+          <h3>Aucune boutique trouvée</h3>
+          <p>Aucune boutique ne correspond à vos critères de recherche.</p>
+          <p-button 
+            label="Effacer les filtres" 
+            icon="pi pi-times"
+            (onClick)="clearFilters()"
+            [outlined]="true"
+          ></p-button>
+        </div>
+      </div>
+
+      <!-- Skeleton loading -->
+      <div *ngIf="loading" class="shops-grid-skeleton">
+        <div *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11,12]" class="shop-skeleton">
+          <p-skeleton height="120px" class="mb-2"></p-skeleton>
+          <p-skeleton width="70%" height="1.5rem" class="mb-2"></p-skeleton>
+          <p-skeleton width="50%" height="1rem" class="mb-2"></p-skeleton>
+          <p-skeleton width="80%" height="1rem"></p-skeleton>
+        </div>
+      </div>
+
+      <!-- DataView avec pagination -->
+      <p-dataView 
+        *ngIf="!loading && filteredShops.length > 0"
+        [value]="filteredShops" 
+        [paginator]="true" 
+        [rows]="rows"
+        [first]="first"
+        [totalRecords]="totalRecords"
+        (onPage)="onPageChange($event)"
+        [alwaysShowPaginator]="false"
+        emptyMessage="Aucune boutique trouvée"
+        class="shops-dataview"
+      >
+        <ng-template pTemplate="list" let-shops>
+          <div class="shops-grid">
+            <div 
+              *ngFor="let shop of shops" 
+              class="shop-card"
+              (click)="onViewShop(shop)"
+            >
+              <!-- Header avec logo -->
+              <div class="shop-header">
+                <div class="shop-logo">
+                  <img 
+                    *ngIf="shop.logo" 
+                    [src]="getShopLogoUrl(shop)" 
+                    [alt]="shop.name"
+                    class="logo-image"
+                    (error)="$event.target.style.display='none'"
+                  />
+                  <div *ngIf="!shop.logo" class="logo-placeholder">
+                    {{ shop.name.charAt(0).toUpperCase() }}
+                  </div>
+                </div>
+                <div class="shop-status">
+                  <span class="status-badge active">
+                    <i class="pi pi-check-circle"></i>
+                    Ouverte
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Informations de la boutique -->
+              <div class="shop-info">
+                <h4 class="shop-name">{{ shop.name }}</h4>
+                <p class="shop-description">{{ shop.description }}</p>
+                
+                <!-- Catégorie -->
+                <div class="shop-category">{{ shop.category?.name }}</div>
+                
+                <!-- Statistiques -->
+                <div class="shop-stats">
+                  <div class="stat-item">
+                    <i class="pi pi-shopping-bag"></i>
+                    <span>{{ shop.statistics?.totalProducts || 0 }} produits</span>
+                  </div>
+                  <div class="stat-item" *ngIf="shop.location?.floor">
+                    <i class="pi pi-map-marker"></i>
+                    <span>{{ shop.location.floor }}</span>
+                  </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="shop-actions">
+                  <p-button 
+                    label="Voir la boutique" 
+                    icon="pi pi-eye"
+                    size="small"
+                    [outlined]="true"
+                    (onClick)="onViewShop(shop); $event.stopPropagation()"
+                  ></p-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </p-card>
+  </div>
+</div>

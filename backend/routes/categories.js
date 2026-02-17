@@ -3,9 +3,9 @@ const router = express.Router();
 const { adminOnly, allRoles } = require('../middleware');
 const CategoryController = require('../controllers/category.controller');
 
-// Lecture disponible pour tous les utilisateurs authentifiés
-router.get('/', allRoles, CategoryController.list);
-router.get('/:id', allRoles, CategoryController.getById);
+// Lecture publique pour le catalogue client (sans authentification)
+router.get('/', CategoryController.list);
+router.get('/:id', CategoryController.getById);
 
 // Gestion réservée aux admins
 router.post('/', adminOnly, CategoryController.create);
