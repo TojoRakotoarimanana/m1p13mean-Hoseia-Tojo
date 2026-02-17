@@ -1,9 +1,11 @@
 <div class="shops-wrapper">
   <div class="header flex justify-content-between align-items-center mb-4">
     <h1>Boutiques</h1>
-    <div class="actions">
-      <p-button label="Nouvelle boutique" icon="pi pi-plus" (onClick)="openNew()"></p-button>
-    </div>
+    @if (isAdmin) {
+      <div class="actions">
+        <p-button label="Nouvelle boutique" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+      </div>
+    }
   </div>
 
   <p-card [style]="{ width: '100%', marginBottom: '1.5rem' }">
@@ -44,7 +46,9 @@
           <th>Statut</th>
           <th>Emplacement</th>
           <th>Contact</th>
-          <th>Actions</th>
+          @if (isAdmin) {
+            <th>Actions</th>
+          }
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-shop>
@@ -65,11 +69,13 @@
             {{ shop.contact?.phone || '-' }}<br />
             {{ shop.contact?.email || '' }}
           </td>
-          <td class="actions">
-            <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editShop(shop)"></p-button>
-            <p-button icon="pi pi-ban" severity="warn" (onClick)="suspendShop(shop)" [disabled]="shop.status === 'suspended'"></p-button>
-            <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteShop(shop)"></p-button>
-          </td>
+          @if (isAdmin) {
+            <td class="actions">
+              <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editShop(shop)"></p-button>
+              <p-button icon="pi pi-ban" severity="warn" (onClick)="suspendShop(shop)" [disabled]="shop.status === 'suspended'"></p-button>
+              <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteShop(shop)"></p-button>
+            </td>
+          }
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -88,7 +94,8 @@
   </p-card>
 </div>
 
-<p-dialog [(visible)]="shopDialog" [modal]="true" [style]="{ width: '520px' }" [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">
+@if (isAdmin) {
+  <p-dialog [(visible)]="shopDialog" [modal]="true" [style]="{ width: '520px' }" [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">>
   <div class="dialog-body">
     <div class="field">
       <label class="field-label">Utilisateur</label>
@@ -163,5 +170,6 @@
     <p-button label="Enregistrer" (onClick)="saveShop()"></p-button>
   </ng-template>
 </p-dialog>
+}
 
 <p-toast></p-toast>

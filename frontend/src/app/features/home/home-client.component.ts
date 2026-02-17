@@ -1,0 +1,209 @@
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { SkeletonModule } from 'primeng/skeleton';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { CatalogService, Product, Shop } from '../../core/services/catalog.service';
+import { CategoryService } from '../../core/services/category.service';
+import { AuthService } from '../../core/services/auth.service';
+
+@Component({
+  selector: 'app-home-client',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    CardModule,
+    ButtonModule,
+    TagModule,
+    SkeletonModule,
+    InputTextModule,
+    SelectModule
+  ],
+  templateUrl: './home-client.component.html',
+  styleUrl: './home-client.component.css'
+})
+export class HomeClientComponent implements OnInit {
+  // Données
+  featuredProducts: Product[] = [];
+  promotions: Product[] = [];
+  featuredShops: Shop[] = [];
+  categories: any[] = [];
+  
+  // états de chargement
+  loadingProducts = true;
+  loadingPromotions = true;
+  loadingShops = true;
+  loadingCategories = true;
+  
+  // Recherche
+  searchTerm = '';
+  selectedCategory: any = null;
+  
+  currentUser: any;
+
+  constructor(
+    private catalogService: CatalogService,
+    private categoryService: CategoryService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.currentUser = this.authService.getUserFromStorage();
+  }
+
+  ngOnInit(): void {
+    this.loadInitialData();
+  }
+
+  private loadInitialData(): void {
+    // Charger les produits vedettes (les plus vus)
+    this.catalogService.getProducts({ page: 1, limit: 8 }).subscribe({
+      next: (response) => {
+        this.featuredProducts = response.products;
+        this.loadingProducts = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des produits:', error);
+        this.loadingProducts = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Charger les promotions
+    this.catalogService.getPromotions({ page: 1, limit: 6 }).subscribe({
+      next: (response) => {
+        this.promotions = response.promotions;
+        this.loadingPromotions = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des promotions:', error);
+        this.loadingPromotions = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Charger les boutiques vedettes
+    this.catalogService.getShops({ page: 1, limit: 6 }).subscribe({
+      next: (response) => {
+        this.featuredShops = response.shops;
+        this.loadingShops = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des boutiques:', error);
+        this.loadingShops = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Charger les catégories
+    this.categoryService.list().subscribe({
+      next: (response: any) => {
+        this.categories = response.categories || response;
+        this.loadingCategories = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des catégories:', error);
+        this.loadingCategories = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onSearch(): void {
+    if (this.searchTerm.trim()) {
+      // Rediriger vers une page de résultats avec le terme de recherche
+      // Pour l'instant, on fait une recherche simple
+      this.catalogService.search(this.searchTerm, { type: 'products', limit: 20 }).subscribe({
+        next: (response) => {
+          console.log('Résultats de recherche:', response);
+          // TODO: Naviguer vers une page de résultats
+        },
+        error: (error) => {
+          console.error('Erreur lors de la recherche:', error);
+        }
+      });
+    }
+  }
+
+  onViewProduct(product: Product): void {
+    // Incrémenter les vues et naviguer vers les détails
+    this.catalogService.incrementProductViews(product._id).subscribe({
+      next: (response) => {
+        console.log(`Vues incrémentées: ${response.views}`);
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'incrémentation des vues:', error);
+      }
+    });
+    
+    // TODO: Naviguer vers la page détails du produit
+    console.log('Voir produit:', product._id);
+  }
+
+  onViewShop(shop: Shop): void {
+    // TODO: Naviguer vers la page détails de la boutique
+    console.log('Voir boutique:', shop._id);
+  }
+
+  onCategoryFilter(category: any): void {
+    this.selectedCategory = category;
+    // Recharger les produits avec le filtre catégorie
+    if (category) {
+      this.loadingProducts = true;
+      this.cdr.detectChanges();
+      this.catalogService.getProducts({ page: 1, limit: 8, category: category._id }).subscribe({
+        next: (response) => {
+          this.featuredProducts = response.products;
+          this.loadingProducts = false;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Erreur lors du filtrage par catégorie:', error);
+          this.loadingProducts = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      // Recharger tous les produits
+      this.loadInitialData();
+    }
+  }
+
+  getProductImageUrl(product: Product): string {
+    if (product.images && product.images.length > 0) {
+      return `http://localhost:3000/uploads/products/${product.images[0]}`;
+    }
+    return 'assets/images/no-image.png'; // Image par défaut
+  }
+
+  getShopLogoUrl(shop: Shop): string {
+    if (shop.logo) {
+      return `http://localhost:3000/uploads/shops/${shop.logo}`;
+    }
+    return 'assets/images/shop-default.png'; // Logo par défaut
+  }
+
+  getDiscountedPrice(product: Product): number {
+    if (product.isPromotion && product.discount > 0) {
+      return Number((product.originalPrice || product.price) * (1 - product.discount / 100)).toFixed(2) as any;
+    }
+    return product.price;
+  }
+
+  getUserGreeting(): string {
+    if (this.currentUser && this.currentUser.firstName) {
+      return `Bonjour ${this.currentUser.firstName} !`;
+    }
+    return 'Bienvenue dans notre catalogue !';
+  }
+}

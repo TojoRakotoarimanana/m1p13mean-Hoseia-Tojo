@@ -64,7 +64,7 @@ export class AuthService {
     return this.userSubject.value;
   }
 
-  private getUserFromStorage(): any {
+  getUserFromStorage(): any {
     const user = localStorage.getItem(this.userKey);
     return user ? JSON.parse(user) : null;
   }
