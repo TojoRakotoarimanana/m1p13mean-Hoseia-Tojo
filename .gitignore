@@ -5,4 +5,3 @@ frontend/build/
 .env
 backend/.env
 *.pdf
-""

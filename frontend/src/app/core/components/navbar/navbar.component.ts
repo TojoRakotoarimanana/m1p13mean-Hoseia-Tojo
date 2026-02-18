@@ -165,9 +165,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     } else if (role === 'client') {
       this.items = [
         {
-          label: 'Accueil',
-          icon: 'pi pi-home',
-          command: () => this.router.navigate(['/home']),
+          label: 'Navigation',
+          icon: 'pi pi-compass',
+          items: [
+            {
+              label: 'Accueil',
+              icon: 'pi pi-home',
+              command: () => this.router.navigate(['/home']),
+            },
+            {
+              label: 'Boutiques',
+              icon: 'pi pi-building',
+              command: () => this.router.navigate(['/shops']),
+            },
+          ],
         },
         {
           separator: true,

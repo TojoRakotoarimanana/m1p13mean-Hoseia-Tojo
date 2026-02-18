@@ -8,9 +8,11 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { DataViewModule } from 'primeng/dataview';
+import { PaginatorModule } from 'primeng/paginator';
 import { FormsModule } from '@angular/forms';
 import { CatalogService, Shop } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
+import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-shops-list',
@@ -25,7 +27,9 @@ import { CategoryService } from '../../core/services/category.service';
     SkeletonModule,
     InputTextModule,
     SelectModule,
-    DataViewModule
+    DataViewModule,
+    PaginatorModule,
+    NavbarComponent
   ],
   templateUrl: './shops-list.component.html',
   styleUrl: './shops-list.component.css'
@@ -149,9 +153,13 @@ export class ShopsListComponent implements OnInit {
     this.rows = event.rows;
   }
 
+  getPaginatedShops(): Shop[] {
+    return this.filteredShops.slice(this.first, this.first + this.rows);
+  }
+
   onViewShop(shop: Shop) {
     // Navigation vers la page détail de la boutique
-    this.router.navigate(['/shops', shop._id]);
+    this.router.navigate(['/shop', shop._id]);
   }
 
   getShopLogoUrl(shop: Shop): string {

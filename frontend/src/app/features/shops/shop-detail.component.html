@@ -1,0 +1,305 @@
+<!-- Navbar -->
+<app-navbar></app-navbar>
+
+<!-- Dashboard Wrapper -->
+<div class="dashboard-wrapper">
+  <!-- Navigation -->
+  <div class="breadcrumb-section">
+    <p-button 
+      label="← Retour aux boutiques" 
+      icon="pi pi-arrow-left"
+      [text]="true"
+      (onClick)="goBack()"
+      class="back-btn"
+    ></p-button>
+  </div>
+
+  <!-- Header boutique -->
+  <div class="shop-header-card">
+    <p-skeleton *ngIf="loading" height="200px" class="mb-3"></p-skeleton>
+    
+    <div *ngIf="!loading && shop" class="shop-header-content">
+      <div class="shop-hero">
+        <div class="shop-logo-large">
+          <img 
+            *ngIf="shop.logo" 
+            [src]="getShopLogoUrl()" 
+            [alt]="shop.name"
+            class="logo-image-large"
+            (error)="$event.target.style.display='none'"
+          />
+          <div *ngIf="!shop.logo" class="logo-placeholder-large">
+            {{ shop.name.charAt(0).toUpperCase() }}
+          </div>
+        </div>
+        
+        <div class="shop-main-info">
+          <div class="shop-title-section">
+            <h1 class="shop-name-large">{{ shop.name }}</h1>
+            <div class="shop-badges">
+              <span class="category-badge-large">{{ shop.category.name }}</span>
+              <span class="status-badge" [ngClass]="{ 'open': isOpenNow(), 'closed': !isOpenNow() }">
+                <i class="pi" [ngClass]="isOpenNow() ? 'pi-check-circle' : 'pi-times-circle'"></i>
+                {{ isOpenNow() ? 'Ouvert' : 'Fermé' }}
+              </span>
+            </div>
+          </div>
+          
+          <p class="shop-description-large">{{ shop.description }}</p>
+          
+          <!-- Stats rapides -->
+          <div class="shop-stats-quick">
+            <div class="stat-quick">
+              <i class="pi pi-shopping-bag"></i>
+              <span>{{ shop.statistics.totalProducts || 0 }} produits</span>
+            </div>
+            <div class="stat-quick" *ngIf="shop.location.floor">
+              <i class="pi pi-map-marker"></i>
+              <span>{{ shop.location.floor }}</span>
+            </div>
+            <div class="stat-quick" *ngIf="shop.contact.phone">
+              <i class="pi pi-phone"></i>
+              <span>{{ shop.contact.phone }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu principal avec onglets -->
+  <div class="content-section">
+    <p-card>
+      <p-tabs [(value)]="activeTab">
+        <p-tablist>
+          <p-tab [value]="0">
+            <i class="pi pi-shopping-bag mr-2"></i>
+            Produits
+          </p-tab>
+          <p-tab [value]="1">
+            <i class="pi pi-info-circle mr-2"></i>
+            Informations
+          </p-tab>
+          <p-tab [value]="2">
+            <i class="pi pi-clock mr-2"></i>
+            Contact & Horaires
+          </p-tab>
+        </p-tablist>
+        
+        <p-tabpanels>
+          <!-- Onglet Produits -->
+          <p-tabpanel [value]="0">
+          <div *ngIf="loadingProducts" class="products-loading">
+            <div class="products-grid-skeleton">
+              <div *ngFor="let item of [1,2,3,4,5,6,7,8]" class="product-skeleton">
+                <p-skeleton height="200px" class="mb-2"></p-skeleton>
+                <p-skeleton width="80%" height="1.2rem" class="mb-2"></p-skeleton>
+                <p-skeleton width="60%" height="1rem"></p-skeleton>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!loadingProducts">
+            <!-- Message si aucun produit -->
+            <div *ngIf="shopProducts.length === 0" class="no-products">
+              <div class="no-products-content">
+                <i class="pi pi-shopping-bag no-products-icon"></i>
+                <h3>Aucun produit disponible</h3>
+                <p>Cette boutique n'a pas encore ajouté de produits à son catalogue.</p>
+              </div>
+            </div>
+
+            <!-- Liste des produits avec pagination -->
+            <p-dataView 
+              *ngIf="shopProducts.length > 0"
+              [value]="shopProducts" 
+              [paginator]="true" 
+              [rows]="rows"
+              [first]="first"
+              [totalRecords]="totalRecords"
+              (onPage)="onPageChange($event)"
+              [alwaysShowPaginator]="false"
+            >
+              <ng-template pTemplate="list" let-products>
+                <div class="products-grid">
+                  <div 
+                    *ngFor="let product of products" 
+                    class="product-card"
+                    (click)="onProductClick(product)"
+                  >
+                    <div class="product-image-container">
+                      <img 
+                        [src]="getProductImageUrl(product)" 
+                        [alt]="product.name"
+                        class="product-image"
+                        (error)="$event.target.src='assets/images/no-image.png'"
+                      />
+                      <div *ngIf="product.isPromotion" class="promotion-badge">
+                        -{{ product.discount }}%
+                      </div>
+                    </div>
+                    <div class="product-info">
+                      <h4 class="product-title">{{ product.name }}</h4>
+                      <p class="product-description">{{ product.description }}</p>
+                      <div class="product-pricing">
+                        <span class="current-price">{{ getDiscountedPrice(product) }}€</span>
+                        <span *ngIf="product.isPromotion" class="original-price">
+                          {{ product.originalPrice || product.price }}€
+                        </span>
+                      </div>
+                      <div class="product-meta">
+                        <span class="product-category">{{ product.category?.name }}</span>
+                        <span class="product-views">{{ product.statistics?.views }} vues</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-dataView>
+          </div>
+          </p-tabpanel>
+
+          <!-- Onglet Informations -->
+          <p-tabpanel [value]="1">
+          <div *ngIf="loading" class="info-skeleton">
+            <p-skeleton width="100%" height="150px" class="mb-3"></p-skeleton>
+            <p-skeleton width="80%" height="100px"></p-skeleton>
+          </div>
+
+          <div *ngIf="!loading && shop" class="shop-info-detailed">
+            <!-- Description détaillée -->
+            <div class="info-section">
+              <h3 class="info-title">
+                <i class="pi pi-info-circle"></i>
+                À propos de la boutique
+              </h3>
+              <p class="info-content">{{ shop.description || 'Aucune description disponible.' }}</p>
+            </div>
+
+            <p-divider></p-divider>
+
+            <!-- Localisation -->
+            <div class="info-section">
+              <h3 class="info-title">
+                <i class="pi pi-map-marker"></i>
+                Localisation
+              </h3>
+              <div class="location-info">
+                <p *ngIf="shop.location.floor" class="location-item">
+                  <strong>Étage:</strong> {{ shop.location.floor }}
+                </p>
+                <p *ngIf="shop.location.zone" class="location-item">
+                  <strong>Zone:</strong> {{ shop.location.zone }}
+                </p>
+                <p *ngIf="shop.location.shopNumber" class="location-item">
+                  <strong>Numéro:</strong> {{ shop.location.shopNumber }}
+                </p>
+                <p *ngIf="!shop.location.floor && !shop.location.zone && !shop.location.shopNumber" class="location-item">
+                  Informations de localisation non disponibles.
+                </p>
+              </div>
+            </div>
+
+            <p-divider></p-divider>
+
+            <!-- Statistiques -->
+            <div class="info-section">
+              <h3 class="info-title">
+                <i class="pi pi-chart-bar"></i>
+                Statistiques
+              </h3>
+              <div class="stats-grid-info">
+                <div class="stat-info-card">
+                  <h4>{{ shop.statistics.totalProducts || 0 }}</h4>
+                  <span>Produits</span>
+                </div>
+                <div class="stat-info-card">
+                  <h4>{{ shop.statistics.totalOrders || 0 }}</h4>
+                  <span>Commandes</span>
+                </div>
+                <div class="stat-info-card">
+                  <h4>{{ shop.status === 'active' ? 'Actif' : 'Inactif' }}</h4>
+                  <span>Statut</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          </p-tabpanel>
+
+          <!-- Onglet Contact & Horaires -->
+          <p-tabpanel [value]="2">
+          <div *ngIf="loading" class="contact-skeleton">
+            <p-skeleton width="100%" height="200px"></p-skeleton>
+          </div>
+
+          <div *ngIf="!loading && shop" class="contact-info">
+            <!-- Contact -->
+            <div class="info-section">
+              <h3 class="info-title">
+                <i class="pi pi-phone"></i>
+                Contact
+              </h3>
+              <div class="contact-details">
+                <p *ngIf="shop.contact.phone" class="contact-item">
+                  <i class="pi pi-phone"></i>
+                  <a href="tel:{{ shop.contact.phone }}">{{ shop.contact.phone }}</a>
+                </p>
+                <p *ngIf="shop.contact.email" class="contact-item">
+                  <i class="pi pi-envelope"></i>
+                  <a href="mailto:{{ shop.contact.email }}">{{ shop.contact.email }}</a>
+                </p>
+                <p *ngIf="!shop.contact.phone && !shop.contact.email" class="contact-item">
+                  Informations de contact non disponibles.
+                </p>
+              </div>
+            </div>
+
+            <p-divider></p-divider>
+
+            <!-- Horaires -->
+            <div class="info-section">
+              <h3 class="info-title">
+                <i class="pi pi-clock"></i>
+                Horaires d'ouverture
+              </h3>
+              <div class="schedule-info" *ngIf="shop.hours; else noSchedule">
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'monday' }">
+                  <span class="day-name">Lundi</span>
+                  <span class="day-hours">{{ !shop.hours['monday']?.open ? 'Fermé' : formatHours(shop.hours['monday']) }}</span>
+                </div>
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'tuesday' }">
+                  <span class="day-name">Mardi</span>
+                  <span class="day-hours">{{ !shop.hours['tuesday']?.open ? 'Fermé' : formatHours(shop.hours['tuesday']) }}</span>
+                </div>
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'wednesday' }">
+                  <span class="day-name">Mercredi</span>
+                  <span class="day-hours">{{ !shop.hours['wednesday']?.open ? 'Fermé' : formatHours(shop.hours['wednesday']) }}</span>
+                </div>
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'thursday' }">
+                  <span class="day-name">Jeudi</span>
+                  <span class="day-hours">{{ !shop.hours['thursday']?.open ? 'Fermé' : formatHours(shop.hours['thursday']) }}</span>
+                </div>
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'friday' }">
+                  <span class="day-name">Vendredi</span>
+                  <span class="day-hours">{{ !shop.hours['friday']?.open ? 'Fermé' : formatHours(shop.hours['friday']) }}</span>
+                </div>
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'saturday' }">
+                  <span class="day-name">Samedi</span>
+                  <span class="day-hours">{{ !shop.hours['saturday']?.open ? 'Fermé' : formatHours(shop.hours['saturday']) }}</span>
+                </div>
+                <div class="schedule-day" [ngClass]="{ 'today': getCurrentDay() === 'sunday' }">
+                  <span class="day-name">Dimanche</span>
+                  <span class="day-hours">{{ !shop.hours['sunday']?.open ? 'Fermé' : formatHours(shop.hours['sunday']) }}</span>
+                </div>
+              </div>
+              <ng-template #noSchedule>
+                <p class="no-schedule">Horaires non disponibles.</p>
+              </ng-template>
+            </div>
+          </div>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </p-card>
+  </div>
+</div>

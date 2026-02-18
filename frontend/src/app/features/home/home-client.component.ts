@@ -1,6 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef, LOCALE_ID } from '@angular/core';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+
+registerLocaleData(localeFr);
+import { RouterModule, Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -12,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { CatalogService, Product, Shop } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
+import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-home-client',
@@ -26,7 +30,11 @@ import { AuthService } from '../../core/services/auth.service';
     SkeletonModule,
     InputTextModule,
     SelectModule,
-    CarouselModule
+    CarouselModule,
+    NavbarComponent
+  ],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'fr-FR' }
   ],
   templateUrl: './home-client.component.html',
   styleUrl: './home-client.component.css'
@@ -37,18 +45,33 @@ export class HomeClientComponent implements OnInit {
   promotions: Product[] = [];
   featuredShops: Shop[] = [];
   categories: any[] = [];
+  newProducts: Product[] = [];
+  trendingProducts: Product[] = [];
+  
+  // Statistiques
+  stats = {
+    totalProducts: 0,
+    totalShops: 0,
+    totalPromotions: 0,
+    totalCategories: 0,
+    newThisWeek: 0,
+    trending: 0
+  };
   
   // états de chargement
   loadingProducts = true;
   loadingPromotions = true;
   loadingShops = true;
   loadingCategories = true;
+  loadingStats = true;
+  loadingNewProducts = true;
   
   // Recherche
   searchTerm = '';
   selectedCategory: any = null;
   
   currentUser: any;
+  currentDate = new Date();
 
   // Carousel options
   carouselResponsiveOptions = [
@@ -73,7 +96,8 @@ export class HomeClientComponent implements OnInit {
     private catalogService: CatalogService,
     private categoryService: CategoryService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {
     this.currentUser = this.authService.getUserFromStorage();
   }
@@ -87,20 +111,24 @@ export class HomeClientComponent implements OnInit {
     this.catalogService.getProducts({ page: 1, limit: 8 }).subscribe({
       next: (response) => {
         this.featuredProducts = response.products;
+        this.stats.totalProducts = response.products.length;
         this.loadingProducts = false;
+        this.loadingStats = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Erreur lors du chargement des produits:', error);
         this.loadingProducts = false;
+        this.loadingStats = false;
         this.cdr.detectChanges();
       }
     });
 
     // Charger les promotions
-    this.catalogService.getPromotions({ page: 1, limit: 6 }).subscribe({
+    this.catalogService.getPromotions({ page: 1, limit: 8 }).subscribe({
       next: (response) => {
         this.promotions = response.promotions;
+        this.stats.totalPromotions = response.promotions.length;
         this.loadingPromotions = false;
         this.cdr.detectChanges();
       },
@@ -115,6 +143,7 @@ export class HomeClientComponent implements OnInit {
     this.catalogService.getShops({ page: 1, limit: 6 }).subscribe({
       next: (response) => {
         this.featuredShops = response.shops;
+        this.stats.totalShops = response.shops.length;
         this.loadingShops = false;
         this.cdr.detectChanges();
       },
@@ -129,12 +158,29 @@ export class HomeClientComponent implements OnInit {
     this.categoryService.list().subscribe({
       next: (response: any) => {
         this.categories = response.categories || response;
+        this.stats.totalCategories = this.categories.length;
         this.loadingCategories = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Erreur lors du chargement des catégories:', error);
         this.loadingCategories = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Charger les nouveaux produits (limité à 4 pour la section)
+    this.catalogService.getProducts({ page: 1, limit: 4 }).subscribe({
+      next: (response) => {
+        // Simuler les nouveaux produits en prenant les 4 premiers
+        this.newProducts = response.products.slice(0, 4);
+        this.stats.newThisWeek = this.newProducts.length;
+        this.loadingNewProducts = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des nouveaux produits:', error);
+        this.loadingNewProducts = false;
         this.cdr.detectChanges();
       }
     });
@@ -179,8 +225,11 @@ export class HomeClientComponent implements OnInit {
   }
 
   onViewShop(shop: Shop): void {
-    // TODO: Naviguer vers la page détails de la boutique
-    console.log('Voir boutique:', shop._id);
+    this.router.navigate(['/shop', shop._id]);
+  }
+
+  onNavigateToShops(): void {
+    this.router.navigate(['/shops']);
   }
 
   onCategoryFilter(category: any): void {
@@ -233,5 +282,21 @@ export class HomeClientComponent implements OnInit {
       return `Bonjour ${this.currentUser.firstName} !`;
     }
     return 'Bienvenue dans notre catalogue !';
+  }
+
+  formatNumber(num: number): string {
+    return new Intl.NumberFormat('fr-FR').format(num);
+  }
+
+  getStatIcon(type: string): string {
+    const iconMap: { [key: string]: string } = {
+      'products': 'pi-box',
+      'promotions': 'pi-tag',
+      'shops': 'pi-building',
+      'categories': 'pi-th-large',
+      'new': 'pi-sparkles',
+      'trending': 'pi-chart-line'
+    };
+    return 'pi ' + (iconMap[type] || 'pi-info-circle');
   }
 }
