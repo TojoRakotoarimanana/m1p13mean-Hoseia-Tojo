@@ -19,6 +19,7 @@ import { ProductStatsComponent } from './features/products/product-stats/product
 import { HomeClientComponent } from './features/home/home-client.component';
 import { ShopsListComponent } from './features/shops/shops-list.component';
 import { ShopDetailComponent } from './features/shops/shop-detail.component';
+import { ShopDetailsComponent } from './features/catalog/shop-details/shop-details.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard, clientGuard, boutiqueGuard, boutiqueOrAdminGuard } from './core/guards/role.guard';
 import { inject } from '@angular/core';
@@ -69,7 +70,7 @@ export const routes: Routes = [
     
     // Routes client publiques  
     { path: 'shops', component: ShopsListComponent, canActivate: [clientGuard] },
-    { path: 'shop/:id', component: ShopDetailComponent, canActivate: [clientGuard] },
+    { path: 'shop/:id', component: ShopDetailsComponent, canActivate: [clientGuard] },
     
     // Dashboard admin uniquement
     { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },

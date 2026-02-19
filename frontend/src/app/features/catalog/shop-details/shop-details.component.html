@@ -1,0 +1,142 @@
+<app-navbar></app-navbar>
+
+<div class="shop-details-wrapper">
+  <div class="back-button-container">
+    <button class="back-button" (click)="goBack()">
+      <i class="pi pi-arrow-left"></i>
+      <span>Retour</span>
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <p-skeleton width="100%" height="200px" styleClass="mb-3"></p-skeleton>
+    <p-skeleton width="100%" height="150px" styleClass="mb-3"></p-skeleton>
+    <div class="products-grid">
+      <p-skeleton *ngFor="let item of [1,2,3,4]" width="100%" height="300px"></p-skeleton>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && shop" class="shop-content">
+    <div class="shop-header-card">
+      <div class="shop-header-content">
+        <div class="shop-logo-section">
+          <div class="shop-logo">
+            <img *ngIf="shop.logo" [src]="'http://localhost:3000/' + shop.logo" [alt]="shop.name">
+            <i *ngIf="!shop.logo" class="pi pi-shop"></i>
+          </div>
+        </div>
+        <div class="shop-info-section">
+          <div class="shop-title-row">
+            <h1 class="shop-name">{{ shop.name }}</h1>
+            <p-tag severity="success" value="Actif"></p-tag>
+          </div>
+          <p class="shop-category">
+            <i class="pi pi-tag"></i>
+            <span>{{ shop.category.name || 'Non catégorisé' }}</span>
+          </p>
+          <p class="shop-description" *ngIf="shop.description">{{ shop.description }}</p>
+          <div class="shop-stats">
+            <div class="stat-item">
+              <i class="pi pi-box"></i>
+              <span>{{ shop.statistics.totalProducts || 0 }} produits</span>
+            </div>
+            <div class="stat-item">
+              <i class="pi pi-map-marker"></i>
+              <span>{{ getLocationString() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="info-card">
+        <div class="card-header">
+          <i class="pi pi-clock"></i>
+          <h2>Horaires d'ouverture</h2>
+        </div>
+        <p-divider></p-divider>
+        <div class="hours-list">
+          <div *ngFor="let day of daysOrder" class="hour-item">
+            <span class="day-label">{{ dayLabels[day] }}</span>
+            <span class="hour-value" *ngIf="shop.hours && shop.hours[day]?.open && shop.hours[day]?.close">
+              {{ shop.hours[day].open }} - {{ shop.hours[day].close }}
+            </span>
+            <span class="hour-value closed" *ngIf="!shop.hours || !shop.hours[day]?.open">
+              Fermé
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-header">
+          <i class="pi pi-phone"></i>
+          <h2>Contact</h2>
+        </div>
+        <p-divider></p-divider>
+        <div class="contact-list">
+          <div class="contact-item" *ngIf="shop.contact.phone">
+            <i class="pi pi-phone"></i>
+            <div class="contact-details">
+              <span class="contact-label">Téléphone</span>
+              <a [href]="'tel:' + shop.contact.phone" class="contact-value">{{ shop.contact.phone }}</a>
+            </div>
+          </div>
+          <div class="contact-item" *ngIf="shop.contact.email">
+            <i class="pi pi-envelope"></i>
+            <div class="contact-details">
+              <span class="contact-label">Email</span>
+              <a [href]="'mailto:' + shop.contact.email" class="contact-value">{{ shop.contact.email }}</a>
+            </div>
+          </div>
+          <div class="contact-item" *ngIf="!shop.contact.phone && !shop.contact.email">
+            <span class="no-contact">Aucune information de contact disponible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="products-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="pi pi-shopping-bag"></i>
+          Produits disponibles
+        </h2>
+        <span class="product-count">{{ products.length }} produit{{ products.length > 1 ? 's' : '' }}</span>
+      </div>
+
+      <div *ngIf="products.length === 0" class="no-products">
+        <i class="pi pi-inbox"></i>
+        <p>Aucun produit disponible pour le moment</p>
+      </div>
+
+      <div *ngIf="products.length > 0" class="products-grid">
+        <div *ngFor="let product of products" class="product-card" (click)="viewProduct(product._id)">
+          <div class="product-image-container">
+            <img [src]="getProductImage(product)" [alt]="product.name" class="product-image">
+            <p-tag *ngIf="product.isPromotion" severity="danger" value="-{{ product.discount }}%" class="discount-badge"></p-tag>
+            <div class="stock-indicator" [class.low-stock]="product.stock.quantity <= product.stock.lowStockAlert">
+              <i class="pi pi-box"></i>
+              <span>{{ product.stock.quantity }} en stock</span>
+            </div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-category" *ngIf="product.category">
+              <i class="pi pi-tag"></i>
+              {{ product.category.name }}
+            </p>
+            <p class="product-description" *ngIf="product.description">{{ product.description }}</p>
+            <div class="product-footer">
+              <div class="product-prices">
+                <span class="current-price">{{ formatPrice(getDiscountedPrice(product)) }}</span>
+                <span class="original-price" *ngIf="product.isPromotion && product.discount > 0">{{ formatPrice(product.price) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
