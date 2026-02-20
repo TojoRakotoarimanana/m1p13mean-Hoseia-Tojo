@@ -1,0 +1,574 @@
+/* ==============================================
+   Product Details — Enterprise Design
+   Tokens identical to home-client
+   ============================================== */
+
+/* ── Wrapper ────────────────────────────────── */
+.pd-wrapper {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 2rem 2.5rem 4rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── Back button ────────────────────────────── */
+.pd-back {
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.back-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* ── Skeleton grid ──────────────────────────── */
+.pd-skeleton-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.pd-skeleton-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Content grid ───────────────────────────── */
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── Gallery column ─────────────────────────── */
+.pd-gallery-col {
+  position: relative;
+}
+
+.pd-gallery-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.pd-main-img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 0.5rem;
+}
+
+.pd-thumb-img {
+  width: 100%;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+}
+
+/* PrimeNG Galleria overrides */
+::ng-deep .p-galleria {
+  width: 100%;
+}
+
+::ng-deep .p-galleria-item-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 360px;
+}
+
+::ng-deep .p-galleria-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+::ng-deep .p-galleria-thumbnail-container {
+  background: transparent;
+  padding: 0.75rem 0 0;
+}
+
+::ng-deep .p-galleria-thumbnail-item {
+  opacity: 0.65;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+::ng-deep .p-galleria-thumbnail-item:hover,
+::ng-deep .p-galleria-thumbnail-item.p-galleria-thumbnail-item-current {
+  opacity: 1;
+}
+
+::ng-deep .p-galleria-thumbnail-item.p-galleria-thumbnail-item-current
+  .p-galleria-thumbnail-item-content {
+  border: 2px solid #2563eb;
+  border-radius: 6px;
+}
+
+::ng-deep .p-galleria-item-nav {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  transition: background 0.15s;
+}
+
+::ng-deep .p-galleria-item-nav:hover {
+  background: #ffffff;
+}
+
+/* ── Gallery badges ─────────────────────────── */
+.pd-gallery-badges {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.badge-discount-lg {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+}
+
+.badge-low-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #fed7aa;
+}
+
+/* ── Info column ────────────────────────────── */
+.pd-info-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.pd-info-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Header ─────────────────────────────────── */
+.pd-header {
+  margin-bottom: 1.25rem;
+}
+
+.pd-header-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pd-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid #bfdbfe;
+}
+
+.pd-category-tag i {
+  font-size: 0.7rem;
+}
+
+/* Stock badge variants */
+.pd-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+.pd-stock-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.pd-stock-warn {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.pd-stock-danger {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.pd-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* ── Divider ─────────────────────────────────── */
+.pd-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 1.25rem 0;
+}
+
+/* ── Price section ──────────────────────────── */
+.pd-price-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pd-price-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pd-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pd-price {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pd-price--normal {
+  color: #16a34a;
+}
+
+.pd-price--promo {
+  color: #dc2626;
+}
+
+.pd-price-original {
+  font-size: 1.25rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.pd-promo-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.pd-savings {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  background: #f0fdf4;
+  color: #16a34a;
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+}
+
+.pd-savings i {
+  font-size: 0.8rem;
+}
+
+.pd-promo-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #fed7aa;
+}
+
+.pd-promo-end i {
+  font-size: 0.8rem;
+}
+
+/* ── Stock section ──────────────────────────── */
+.pd-stock-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pd-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pd-section-label i {
+  font-size: 0.85rem;
+}
+
+.pd-stock-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pd-stock-bar-track {
+  width: 100%;
+  height: 7px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pd-stock-bar-fill {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.pd-stock-bar-fill--low {
+  background: #dc2626;
+}
+
+.pd-stock-qty {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pd-stock-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border-left: 3px solid #dc2626;
+}
+
+.pd-stock-alert i {
+  font-size: 0.85rem;
+}
+
+/* ── Description section ────────────────────── */
+.pd-description-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pd-description {
+  font-size: 0.9375rem;
+  color: #64748b;
+  line-height: 1.75;
+  margin: 0;
+  padding: 0.875rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 3px solid #e2e8f0;
+}
+
+/* ── Shop section ───────────────────────────── */
+.pd-shop-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pd-shop-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pd-shop-row:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.pd-shop-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-shop-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pd-shop-initial {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.pd-shop-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pd-shop-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.pd-shop-cta i {
+  font-size: 0.75rem;
+}
+
+/* ── Stats row ──────────────────────────────── */
+.pd-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pd-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.825rem;
+  color: #94a3b8;
+}
+
+.pd-stat i {
+  font-size: 0.85rem;
+}
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 1024px) {
+  .pd-wrapper {
+    padding: 1.5rem 1.5rem 3rem;
+  }
+
+  .pd-grid,
+  .pd-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-wrapper {
+    padding: 1rem 1rem 3rem;
+  }
+
+  .pd-title {
+    font-size: 1.375rem;
+  }
+
+  .pd-price {
+    font-size: 1.625rem;
+  }
+
+  .pd-info-card {
+    padding: 1.25rem;
+  }
+
+  .pd-gallery-card {
+    padding: 1rem;
+  }
+
+  .pd-promo-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

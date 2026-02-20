@@ -101,7 +101,12 @@ export class ShopDetailsComponent implements OnInit {
 
   getProductImage(product: Product): string {
     if (product.images && product.images.length > 0) {
-      return `http://localhost:3000/${product.images[0]}`;
+      const img = product.images[0];
+      // Vérifier si l'URL est absolue (commence par http:// ou https://)
+      if (img.startsWith('http://') || img.startsWith('https://')) {
+        return img;
+      }
+      return `http://localhost:3000/${img}`;
     }
     return 'https://via.placeholder.com/400x300/667eea/ffffff?text=Pas+d\'image';
   }
@@ -125,6 +130,6 @@ export class ShopDetailsComponent implements OnInit {
   }
 
   viewProduct(productId: string): void {
-    this.catalogService.incrementProductViews(productId).subscribe();
+    this.router.navigate(['/product', productId]);
   }
 }

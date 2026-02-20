@@ -10,6 +10,7 @@ export interface Product {
   originalPrice?: number;
   discount: number;
   isPromotion: boolean;
+  promoStartDate?: Date;
   promoEndDate?: Date;
   images: string[];
   stock: {

@@ -93,6 +93,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true, min: 0 },
   originalPrice: { type: Number, min: 0 },
   discount: { type: Number, default: 0, min: 0, max: 100 },
+  promoStartDate: { type: Date },
   promoEndDate: { type: Date },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   images: [String],

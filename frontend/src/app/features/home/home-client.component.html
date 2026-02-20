@@ -1,375 +1,238 @@
-<!-- Navbar -->
 <app-navbar></app-navbar>
 
-<!-- Dashboard Wrapper -->
-<div class="dashboard-wrapper">
-  <!-- Header -->
-  <div class="dashboard-header">
-    <div class="header-content">
+<div class="home-wrapper">
+
+  <!-- ── Page Header ─────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-header-inner">
       <div>
-        <h1 class="dashboard-title">{{ getUserGreeting() }}</h1>
-        <p class="dashboard-subtitle">Découvrez nos produits et explorez les boutiques</p>
+        <h1 class="page-greeting">{{ getUserGreeting() }}</h1>
+        <p class="page-tagline">Explorez notre catalogue de boutiques et produits</p>
       </div>
-      <div class="header-date">
+      <time class="page-date">
         <i class="pi pi-calendar"></i>
-        <span>{{ currentDate | date:'dd MMM yyyy':'':'fr' }}</span>
-      </div>
+        {{ currentDate | date:'EEEE d MMMM yyyy':'':'fr' }}
+      </time>
     </div>
-  </div>
+  </header>
 
-  <!-- Search Section -->
+  <!-- ── Search ──────────────────────────────────── -->
   <div class="search-section">
-    <div class="search-container">
-      <div class="search-icon-wrapper">
-        <i class="pi pi-search"></i>
-      </div>
-      <input 
-        type="text" 
-        pInputText 
-        placeholder="Rechercher des produits, boutiques, catégories..." 
+    <div class="search-bar">
+      <i class="pi pi-search"></i>
+      <input
+        pInputText
+        type="text"
+        placeholder="Rechercher des produits, boutiques, catégories…"
         [(ngModel)]="searchTerm"
-        class="search-input"
         (keyup.enter)="onSearch()"
+        class="search-input"
       />
-      <button 
-        class="search-button"
-        (click)="onSearch()"
-        [disabled]="!searchTerm.trim()"
-      >
-        <span class="button-text">Rechercher</span>
-        <i class="pi pi-arrow-right"></i>
+      <button class="search-submit" (click)="onSearch()" [disabled]="!searchTerm.trim()">
+        Rechercher
       </button>
     </div>
-    <div class="search-suggestions" *ngIf="categories.length > 0">
-      <span class="suggestion-label">Catégories populaires:</span>
-      <button 
-        *ngFor="let cat of categories.slice(0, 5)" 
-        class="suggestion-chip"
+    <div class="search-chips" *ngIf="categories.length > 0">
+      <span class="chips-label">Catégories :</span>
+      <button
+        *ngFor="let cat of categories.slice(0, 5)"
+        class="chip"
         (click)="onCategoryFilter(cat)"
+      >{{ cat.name }}</button>
+    </div>
+  </div>
+
+  <!-- ── Stats Bar ───────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="stats-bar-item">
+      <span class="stats-bar-value">{{ formatNumber(stats.totalProducts) }}</span>
+      <span class="stats-bar-label">Produits</span>
+    </div>
+    <div class="stats-bar-sep"></div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-value accent-promo">{{ formatNumber(stats.totalPromotions) }}</span>
+      <span class="stats-bar-label">Promotions</span>
+    </div>
+    <div class="stats-bar-sep"></div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-value">{{ formatNumber(stats.totalShops) }}</span>
+      <span class="stats-bar-label">Boutiques</span>
+    </div>
+    <div class="stats-bar-sep"></div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-value">{{ formatNumber(stats.totalCategories) }}</span>
+      <span class="stats-bar-label">Catégories</span>
+    </div>
+  </div>
+
+  <!-- ── Promotions ──────────────────────────────── -->
+  <section class="home-section" *ngIf="promotions.length > 0 || loadingPromotions">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 class="section-title">Promotions en cours</h2>
+        <span class="section-badge" *ngIf="!loadingPromotions">{{ stats.totalPromotions }}</span>
+      </div>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="loadingPromotions">
+      <div *ngFor="let i of skeletonRange(4)" class="skeleton-card">
+        <p-skeleton height="160px"></p-skeleton>
+        <div class="skeleton-body">
+          <p-skeleton width="35%" height="0.75rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="75%" height="1rem" styleClass="mb-3"></p-skeleton>
+          <p-skeleton width="45%" height="1.125rem"></p-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="!loadingPromotions">
+      <article
+        *ngFor="let product of promotions"
+        class="product-card"
+        (click)="onViewProduct(product)"
       >
-        {{ cat.name }}
+        <div class="product-card-img">
+          <img [src]="getProductImageUrl(product)" [alt]="product.name" loading="lazy" />
+          <span class="badge-discount">−{{ product.discount }}%</span>
+        </div>
+        <div class="product-card-body">
+          <p class="product-card-shop">{{ product.shopId.name }}</p>
+          <h3 class="product-card-name">{{ product.name }}</h3>
+          <div class="product-card-pricing">
+            <span class="price price--promo">{{ getDiscountedPrice(product) | number:'1.2-2' }} Ar</span>
+            <span class="price price--original">{{ product.price | number:'1.2-2' }} Ar</span>
+          </div>
+          <p class="product-card-dates" *ngIf="getPromoDateRange(product)">
+            <i class="pi pi-clock"></i>{{ getPromoDateRange(product) }}
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Boutiques ───────────────────────────────── -->
+  <section class="home-section" *ngIf="featuredShops.length > 0 || loadingShops">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 class="section-title">Boutiques partenaires</h2>
+        <span class="section-badge" *ngIf="!loadingShops">{{ stats.totalShops }}</span>
+      </div>
+      <button class="section-link" (click)="onNavigateToShops()">
+        Voir toutes <i class="pi pi-arrow-right"></i>
       </button>
     </div>
-  </div>
 
-  <!-- Stats Grid -->
-  <div class="stats-grid">
-    <div class="stat-card products-card">
-      <p-skeleton *ngIf="loadingStats" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loadingStats" class="stat-card-content">
-        <div class="stat-icon">
-          <i [class]="getStatIcon('products')"></i>
-        </div>
-        <div class="stat-details">
-          <p class="stat-label">Produits disponibles</p>
-          <h2 class="stat-value">{{ formatNumber(stats.totalProducts) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge positive">
-              <i class="pi pi-check-circle"></i>
-              Tous en stock
-            </span>
-          </div>
+    <div class="shops-list" *ngIf="loadingShops">
+      <div *ngFor="let i of skeletonRange(6)" class="skeleton-card skeleton-card--row">
+        <p-skeleton shape="circle" size="2.75rem"></p-skeleton>
+        <div style="flex:1">
+          <p-skeleton width="55%" height="0.9rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="35%" height="0.75rem"></p-skeleton>
         </div>
       </div>
     </div>
 
-    <div class="stat-card promotions-card">
-      <p-skeleton *ngIf="loadingPromotions" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loadingPromotions" class="stat-card-content">
-        <div class="stat-icon">
-          <i [class]="getStatIcon('promotions')"></i>
-        </div>
-        <div class="stat-details">
-          <p class="stat-label">Promotions actives</p>
-          <h2 class="stat-value">{{ formatNumber(stats.totalPromotions) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge neutral">
-              <i class="pi pi-tag"></i>
-              Offres limitées
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-card shops-card">
-      <p-skeleton *ngIf="loadingShops" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loadingShops" class="stat-card-content">
-        <div class="stat-icon">
-          <i [class]="getStatIcon('shops')"></i>
-        </div>
-        <div class="stat-details">
-          <p class="stat-label">Boutiques partenaires</p>
-          <h2 class="stat-value">{{ formatNumber(stats.totalShops) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge positive">
-              <i class="pi pi-check-circle"></i>
-              {{ stats.totalShops }} actives
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-card categories-card">
-      <p-skeleton *ngIf="loadingCategories" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loadingCategories" class="stat-card-content">
-        <div class="stat-icon">
-          <i [class]="getStatIcon('categories')"></i>
-        </div>
-        <div class="stat-details">
-          <p class="stat-label">Catégories</p>
-          <h2 class="stat-value">{{ formatNumber(stats.totalCategories) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge neutral">
-              <i class="pi pi-grid"></i>
-              Pour tous les goûts
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-card new-card">
-      <p-skeleton *ngIf="loadingNewProducts" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loadingNewProducts" class="stat-card-content">
-        <div class="stat-icon">
-          <i [class]="getStatIcon('new')"></i>
-        </div>
-        <div class="stat-details">
-          <p class="stat-label">Nouveautés</p>
-          <h2 class="stat-value">{{ formatNumber(newProducts.length) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge positive">
-              <i class="pi pi-arrow-up"></i>
-              Cette semaine
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Nouveaux produits Section -->
-  <div class="content-section" *ngIf="newProducts.length > 0">
-    <p-card>
-      <ng-template pTemplate="header">
-        <div class="card-header">
-          <div class="header-title">
-            <i class="pi pi-sparkles"></i>
-            <h3>Nouveautés de la semaine</h3>
-          </div>
-          <p-button 
-            label="Voir tout" 
-            icon="pi pi-arrow-right"
-            [text]="true"
-          ></p-button>
-        </div>
-      </ng-template>
-
-      <div *ngIf="loadingNewProducts" class="products-grid-skeleton">
-        <div *ngFor="let item of [1,2,3,4]" class="product-skeleton">
-          <p-skeleton height="200px" class="mb-2"></p-skeleton>
-          <p-skeleton width="80%" height="1.5rem" class="mb-2"></p-skeleton>
-          <p-skeleton width="60%" height="1rem"></p-skeleton>
-        </div>
-      </div>
-
-      <div *ngIf="!loadingNewProducts" class="products-grid-compact">
-        <div *ngFor="let product of newProducts" class="product-card" (click)="onViewProduct(product)">
-          <div class="product-image-container">
-            <img 
-              [src]="getProductImageUrl(product)" 
-              [alt]="product.name"
-              class="product-image"
-            />
-            <div class="new-badge">
-              <i class="pi pi-sparkles"></i>
-              Nouveau
-            </div>
-          </div>
-          <div class="product-info">
-            <h4 class="product-title">{{ product.name }}</h4>
-            <p class="product-shop">{{ product.shopId.name }}</p>
-            <div class="product-pricing">
-              <span class="current-price">{{ product.price | number:'1.2-2' }} Ar</span>
-            </div>
-            <div class="product-stock">
-              <i class="pi pi-check-circle"></i>
-              En stock
-            </div>
-          </div>
-        </div>
-      </div>
-    </p-card>
-  </div>
-
-  <!-- Promotions Section -->
-  <div class="content-section" *ngIf="promotions.length > 0">
-    <p-card>
-      <ng-template pTemplate="header">
-        <div class="card-header">
-          <div class="header-title">
-            <i class="pi pi-tag"></i>
-            <h3>Promotions en cours</h3>
-          </div>
-        </div>
-      </ng-template>
-
-      <div *ngIf="loadingPromotions" class="products-grid-skeleton">
-        <div *ngFor="let item of [1,2,3,4]" class="product-skeleton">
-          <p-skeleton height="200px" class="mb-2"></p-skeleton>
-          <p-skeleton width="80%" height="1.5rem" class="mb-2"></p-skeleton>
-          <p-skeleton width="60%" height="1rem"></p-skeleton>
-        </div>
-      </div>
-
-      <p-carousel 
-        *ngIf="!loadingPromotions"
-        [value]="promotions" 
-        [numVisible]="4" 
-        [numScroll]="1" 
-        [circular]="true"
-        [autoplayInterval]="5000"
-        [responsiveOptions]="carouselResponsiveOptions"
-        class="products-carousel"
+    <div class="shops-list" *ngIf="!loadingShops">
+      <article
+        *ngFor="let shop of featuredShops"
+        class="shop-row"
+        (click)="onViewShop(shop)"
       >
-        <ng-template let-product pTemplate="item">
-          <div class="product-card" (click)="onViewProduct(product)">
-            <div class="product-image-container">
-              <img 
-                [src]="getProductImageUrl(product)" 
-                [alt]="product.name"
-                class="product-image"
-              />
-              <div class="discount-badge">-{{ product.discount }}%</div>
-            </div>
-            <div class="product-info">
-              <h4 class="product-title">{{ product.name }}</h4>
-              <p class="product-shop">{{ product.shopId.name }}</p>
-              <div class="product-pricing">
-                <span class="current-price">{{ product.price | number:'1.2-2' }} Ar</span>
-                <span class="original-price">{{ product.originalPrice | number:'1.2-2' }} Ar</span>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-      </p-carousel>
-    </p-card>
-  </div>
-
-  <!-- Boutiques Section -->
-  <div class="content-section" *ngIf="featuredShops.length > 0">
-    <p-card>
-      <ng-template pTemplate="header">
-        <div class="card-header">
-          <div class="header-title">
-            <i class="pi pi-building"></i>
-            <h3>Boutiques partenaires</h3>
-          </div>
-          <p-button 
-            label="Voir tout" 
-            icon="pi pi-arrow-right"
-            [text]="true"
-            (onClick)="onNavigateToShops()"
-          ></p-button>
+        <div class="shop-row-logo">
+          <img *ngIf="shop.logo" [src]="getShopLogoUrl(shop)" [alt]="shop.name" />
+          <span *ngIf="!shop.logo" class="shop-row-initial">{{ shop.name.charAt(0) }}</span>
         </div>
-      </ng-template>
+        <div class="shop-row-info">
+          <h3 class="shop-row-name">{{ shop.name }}</h3>
+          <p class="shop-row-category">{{ shop.category.name }}</p>
+        </div>
+        <span class="shop-row-count">{{ shop.statistics.totalProducts || 0 }} produits</span>
+        <i class="pi pi-chevron-right shop-row-arrow"></i>
+      </article>
+    </div>
+  </section>
 
-      <div *ngIf="loadingShops" class="shops-grid-skeleton">
-        <div *ngFor="let item of [1,2,3,4,5,6]" class="shop-skeleton">
-          <p-skeleton height="120px" class="mb-2"></p-skeleton>
-          <p-skeleton width="70%" height="1.5rem" class="mb-2"></p-skeleton>
-          <p-skeleton width="50%" height="1rem"></p-skeleton>
+  <!-- ── Catalogue ───────────────────────────────── -->
+  <section class="home-section">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 class="section-title">Catalogue</h2>
+        <span class="section-badge" *ngIf="!loadingProducts">{{ stats.totalProducts }}</span>
+      </div>
+      <p-select
+        [(ngModel)]="selectedCategory"
+        [options]="categories"
+        optionLabel="name"
+        placeholder="Toutes les catégories"
+        [showClear]="true"
+        (onChange)="onCategoryFilter($event.value)"
+      ></p-select>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="loadingProducts">
+      <div *ngFor="let i of skeletonRange(12)" class="skeleton-card">
+        <p-skeleton height="180px"></p-skeleton>
+        <div class="skeleton-body">
+          <p-skeleton width="35%" height="0.75rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="80%" height="1rem" styleClass="mb-3"></p-skeleton>
+          <p-skeleton width="45%" height="1.125rem"></p-skeleton>
         </div>
       </div>
+    </div>
 
-      <div *ngIf="!loadingShops" class="shops-grid">
-        <div *ngFor="let shop of featuredShops" class="shop-card" (click)="onViewShop(shop)">
-          <div class="shop-header">
-            <div class="shop-logo">
-              <img 
-                *ngIf="shop.logo" 
-                [src]="getShopLogoUrl(shop)" 
-                [alt]="shop.name"
-                class="logo-image"
-              />
-              <div *ngIf="!shop.logo" class="logo-placeholder">
-                {{ shop.name.charAt(0).toUpperCase() }}
-              </div>
-            </div>
-          </div>
-          <div class="shop-info">
-            <h4 class="shop-name">{{ shop.name }}</h4>
-            <p class="shop-category">{{ shop.category.name }}</p>
-            <div class="shop-stats">
-              <span class="stat-item">
-                <i class="pi pi-shopping-bag"></i>
-                {{ shop.statistics.totalProducts || 0 }} produits
-              </span>
-            </div>
-          </div>
+    <div class="cards-grid cards-grid--4" *ngIf="!loadingProducts">
+      <article
+        *ngFor="let product of featuredProducts"
+        class="product-card"
+        (click)="onViewProduct(product)"
+      >
+        <div class="product-card-img">
+          <img [src]="getProductImageUrl(product)" [alt]="product.name" loading="lazy" />
+          <span class="badge-discount" *ngIf="product.isPromotion && product.discount > 0">
+            −{{ product.discount }}%
+          </span>
         </div>
-      </div>
-    </p-card>
-  </div>
+        <div class="product-card-body">
+          <p class="product-card-shop">{{ product.shopId.name }}</p>
+          <h3 class="product-card-name">{{ product.name }}</h3>
+          <div class="product-card-pricing">
+            <span [class]="product.isPromotion && product.discount > 0 ? 'price price--promo' : 'price price--normal'">
+              {{ getDiscountedPrice(product) | number:'1.2-2' }} Ar
+            </span>
+            <span *ngIf="product.isPromotion && product.discount > 0" class="price price--original">
+              {{ product.price | number:'1.2-2' }} Ar
+            </span>
+          </div>
+          <p class="product-card-stock">
+            <i class="pi pi-check-circle"></i> En stock
+          </p>
+        </div>
+      </article>
+    </div>
 
-  <!-- Produits Section -->
-  <div class="content-section" *ngIf="featuredProducts.length > 0">
-    <p-card>
-      <ng-template pTemplate="header">
-        <div class="card-header">
-          <div class="header-title">
-            <i class="pi pi-box"></i>
-            <h3>Produits disponibles</h3>
-          </div>
-          <p-select 
-            [(ngModel)]="selectedCategory"
-            [options]="categories" 
-            optionLabel="name" 
-            placeholder="Filtrer"
-            [showClear]="true"
-            (onChange)="onCategoryFilter($event.value)"
-          ></p-select>
-        </div>
-      </ng-template>
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!loadingProducts && totalPages > 1">
+      <button
+        class="page-btn"
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)"
+      >
+        <i class="pi pi-chevron-left"></i>
+      </button>
+      <button
+        *ngFor="let p of paginationPages"
+        class="page-btn"
+        [class.page-btn--active]="p === currentPage"
+        (click)="onPageChange(p)"
+      >{{ p }}</button>
+      <button
+        class="page-btn"
+        [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)"
+      >
+        <i class="pi pi-chevron-right"></i>
+      </button>
+    </div>
+  </section>
 
-      <div *ngIf="loadingProducts" class="products-grid-skeleton">
-        <div *ngFor="let item of [1,2,3,4,5,6,7,8]" class="product-skeleton">
-          <p-skeleton height="200px" class="mb-2"></p-skeleton>
-          <p-skeleton width="80%" height="1.5rem" class="mb-2"></p-skeleton>
-          <p-skeleton width="60%" height="1rem"></p-skeleton>
-        </div>
-      </div>
-
-      <div *ngIf="!loadingProducts" class="products-grid">
-        <div *ngFor="let product of featuredProducts" class="product-card" (click)="onViewProduct(product)">
-          <div class="product-image-container">
-            <img 
-              [src]="getProductImageUrl(product)" 
-              [alt]="product.name"
-              class="product-image"
-            />
-            <div class="discount-badge" *ngIf="product.isPromotion">
-              -{{ product.discount }}%
-            </div>
-          </div>
-          <div class="product-info">
-            <h4 class="product-title">{{ product.name }}</h4>
-            <p class="product-shop">{{ product.shopId.name }}</p>
-            <div class="product-pricing">
-              <span class="current-price">{{ product.price | number:'1.2-2' }} Ar</span>
-              <span *ngIf="product.isPromotion" class="original-price">
-                {{ product.originalPrice | number:'1.2-2' }} Ar
-              </span>
-            </div>
-            <div class="product-stock">
-              <i class="pi pi-check-circle"></i>
-              En stock
-            </div>
-          </div>
-        </div>
-      </div>
-    </p-card>
-  </div>
 </div>
