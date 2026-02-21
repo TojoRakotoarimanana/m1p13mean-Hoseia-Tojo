@@ -1,3 +1,130 @@
+.orders-wrapper {
+  padding: 2rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pending-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f59e0b;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.4rem;
+}
+
+.filter-actions {
+  align-items: flex-end;
+  padding-top: 1.5rem;
+}
+
+/* Table */
+.order-number {
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-name {
+  font-weight: 500;
+}
+
+.client-email {
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.items-count {
+  color: #374151;
+}
+
+.amount {
+  font-weight: 600;
+  color: #111827;
+}
+
+.date {
+  color: #6b7280;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Detail dialog */
+.order-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.detail-label {
+  min-width: 140px;
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-weight: 500;
+  color: #111827;
+}
+
+.total-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.total-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.total-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Status change form */
+.status-change-form .field {
+  margin-top: 0.5rem;
+}
 .my-orders-container {
     min-height: calc(100vh - 200px);
 }
