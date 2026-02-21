@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-
+<p-toast></p-toast>
 <div class="pd-wrapper">
 
   <!-- ── Back ─────────────────────────────────────── -->
@@ -32,27 +32,13 @@
 
         <!-- Main image -->
         <div class="gallery-main">
-          <img
-            [src]="images[selectedImageIndex]"
-            [alt]="product.name"
-            class="gallery-img"
-          />
+          <img [src]="images[selectedImageIndex]" [alt]="product.name" class="gallery-img" />
 
           <!-- Prev / Next arrows (visible on hover) -->
-          <button
-            *ngIf="images.length > 1"
-            class="gallery-nav gallery-nav--prev"
-            type="button"
-            (click)="prevImage()"
-          >
+          <button *ngIf="images.length > 1" class="gallery-nav gallery-nav--prev" type="button" (click)="prevImage()">
             <i class="pi pi-chevron-left"></i>
           </button>
-          <button
-            *ngIf="images.length > 1"
-            class="gallery-nav gallery-nav--next"
-            type="button"
-            (click)="nextImage()"
-          >
+          <button *ngIf="images.length > 1" class="gallery-nav gallery-nav--next" type="button" (click)="nextImage()">
             <i class="pi pi-chevron-right"></i>
           </button>
 
@@ -74,13 +60,8 @@
 
         <!-- Thumbnails -->
         <div class="gallery-thumbs" *ngIf="images.length > 1">
-          <button
-            *ngFor="let img of images; let i = index"
-            class="gallery-thumb"
-            [class.gallery-thumb--active]="i === selectedImageIndex"
-            type="button"
-            (click)="selectImage(i)"
-          >
+          <button *ngFor="let img of images; let i = index" class="gallery-thumb"
+            [class.gallery-thumb--active]="i === selectedImageIndex" type="button" (click)="selectImage(i)">
             <img [src]="img" [alt]="product.name" />
           </button>
         </div>
@@ -107,8 +88,7 @@
 
         <!-- Stock badge -->
         <span class="stock-badge" [ngClass]="'stock-badge--' + getStockSeverity()">
-          <i class="pi"
-            [ngClass]="{
+          <i class="pi" [ngClass]="{
               'pi-check-circle': getStockSeverity() === 'success',
               'pi-exclamation-circle': getStockSeverity() === 'warn',
               'pi-times-circle': getStockSeverity() === 'danger'
@@ -124,8 +104,7 @@
           <div class="price-row">
             <div class="price-left">
               <span class="price-label">Prix</span>
-              <span class="price-amount"
-                [class.price-amount--promo]="product.isPromotion && product.discount > 0"
+              <span class="price-amount" [class.price-amount--promo]="product.isPromotion && product.discount > 0"
                 [class.price-amount--normal]="!(product.isPromotion && product.discount > 0)">
                 {{ getDiscountedPrice() | number:'1.2-2' }} Ar
               </span>
@@ -156,10 +135,7 @@
             <i class="pi pi-box"></i> Disponibilité
           </div>
           <div class="stock-bar-track">
-            <div
-              class="stock-bar-fill"
-              [class.stock-bar-fill--low]="isLowStock()"
-              [style.width.%]="getStockWidth()">
+            <div class="stock-bar-fill" [class.stock-bar-fill--low]="isLowStock()" [style.width.%]="getStockWidth()">
             </div>
           </div>
           <span class="stock-qty">{{ product.stock.quantity }} unités disponibles</span>
@@ -170,6 +146,23 @@
         </div>
 
         <div class="pd-sep" *ngIf="product.description"></div>
+
+        <!-- Add to cart -->
+        <div class="flex flex-column gap-3 mb-4 mt-2">
+          <div class="flex align-items-center gap-3">
+            <label class="font-bold text-gray-700">Quantité:</label>
+            <p-inputNumber [(ngModel)]="quantity" [showButtons]="true" buttonLayout="horizontal"
+              spinnerMode="horizontal" [min]="1" [max]="product.stock.quantity"
+              decrementButtonClass="p-button-secondary p-button-outlined"
+              incrementButtonClass="p-button-secondary p-button-outlined" incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus" [inputStyle]="{'width': '3rem', 'text-align': 'center'}">
+            </p-inputNumber>
+          </div>
+
+          <p-button label="Ajouter au Panier" icon="pi pi-shopping-cart" styleClass="w-full p-button-lg shadow-2"
+            [disabled]="product.stock.quantity === 0" [loading]="isAddingToCart" (onClick)="addToCart()">
+          </p-button>
+        </div>
 
         <!-- Description -->
         <div *ngIf="product.description" class="desc-section">
@@ -188,11 +181,8 @@
           </div>
           <div class="shop-row" (click)="viewShop()">
             <div class="shop-logo">
-              <img
-                *ngIf="product.shopId.logo"
-                [src]="'http://localhost:3000/' + product.shopId.logo"
-                [alt]="product.shopId.name"
-              />
+              <img *ngIf="product.shopId.logo" [src]="'http://localhost:3000/' + product.shopId.logo"
+                [alt]="product.shopId.name" />
               <span *ngIf="!product.shopId.logo" class="shop-initial">
                 {{ product.shopId.name.charAt(0) }}
               </span>

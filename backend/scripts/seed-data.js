@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { User, Category, Shop, Product } = require('../models');
 
-const DB_URI = 'mongodb://localhost:27017/mean';
+const DB_URI = 'mongodb://localhost:27017/m1p13mean';
 
 const shopCategories = [
   { name: 'Mode & Vêtements', description: 'Magasins de vêtements et accessoires', type: 'boutique', icon: 'pi-shopping-bag' },
