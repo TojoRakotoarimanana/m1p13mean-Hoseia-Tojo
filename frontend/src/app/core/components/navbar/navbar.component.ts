@@ -56,6 +56,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
   navigateTo(path: string): void {
     this.router.navigate([path]);
   }
+
+  navigateToHome(): void {
+    const role = this.user?.role;
+    switch (role) {
+      case 'client':
+        this.router.navigate(['/home']);
+        break;
+      case 'boutique':
+        this.router.navigate(['/my-shop']);
+        break;
+      case 'admin':
+        this.router.navigate(['/dashboard']);
+        break;
+      default:
+        this.router.navigate(['/dashboard']);
+    }
+  }
+
   loadMenuItems(): void {
     const role = this.user?.role;
 
@@ -106,11 +124,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     } else if (role === 'boutique') {
       this.items = [
         {
-          label: 'Dashboard',
-          icon: 'pi pi-home',
-          command: () => this.router.navigate(['/dashboard']),
-        },
-        {
           separator: true,
         },
         {
@@ -127,16 +140,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
               icon: 'pi pi-box',
               command: () => this.router.navigate(['/my-products']),
             },
-          ],
-        },
-        {
-          label: 'Explorer',
-          icon: 'pi pi-compass',
-          items: [
             {
-              label: 'Toutes les Boutiques',
-              icon: 'pi pi-shop',
-              command: () => this.router.navigate(['/shops']),
+              label: 'Gestion Stock',
+              icon: 'pi pi-list',
+              command: () => this.router.navigate(['/my-products/stock']),
+            },
+            {
+              label: 'Statistiques',
+              icon: 'pi pi-chart-line',
+              command: () => this.router.navigate(['/my-products/stats']),
             },
           ],
         },
@@ -153,17 +165,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     } else if (role === 'client') {
       this.items = [
         {
-          label: 'Accueil',
-          icon: 'pi pi-home',
-          command: () => this.router.navigate(['/dashboard']),
-        },
-        {
-          separator: true,
-        },
-        {
-          label: 'Boutiques',
-          icon: 'pi pi-shop',
-          command: () => this.router.navigate(['/shops']),
+          label: 'Navigation',
+          icon: 'pi pi-compass',
+          items: [
+            {
+              label: 'Accueil',
+              icon: 'pi pi-home',
+              command: () => this.router.navigate(['/home']),
+            },
+            {
+              label: 'Boutiques',
+              icon: 'pi pi-building',
+              command: () => this.router.navigate(['/shops']),
+            },
+          ],
         },
         {
           separator: true,

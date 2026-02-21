@@ -36,6 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private pageTitles: { [key: string]: string } = {
     'dashboard': 'Tableau de bord',
+    'home': 'Accueil',
     'shops': 'Boutiques',
     'categories': 'Catégories',
     'my-shop': 'Ma Boutique',

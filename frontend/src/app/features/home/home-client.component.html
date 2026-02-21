@@ -1,0 +1,240 @@
+<app-navbar></app-navbar>
+
+<div class="home-wrapper">
+
+  <!-- ── Page Header ─────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <h1 class="page-greeting">{{ getUserGreeting() }}</h1>
+        <p class="page-tagline">Explorez notre catalogue de boutiques et produits</p>
+      </div>
+      <time class="page-date">
+        <i class="pi pi-calendar"></i>
+        {{ currentDate | date:'EEEE d MMMM yyyy':'':'fr' }}
+      </time>
+    </div>
+  </header>
+
+  <!-- ── Search ──────────────────────────────────── -->
+  <div class="search-section">
+    <div class="search-bar">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        pInputText
+        type="text"
+        placeholder="Rechercher des produits, boutiques, catégories…"
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+        (input)="onSearchInput()"
+        class="search-input"
+      />
+      <button
+        *ngIf="searchTerm"
+        class="search-clear"
+        type="button"
+        (click)="clearSearch()"
+        title="Effacer"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+      <button class="search-submit" (click)="onSearch()" [disabled]="!searchTerm.trim()">
+        Rechercher
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Stats Bar ───────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="stats-bar-item">
+      <span class="stats-bar-value">{{ formatNumber(stats.totalProducts) }}</span>
+      <span class="stats-bar-label">Produits</span>
+    </div>
+    <div class="stats-bar-sep"></div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-value accent-promo">{{ formatNumber(stats.totalPromotions) }}</span>
+      <span class="stats-bar-label">Promotions</span>
+    </div>
+    <div class="stats-bar-sep"></div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-value">{{ formatNumber(stats.totalShops) }}</span>
+      <span class="stats-bar-label">Boutiques</span>
+    </div>
+    <div class="stats-bar-sep"></div>
+    <div class="stats-bar-item">
+      <span class="stats-bar-value">{{ formatNumber(stats.totalCategories) }}</span>
+      <span class="stats-bar-label">Catégories</span>
+    </div>
+  </div>
+
+  <!-- ── Promotions ──────────────────────────────── -->
+  <section class="home-section" *ngIf="promotions.length > 0 || loadingPromotions">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 class="section-title">Promotions en cours</h2>
+        <span class="section-badge" *ngIf="!loadingPromotions">{{ stats.totalPromotions }}</span>
+      </div>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="loadingPromotions">
+      <div *ngFor="let i of skeletonRange(4)" class="skeleton-card">
+        <p-skeleton height="160px"></p-skeleton>
+        <div class="skeleton-body">
+          <p-skeleton width="35%" height="0.75rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="75%" height="1rem" styleClass="mb-3"></p-skeleton>
+          <p-skeleton width="45%" height="1.125rem"></p-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="!loadingPromotions">
+      <article
+        *ngFor="let product of promotions"
+        class="product-card"
+        (click)="onViewProduct(product)"
+      >
+        <div class="product-card-img">
+          <img [src]="getProductImageUrl(product)" [alt]="product.name" loading="lazy" />
+          <span class="badge-discount">−{{ product.discount }}%</span>
+        </div>
+        <div class="product-card-body">
+          <p class="product-card-shop">{{ product.shopId.name }}</p>
+          <h3 class="product-card-name">{{ product.name }}</h3>
+          <div class="product-card-pricing">
+            <span class="price price--promo">{{ getDiscountedPrice(product) | number:'1.2-2' }} Ar</span>
+            <span class="price price--original">{{ product.price | number:'1.2-2' }} Ar</span>
+          </div>
+          <p class="product-card-dates" *ngIf="getPromoDateRange(product)">
+            <i class="pi pi-clock"></i>{{ getPromoDateRange(product) }}
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Boutiques ───────────────────────────────── -->
+  <section class="home-section" *ngIf="featuredShops.length > 0 || loadingShops">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 class="section-title">Boutiques partenaires</h2>
+        <span class="section-badge" *ngIf="!loadingShops">{{ stats.totalShops }}</span>
+      </div>
+      <button class="section-link" (click)="onNavigateToShops()">
+        Voir toutes <i class="pi pi-arrow-right"></i>
+      </button>
+    </div>
+
+    <div class="shops-list" *ngIf="loadingShops">
+      <div *ngFor="let i of skeletonRange(6)" class="skeleton-card skeleton-card--row">
+        <p-skeleton shape="circle" size="2.75rem"></p-skeleton>
+        <div style="flex:1">
+          <p-skeleton width="55%" height="0.9rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="35%" height="0.75rem"></p-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <div class="shops-list" *ngIf="!loadingShops">
+      <article
+        *ngFor="let shop of featuredShops"
+        class="shop-row"
+        (click)="onViewShop(shop)"
+      >
+        <div class="shop-row-logo">
+          <img *ngIf="shop.logo" [src]="getShopLogoUrl(shop)" [alt]="shop.name" />
+          <span *ngIf="!shop.logo" class="shop-row-initial">{{ shop.name.charAt(0) }}</span>
+        </div>
+        <div class="shop-row-info">
+          <h3 class="shop-row-name">{{ shop.name }}</h3>
+          <p class="shop-row-category">{{ shop.category.name }}</p>
+        </div>
+        <span class="shop-row-count">{{ shop.statistics.totalProducts || 0 }} produits</span>
+        <i class="pi pi-chevron-right shop-row-arrow"></i>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Catalogue ───────────────────────────────── -->
+  <section class="home-section" id="catalogue">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2 class="section-title">Catalogue</h2>
+        <span class="section-badge" *ngIf="!loadingProducts">{{ stats.totalProducts }}</span>
+      </div>
+      <p-select
+        [(ngModel)]="selectedCategory"
+        [options]="categories"
+        optionLabel="name"
+        placeholder="Toutes les catégories"
+        [showClear]="true"
+        (onChange)="onCategoryFilter($event.value)"
+      ></p-select>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="loadingProducts">
+      <div *ngFor="let i of skeletonRange(12)" class="skeleton-card">
+        <p-skeleton height="180px"></p-skeleton>
+        <div class="skeleton-body">
+          <p-skeleton width="35%" height="0.75rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="80%" height="1rem" styleClass="mb-3"></p-skeleton>
+          <p-skeleton width="45%" height="1.125rem"></p-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-grid cards-grid--4" *ngIf="!loadingProducts">
+      <article
+        *ngFor="let product of featuredProducts"
+        class="product-card"
+        (click)="onViewProduct(product)"
+      >
+        <div class="product-card-img">
+          <img [src]="getProductImageUrl(product)" [alt]="product.name" loading="lazy" />
+          <span class="badge-discount" *ngIf="product.isPromotion && product.discount > 0">
+            −{{ product.discount }}%
+          </span>
+        </div>
+        <div class="product-card-body">
+          <p class="product-card-shop">{{ product.shopId.name }}</p>
+          <h3 class="product-card-name">{{ product.name }}</h3>
+          <div class="product-card-pricing">
+            <span [class]="product.isPromotion && product.discount > 0 ? 'price price--promo' : 'price price--normal'">
+              {{ getDiscountedPrice(product) | number:'1.2-2' }} Ar
+            </span>
+            <span *ngIf="product.isPromotion && product.discount > 0" class="price price--original">
+              {{ product.price | number:'1.2-2' }} Ar
+            </span>
+          </div>
+          <p class="product-card-stock">
+            <i class="pi pi-check-circle"></i> En stock
+          </p>
+        </div>
+      </article>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!loadingProducts && totalPages > 1">
+      <button
+        class="page-btn"
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)"
+      >
+        <i class="pi pi-chevron-left"></i>
+      </button>
+      <button
+        *ngFor="let p of paginationPages"
+        class="page-btn"
+        [class.page-btn--active]="p === currentPage"
+        (click)="onPageChange(p)"
+      >{{ p }}</button>
+      <button
+        class="page-btn"
+        [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)"
+      >
+        <i class="pi pi-chevron-right"></i>
+      </button>
+    </div>
+  </section>
+
+</div>

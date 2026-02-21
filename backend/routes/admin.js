@@ -1,7 +1,11 @@
 var express = require('express');
 var router = express.Router();
+const { adminOnly } = require('../middleware');
 const ShopService = require('../services/shop.service');
 const DashboardAdminController = require('../controllers/dashboardAdmin.controller');
+
+// Toutes les routes admin sont protégées
+router.use(adminOnly);
 
 router.get('/stats', DashboardAdminController.getGlobalStats);
 router.get('/activities', DashboardAdminController.getRecentActivities);

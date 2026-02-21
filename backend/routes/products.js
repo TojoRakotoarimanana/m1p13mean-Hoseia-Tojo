@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const { boutiqueOnly } = require('../middleware');
 const ProductController = require('../controllers/product.controller');
 const { upload } = require('../utils/upload');
+
+// Toutes les routes produits sont pour les boutiques uniquement
+router.use(boutiqueOnly);
 
 router.post('/', upload.array('images', 5), ProductController.create);
 router.get('/my-products', ProductController.listByShop);
