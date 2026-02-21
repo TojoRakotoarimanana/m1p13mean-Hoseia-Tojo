@@ -1,0 +1,22 @@
+.history-container {
+    min-height: calc(100vh - 200px);
+}
+
+.custom-marker {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+:host ::ng-deep .customized-timeline .p-timeline-event-opposite {
+    display: none;
+}
+
+:host ::ng-deep .customized-timeline .p-timeline-event-content {
+    padding-bottom: 2rem;
+}

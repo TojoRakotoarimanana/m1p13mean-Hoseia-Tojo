@@ -15,11 +15,13 @@ var categoriesRouter = require('./routes/categories');
 var productsRouter = require('./routes/products');
 var catalogRouter = require('./routes/catalog');
 var adminRouter = require('./routes/admin');
-var orderShopRouter = require('./routes/orderShop');
+var cartRouter = require('./routes/cart');
+var ordersRouter = require('./routes/orders');
+var notificationsRouter = require('./routes/notifications');
 
 var app = express();
 var corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:4200';
-var mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/mean';
+var mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/m1p13mean';
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -29,8 +31,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-    origin: corsOrigin,
-    credentials: true
+  origin: corsOrigin,
+  credentials: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -42,17 +44,19 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/catalog', catalogRouter);
 app.use('/api/admin', adminRouter);
-app.use('/api/shop/orders', orderShopRouter);
+app.use('/api/cart', cartRouter);
+app.use('/api/orders', ordersRouter);
+app.use('/api/notifications', notificationsRouter);
 
 mongoose.connect(mongoUri)
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 

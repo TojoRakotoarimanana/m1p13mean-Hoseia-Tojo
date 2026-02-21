@@ -125,3 +125,12 @@
 .status-change-form .field {
   margin-top: 0.5rem;
 }
+.my-orders-container {
+    min-height: calc(100vh - 200px);
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    background-color: var(--surface-50);
+    color: var(--surface-900);
+    font-weight: 600;
+}

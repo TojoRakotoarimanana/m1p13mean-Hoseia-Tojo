@@ -1,0 +1,131 @@
+<app-navbar></app-navbar>
+
+<div class="cart-wrapper">
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <h1 class="page-title">Mon panier</h1>
+                <p class="page-tagline" *ngIf="totalItems > 0">{{ totalItems }} article(s) au total</p>
+                <p class="page-tagline" *ngIf="totalItems === 0">Votre panier attend d'être rempli.</p>
+            </div>
+            <div *ngIf="totalItems > 0">
+                <p-button label="Vider le panier" icon="pi pi-trash" [text]="true" severity="danger"
+                    (onClick)="clearCart($event)"></p-button>
+            </div>
+        </div>
+    </header>
+
+    <div class="cart-content">
+        <!-- EMPTY STATE -->
+        <div *ngIf="totalItems === 0" class="empty-cart">
+            <i class="pi pi-shopping-cart empty-icon"></i>
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Votre panier est vide</h2>
+            <p class="text-slate-500 mb-6 max-w-sm mx-auto">Parcourez nos boutiques pour découvrir des produits
+                exceptionnels et commencez votre shopping.</p>
+            <p-button label="Découvrir les boutiques" icon="pi pi-shop" routerLink="/shops"
+                styleClass="p-button-raised"></p-button>
+        </div>
+
+        <!-- CART CONTENT -->
+        <div class="grid" *ngIf="totalItems > 0">
+            <!-- Items List -->
+            <div class="col-12 lg:col-8">
+                <div *ngFor="let group of cartGroups" class="shop-group">
+                    <div class="shop-group-header">
+                        <div class="shop-info">
+                            <img [src]="getShopLogo(group.shop)" alt="Logo" class="shop-logo"
+                                *ngIf="getShopLogo(group.shop)" />
+                            <span class="shop-name">{{ group.shop?.name || 'Boutique' }}</span>
+                        </div>
+                        <p-tag [value]="group.items.length + ' produit(s)'" severity="secondary"
+                            styleClass="bg-slate-100 text-slate-600 border-none"></p-tag>
+                    </div>
+
+                    <div class="cart-items-list">
+                        <div *ngFor="let item of group.items" class="cart-item">
+                            <div class="item-img-container">
+                                <img [src]="getProductImage(item.product)" [alt]="item.product.name" class="item-img" />
+                            </div>
+
+                            <div class="item-details">
+                                <div>
+                                    <h3 class="item-name" [routerLink]="['/product', item.product._id]">{{
+                                        item.product.name }}</h3>
+                                    <div class="flex align-items-center gap-2">
+                                        <span class="item-price-unit" [class.text-red-500]="item.product.isPromotion"
+                                            [class.font-bold]="item.product.isPromotion">
+                                            {{ formatCurrency(item.product.price) }}
+                                        </span>
+                                        <span *ngIf="item.product.isPromotion && item.product.originalPrice"
+                                            class="original-price ml-2">
+                                            {{ formatCurrency(item.product.originalPrice) }}
+                                        </span>
+                                        <span class="text-xs text-slate-400 ml-1">par unité</span>
+                                    </div>
+                                </div>
+
+                                <div class="item-actions">
+                                    <div class="quantity-picker">
+                                        <p-inputNumber [(ngModel)]="item.quantity" [showButtons]="true"
+                                            buttonLayout="horizontal" spinnerMode="horizontal" [min]="1"
+                                            [max]="item.product.stock.quantity || 99"
+                                            decrementButtonClass="p-button-text p-button-secondary"
+                                            incrementButtonClass="p-button-text p-button-secondary"
+                                            incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"
+                                            [inputStyle]="{'width': '3rem', 'text-align': 'center', 'border': 'none', 'background': '#f8fafc'}"
+                                            (onInput)="updateQuantity(item.product._id, item.quantity)">
+                                        </p-inputNumber>
+                                    </div>
+                                    <button class="p-button p-button-text p-button-danger p-button-sm"
+                                        (click)="removeItem(item.product._id)">
+                                        <i class="pi pi-trash mr-2"></i> Retirer
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="item-total-section">
+                                <span class="item-price-total">{{ formatCurrency(item.product.price * item.quantity)
+                                    }}</span>
+                                <div *ngIf="item.product.isPromotion && item.product.discount"
+                                    class="text-xs text-red-500 font-medium">
+                                    Économie de {{ item.product.discount }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Sidebar -->
+            <div class="col-12 lg:col-4">
+                <div class="summary-card">
+                    <h2 class="summary-title">Récapitulatif</h2>
+
+                    <div class="summary-row">
+                        <span>Sous-total</span>
+                        <span class="font-bold text-slate-900">{{ formatCurrency(totalAmount) }}</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Livraison</span>
+                        <span class="text-green-600 font-medium">Calculé au checkout</span>
+                    </div>
+
+                    <div class="summary-total-box">
+                        <div class="total-label">Total estimation</div>
+                        <div class="total-value">{{ formatCurrency(totalAmount) }}</div>
+                    </div>
+
+                    <p-button label="Commander" icon="pi pi-arrow-right" iconPos="right"
+                        styleClass="checkout-btn p-button-primary shadow-lg" (onClick)="checkout()"></p-button>
+
+                    <div class="mt-4 flex align-items-center justify-content-center gap-2 text-slate-400 text-sm">
+                        <i class="pi pi-shield"></i>
+                        <span>Paiement 100% sécurisé</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p-confirmDialog></p-confirmDialog>

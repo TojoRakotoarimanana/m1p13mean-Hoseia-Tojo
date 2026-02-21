@@ -1,0 +1,234 @@
+.order-details-container {
+    min-height: calc(100vh - 200px);
+}
+
+.order-details-wrapper {
+    background: #f1f5f9;
+    min-height: 100vh;
+    padding: 0 0 4rem;
+}
+
+.page-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 2.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.025em;
+}
+
+.page-tagline {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.25rem 0 0;
+}
+
+.details-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ── Timeline ── */
+.timeline-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.timeline-container {
+    padding: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.custom-marker {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 1;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.3s ease;
+}
+
+.timeline-content {
+    text-align: center;
+    margin-top: 1rem;
+    min-width: 120px;
+    padding: 0 0.5rem;
+}
+
+.status-text {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    line-height: 1.2;
+}
+
+.status-active {
+    color: #0f172a;
+}
+
+.status-date {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+::ng-deep .p-timeline-event-connector {
+    background-color: #f1f5f9 !important;
+    height: 3px !important;
+}
+
+::ng-deep .p-timeline-event:has(.status-active) + .p-timeline-event-connector {
+    background-color: #6366f1 !important;
+}
+
+/* ── Sub Orders ── */
+.order-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.order-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.shop-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.items-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 0.25rem;
+    cursor: pointer;
+}
+
+.item-name:hover {
+    text-decoration: underline;
+}
+
+.order-card-footer {
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    text-align: right;
+}
+
+/* ── Info Cards ── */
+.info-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
+}
+
+.info-label {
+    color: #64748b;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.total-box {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .page-header-inner, .details-content {
+        padding: 0 1rem;
+    }
+    .page-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
