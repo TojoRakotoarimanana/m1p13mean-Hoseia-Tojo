@@ -15,6 +15,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { ShopService } from '../../core/services/shop.service';
 import { UserService } from '../../core/services/user.service';
 import { CategoryService } from '../../core/services/category.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-shops',
@@ -69,13 +70,19 @@ export class ShopsComponent implements OnInit {
     private userService: UserService,
     private categoryService: CategoryService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
     this.loadShops();
     this.loadUsers();
     this.loadCategories();
+  }
+
+  get isAdmin(): boolean {
+    const user = this.authService.getUserFromStorage();
+    return user?.role === 'admin';
   }
 
   loadUsers() {

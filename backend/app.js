@@ -13,6 +13,7 @@ var authRouter = require('./routes/auth');
 var shopsRouter = require('./routes/shops');
 var categoriesRouter = require('./routes/categories');
 var productsRouter = require('./routes/products');
+var catalogRouter = require('./routes/catalog');
 var adminRouter = require('./routes/admin');
 
 var app = express();
@@ -38,6 +39,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/shops', shopsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/catalog', catalogRouter);
 app.use('/api/admin', adminRouter);
 
 mongoose.connect(mongoUri)

@@ -16,7 +16,13 @@ import { MyProductsComponent } from './features/products/my-products/my-products
 import { ProductFormComponent } from './features/products/product-form/product-form.component';
 import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
 import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
+import { HomeClientComponent } from './features/home/home-client.component';
+import { ShopsListComponent } from './features/shops/shops-list.component';
+import { ShopDetailComponent } from './features/shops/shop-detail.component';
+import { ShopDetailsComponent } from './features/catalog/shop-details/shop-details.component';
+import { ProductDetailsComponent } from './features/catalog/product-details/product-details.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard, clientGuard, boutiqueGuard, boutiqueOrAdminGuard } from './core/guards/role.guard';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
@@ -26,7 +32,25 @@ const redirectIfLoggedIn: any = () => {
   const router = inject(Router);
   
   if (authService.isLoggedIn()) {
-    router.navigate(['/dashboard']);
+    const user = authService.getUserFromStorage();
+    // Rediriger selon le rôle de l'utilisateur
+    if (user && user.role) {
+      switch (user.role) {
+        case 'client':
+          router.navigate(['/home']);
+          break;
+        case 'boutique':
+          router.navigate(['/my-shop']);
+          break;
+        case 'admin':
+          router.navigate(['/dashboard']);
+          break;
+        default:
+          router.navigate(['/login']);
+      }
+    } else {
+      router.navigate(['/dashboard']); // Fallback
+    }
     return false;
   }
   return true;
@@ -42,15 +66,28 @@ export const routes: Routes = [
     { path: 'register-admin', canActivate: [redirectIfLoggedIn], component: RegisterAdminComponent },
     { path: 'register-boutique', canActivate: [redirectIfLoggedIn], component: RegisterBoutiqueComponent },
     
-    { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-    { path: 'shops', component: ShopsComponent, canActivate: [authGuard] },
-    { path: 'categories', component: CategoriesComponent, canActivate: [authGuard] },
-    { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [authGuard] },
-    { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [authGuard] },
-    { path: 'my-shop', component: MyShopComponent, canActivate: [authGuard] },
-    { path: 'my-products', component: MyProductsComponent, canActivate: [authGuard] },
-    { path: 'my-products/new', component: ProductFormComponent, canActivate: [authGuard] },
-    { path: 'my-products/:id/edit', component: ProductFormComponent, canActivate: [authGuard] },
-    { path: 'my-products/stock', component: StockManagementComponent, canActivate: [authGuard] },
-    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [authGuard] }
+    // Page d'accueil client
+    { path: 'home', component: HomeClientComponent, canActivate: [clientGuard] },
+    
+    // Routes client publiques  
+    { path: 'shops', component: ShopsListComponent, canActivate: [clientGuard] },
+    { path: 'shop/:id', component: ShopDetailsComponent, canActivate: [clientGuard] },
+    { path: 'product/:id', component: ProductDetailsComponent, canActivate: [clientGuard] },
+    
+    // Dashboard admin uniquement
+    { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },
+    
+    // Routes admin
+    { path: 'admin/shops', component: ShopsComponent, canActivate: [adminGuard] },
+    { path: 'categories', component: CategoriesComponent, canActivate: [adminGuard] },
+    { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [adminGuard] },
+    { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [adminGuard] },
+    
+    // Routes boutique
+    { path: 'my-shop', component: MyShopComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-products', component: MyProductsComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-products/new', component: ProductFormComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-products/:id/edit', component: ProductFormComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-products/stock', component: StockManagementComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [boutiqueGuard] }
 ];

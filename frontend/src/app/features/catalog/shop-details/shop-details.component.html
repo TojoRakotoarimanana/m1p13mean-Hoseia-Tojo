@@ -1,0 +1,168 @@
+<app-navbar></app-navbar>
+
+<div class="sd-wrapper">
+
+  <!-- ── Back ─────────────────────────────────────── -->
+  <div class="sd-back">
+    <button class="back-btn" (click)="goBack()">
+      <i class="pi pi-arrow-left"></i>
+      Retour au catalogue
+    </button>
+  </div>
+
+  <!-- ── Skeleton ──────────────────────────────────── -->
+  <div *ngIf="loading" class="sd-skeleton">
+    <p-skeleton height="160px" borderRadius="12px" styleClass="mb-4"></p-skeleton>
+    <div class="sd-skeleton-row">
+      <p-skeleton height="180px" borderRadius="12px"></p-skeleton>
+      <p-skeleton height="180px" borderRadius="12px"></p-skeleton>
+    </div>
+    <div class="sd-skeleton-grid">
+      <p-skeleton *ngFor="let i of [1,2,3,4]" height="260px" borderRadius="12px"></p-skeleton>
+    </div>
+  </div>
+
+  <!-- ── Content ───────────────────────────────────── -->
+  <div *ngIf="!loading && shop">
+
+    <!-- ═══ Hero ═══ -->
+    <div class="sd-hero">
+      <div class="sd-hero-logo">
+        <img *ngIf="shop.logo" [src]="getShopLogoUrl()" [alt]="shop.name" />
+        <span *ngIf="!shop.logo" class="sd-hero-initial">{{ shop.name.charAt(0) }}</span>
+      </div>
+
+      <div class="sd-hero-info">
+        <div class="sd-hero-top">
+          <h1 class="sd-hero-name">{{ shop.name }}</h1>
+          <span class="sd-status-badge">
+            <span class="sd-status-dot"></span>
+            Actif
+          </span>
+        </div>
+
+        <div class="sd-hero-tags">
+          <span class="tag tag--blue">
+            <i class="pi pi-tag"></i>{{ shop.category?.name || 'Non catégorisé' }}
+          </span>
+          <span *ngIf="getLocationString()" class="tag tag--gray">
+            <i class="pi pi-map-marker"></i>{{ getLocationString() }}
+          </span>
+        </div>
+
+        <p *ngIf="shop.description" class="sd-hero-desc">{{ shop.description }}</p>
+
+        <div class="sd-hero-stats">
+          <div class="sd-kpi">
+            <span class="sd-kpi-value">{{ shop.statistics.totalProducts || 0 }}</span>
+            <span class="sd-kpi-label">Produits</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Info row (hours + contact) ═══ -->
+    <div class="sd-info-row">
+
+      <!-- Horaires -->
+      <div class="sd-card">
+        <div class="sd-card-header">
+          <i class="pi pi-clock"></i>
+          <h2>Horaires d'ouverture</h2>
+        </div>
+        <div class="hours-list">
+          <div *ngFor="let day of daysOrder" class="hour-item" [class.hour-item--open]="isDayOpen(day)">
+            <span class="hour-day">{{ dayLabels[day] }}</span>
+            <span *ngIf="isDayOpen(day)" class="hour-time">
+              {{ shop.hours[day].open }} – {{ shop.hours[day].close }}
+            </span>
+            <span *ngIf="!isDayOpen(day)" class="hour-closed">Fermé</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="sd-card">
+        <div class="sd-card-header">
+          <i class="pi pi-phone"></i>
+          <h2>Contact</h2>
+        </div>
+        <div class="contact-list">
+          <a *ngIf="shop.contact?.phone" [href]="'tel:' + shop.contact.phone" class="contact-item">
+            <div class="contact-icon"><i class="pi pi-phone"></i></div>
+            <div class="contact-body">
+              <span class="contact-label">Téléphone</span>
+              <span class="contact-value">{{ shop.contact.phone }}</span>
+            </div>
+          </a>
+          <a *ngIf="shop.contact?.email" [href]="'mailto:' + shop.contact.email" class="contact-item">
+            <div class="contact-icon"><i class="pi pi-envelope"></i></div>
+            <div class="contact-body">
+              <span class="contact-label">Email</span>
+              <span class="contact-value">{{ shop.contact.email }}</span>
+            </div>
+          </a>
+          <div *ngIf="!shop.contact?.phone && !shop.contact?.email" class="contact-empty">
+            <i class="pi pi-info-circle"></i>
+            Aucun contact renseigné
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ Products ═══ -->
+    <section class="sd-products-section">
+      <div class="sd-section-header">
+        <h2 class="sd-section-title">Produits disponibles</h2>
+        <span class="sd-section-badge">{{ products.length }}</span>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="products.length === 0" class="sd-empty">
+        <i class="pi pi-inbox"></i>
+        <p>Aucun produit disponible pour le moment</p>
+      </div>
+
+      <!-- Grid -->
+      <div *ngIf="products.length > 0" class="sd-products-grid">
+        <article
+          *ngFor="let product of products"
+          class="product-card"
+          (click)="viewProduct(product._id)"
+        >
+          <div class="product-card-img">
+            <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy" />
+            <span *ngIf="product.isPromotion && product.discount > 0" class="badge-discount">
+              −{{ product.discount }}%
+            </span>
+            <span *ngIf="isLowStock(product)" class="badge-low-stock">
+              <i class="pi pi-exclamation-triangle"></i> Stock limité
+            </span>
+          </div>
+
+          <div class="product-card-body">
+            <p *ngIf="product.category" class="product-card-category">
+              <i class="pi pi-tag"></i>{{ product.category.name }}
+            </p>
+            <h3 class="product-card-name">{{ product.name }}</h3>
+            <div class="product-card-pricing">
+              <span
+                [class]="product.isPromotion && product.discount > 0 ? 'price price--promo' : 'price price--normal'">
+                {{ getDiscountedPrice(product) | number:'1.2-2' }} Ar
+              </span>
+              <span *ngIf="product.isPromotion && product.discount > 0" class="price price--original">
+                {{ product.price | number:'1.2-2' }} Ar
+              </span>
+            </div>
+            <div class="product-card-stock">
+              <i class="pi pi-box"></i>
+              {{ product.stock.quantity }} en stock
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </div>
+</div>
