@@ -197,6 +197,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
               icon: 'pi pi-building',
               command: () => this.router.navigate(['/shops']),
             },
+            {
+              label: 'Tous les articles',
+              icon: 'pi pi-th-large',
+              command: () => this.router.navigate(['/products']),
+            },
           ],
         },
         {

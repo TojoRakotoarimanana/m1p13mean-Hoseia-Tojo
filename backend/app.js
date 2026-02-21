@@ -17,6 +17,7 @@ var catalogRouter = require('./routes/catalog');
 var adminRouter = require('./routes/admin');
 var cartRouter = require('./routes/cart');
 var ordersRouter = require('./routes/orders');
+var orderShopRouter = require('./routes/orderShop');
 var notificationsRouter = require('./routes/notifications');
 
 var app = express();
@@ -46,6 +47,7 @@ app.use('/api/catalog', catalogRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/shop/orders', orderShopRouter);
 app.use('/api/notifications', notificationsRouter);
 
 mongoose.connect(mongoUri)

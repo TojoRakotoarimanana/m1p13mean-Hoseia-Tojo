@@ -5,7 +5,7 @@ class CartService {
         let cart = await Cart.findOne({ userId })
             .populate({
                 path: 'items.productId',
-                select: 'name price originalPrice isPromotion images stock isActive shopId'
+                select: 'name price originalPrice discount isPromotion images stock isActive shopId'
             })
             .populate({
                 path: 'items.shopId',
@@ -18,6 +18,13 @@ class CartService {
         }
 
         return cart;
+    }
+
+    _effectivePrice(product) {
+        if (product.isPromotion && product.discount > 0 && product.originalPrice > 0) {
+            return Number((product.originalPrice * (1 - product.discount / 100)).toFixed(2));
+        }
+        return product.price;
     }
 
     async addItem(userId, productId, quantity = 1) {
@@ -65,13 +72,13 @@ class CartService {
                 throw error;
             }
             existingItem.quantity = newQty;
-            existingItem.price = product.price;
+            existingItem.price = this._effectivePrice(product);
         } else {
             cart.items.push({
                 productId: product._id,
                 shopId: product.shopId._id || product.shopId,
                 quantity: qty,
-                price: product.price
+                price: this._effectivePrice(product)
             });
         }
 
@@ -80,7 +87,7 @@ class CartService {
 
         // Populate pour le retour
         await cart.populate([
-            { path: 'items.productId', select: 'name price originalPrice isPromotion images stock isActive shopId' },
+            { path: 'items.productId', select: 'name price originalPrice discount isPromotion images stock isActive shopId' },
             { path: 'items.shopId', select: 'name' }
         ]);
 
@@ -139,12 +146,12 @@ class CartService {
         }
 
         item.quantity = qty;
-        item.price = product.price;
+        item.price = this._effectivePrice(product);
         cart.calculateTotal();
         await cart.save();
 
         await cart.populate([
-            { path: 'items.productId', select: 'name price originalPrice isPromotion images stock isActive shopId' },
+            { path: 'items.productId', select: 'name price originalPrice discount isPromotion images stock isActive shopId' },
             { path: 'items.shopId', select: 'name' }
         ]);
 

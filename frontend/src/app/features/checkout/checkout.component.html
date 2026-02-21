@@ -1,211 +1,260 @@
 <app-navbar></app-navbar>
+<p-toast></p-toast>
 
-<div class="checkout-wrapper">
-    <p-toast></p-toast>
+<div class="checkout-page">
 
-    <header class="page-header">
+    <!-- Header -->
+    <div class="page-header">
         <div class="page-header-inner">
             <div>
-                <h1 class="page-title">Passer la commande</h1>
-                <p class="page-tagline">Finalisez votre achat en quelques étapes sécurisées.</p>
-            </div>
-            <div class="page-actions">
-                <p-button icon="pi pi-arrow-left" label="Retour au panier" [text]="true" routerLink="/cart"
-                    severity="secondary"></p-button>
+                <h1 class="page-title">Finaliser la commande</h1>
+                <p class="page-sub">
+                    <a routerLink="/cart" class="back-link">
+                        <i class="pi pi-arrow-left"></i> Retour au panier
+                    </a>
+                </p>
             </div>
         </div>
-    </header>
+    </div>
 
-    <div class="checkout-content">
-        <!-- STEPPER -->
-        <div class="steps-card">
-            <p-steps [model]="items" [readonly]="true" [activeIndex]="activeIndex"></p-steps>
+    <!-- Step indicator -->
+    <div class="steps-bar">
+        <div class="steps-bar-inner">
+            @for (step of stepDefs; track step.label) {
+                <div class="step-item"
+                    [class.step-active]="activeIndex === $index"
+                    [class.step-done]="activeIndex > $index">
+                    <span class="step-num">
+                        @if (activeIndex > $index) {
+                            <i class="pi pi-check"></i>
+                        } @else {
+                            {{ $index + 1 }}
+                        }
+                    </span>
+                    <span class="step-label">{{ step.label }}</span>
+                </div>
+                @if (!$last) {
+                    <div class="step-connector" [class.connector-done]="activeIndex > $index"></div>
+                }
+            }
         </div>
+    </div>
 
-        <div class="grid">
-            <!-- Main Content -->
-            <div class="col-12 lg:col-8">
+    <!-- Main layout -->
+    <div class="checkout-layout">
 
-                <!-- ÉTAPE 1: RÉCAPITULATIF -->
-                <div *ngIf="activeIndex === 0" class="checkout-card">
-                    <h2 class="card-title"><i class="pi pi-shopping-bag"></i>Récapitulatif de la commande</h2>
+        <!-- Left: step content -->
+        <div class="checkout-main">
 
-                    <div *ngFor="let group of cartGroups; let last = last" class="mb-5">
-                        <div class="flex align-items-center gap-2 mb-3">
-                            <i class="pi pi-shop text-slate-400"></i>
-                            <span class="font-bold text-slate-700">{{ group.shop?.name || 'Boutique' }}</span>
+            <!-- ÉTAPE 0 : Récapitulatif -->
+            @if (activeIndex === 0) {
+                <div class="step-card">
+                    <h2 class="step-card-title">Récapitulatif</h2>
+
+                    @for (group of cartGroups; track group.shop?._id) {
+                        <div class="group-header">
+                            <i class="pi pi-shop"></i>
+                            <span>{{ group.shop?.name || 'Boutique' }}</span>
+                            <span class="group-pill">{{ group.items.length }}</span>
                         </div>
 
-                        <div class="flex flex-column gap-3">
-                            <div *ngFor="let item of group.items"
-                                class="flex align-items-center justify-content-between p-3 bg-slate-50 border-round-xl">
-                                <div class="flex align-items-center gap-3">
-                                    <div
-                                        class="relative w-4rem h-4rem border-round-lg overflow-hidden border-1 border-slate-200 bg-white">
-                                        <img [src]="'http://localhost:3000/uploads/products/' + item.product.images[0]"
-                                            *ngIf="item.product.images.length" class="w-full h-full object-cover" />
-                                        <span
-                                            class="absolute top-0 right-0 bg-slate-900 text-white text-xs px-1.5 py-0.5 font-bold border-round-bl-lg">
-                                            {{ item.quantity }}
+                        @for (item of group.items; track item.product._id) {
+                            <div class="recap-item">
+                                <img [src]="getProductImageUrl(item.product)"
+                                    [alt]="item.product.name" class="recap-img" />
+                                <div class="recap-info">
+                                    <p class="recap-name">{{ item.product.name }}</p>
+                                    <div class="recap-price-line">
+                                        <span [class.recap-price-promo]="item.product.isPromotion"
+                                            [class.recap-price-normal]="!item.product.isPromotion">
+                                            {{ formatCurrency(item.product.price) }}
                                         </span>
-                                    </div>
-                                    <div>
-                                        <h4 class="m-0 text-slate-900 font-semibold">{{ item.product.name }}</h4>
-                                        <div class="flex align-items-center gap-2">
-                                            <span class="text-xs" [class.text-red-500]="item.product.isPromotion"
-                                                [class.font-bold]="item.product.isPromotion">
-                                                {{ formatCurrency(getDiscountedPrice(item.product)) }}
-                                            </span>
-                                            <span *ngIf="item.product.isPromotion && item.product.originalPrice"
-                                                class="original-price ml-1">
+                                        @if (item.product.isPromotion && item.product.originalPrice) {
+                                            <span class="recap-price-original">
                                                 {{ formatCurrency(item.product.originalPrice) }}
                                             </span>
-                                            <span class="text-xs text-slate-400">/ unité</span>
-                                        </div>
+                                        }
+                                        <span class="recap-qty">× {{ item.quantity }}</span>
                                     </div>
                                 </div>
-                                <div class="font-bold text-slate-900">
-                                    {{ formatCurrency(getDiscountedPrice(item.product) * item.quantity) }}
-                                </div>
+                                <span class="recap-subtotal">
+                                    {{ formatCurrency(item.product.price * item.quantity) }}
+                                </span>
                             </div>
-                        </div>
-                    </div>
+                            @if (!$last) {
+                                <div class="recap-sep"></div>
+                            }
+                        }
+
+                        @if (!$last) {
+                            <div class="group-sep"></div>
+                        }
+                    }
                 </div>
+            }
 
-                <!-- ÉTAPE 2: LIVRAISON -->
-                <div *ngIf="activeIndex === 1" class="checkout-card">
-                    <h2 class="card-title"><i class="pi pi-map-marker"></i>Informations de livraison</h2>
+            <!-- ÉTAPE 1 : Livraison -->
+            @if (activeIndex === 1) {
+                <div class="step-card">
+                    <h2 class="step-card-title">Livraison</h2>
 
-                    <div class="grid formgrid p-fluid">
-                        <div class="field col-12 md:col-6">
-                            <label class="font-bold text-slate-700 mb-2 block">Nom complet *</label>
-                            <input pInputText [(ngModel)]="shippingInfo.fullName" placeholder="Ex: Jean Dupont"
-                                class="p-inputtext-lg" />
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="field-label">Nom complet <span class="req">*</span></label>
+                            <input pInputText [(ngModel)]="shippingInfo.fullName"
+                                placeholder="Jean Dupont" class="field-input" />
                         </div>
-                        <div class="field col-12 md:col-6">
-                            <label class="font-bold text-slate-700 mb-2 block">Téléphone *</label>
-                            <input pInputText [(ngModel)]="shippingInfo.phone" placeholder="034 XX XXX XX"
-                                class="p-inputtext-lg" />
+                        <div class="form-field">
+                            <label class="field-label">Téléphone <span class="req">*</span></label>
+                            <input pInputText [(ngModel)]="shippingInfo.phone"
+                                placeholder="034 XX XXX XX" class="field-input" />
                         </div>
-                        <div class="field col-12 md:col-6">
-                            <label class="font-bold text-slate-700 mb-2 block">Ville *</label>
-                            <input pInputText [(ngModel)]="shippingInfo.city" placeholder="Votre ville"
-                                class="p-inputtext-lg" />
+                        <div class="form-field">
+                            <label class="field-label">Ville <span class="req">*</span></label>
+                            <input pInputText [(ngModel)]="shippingInfo.city"
+                                placeholder="Antananarivo" class="field-input" />
                         </div>
-                        <div class="field col-12">
-                            <label class="font-bold text-slate-700 mb-2 block">Adresse complète *</label>
-                            <input pInputText [(ngModel)]="shippingInfo.address" placeholder="Lot, Quartier, Rue..."
-                                class="p-inputtext-lg" />
+                        <div class="form-field form-field-full">
+                            <label class="field-label">Adresse <span class="req">*</span></label>
+                            <input pInputText [(ngModel)]="shippingInfo.address"
+                                placeholder="Lot, Quartier, Rue..." class="field-input" />
                         </div>
-                        <div class="field col-12">
-                            <label class="font-bold text-slate-700 mb-2 block">Instructions particulières
-                                (Optionnel)</label>
-                            <textarea pInputTextarea [(ngModel)]="shippingInfo.notes" rows="3"
+                        <div class="form-field form-field-full">
+                            <label class="field-label">
+                                Instructions <span class="opt">(optionnel)</span>
+                            </label>
+                            <textarea [(ngModel)]="shippingInfo.notes" rows="3"
                                 placeholder="Porte bleue, appeler au portail..."
-                                class="p-inputtext-lg w-full p-3 border-round-lg border-1 border-slate-300"></textarea>
+                                class="field-textarea"></textarea>
                         </div>
                     </div>
                 </div>
+            }
 
-                <!-- ÉTAPE 3: PAIEMENT -->
-                <div *ngIf="activeIndex === 2" class="checkout-card">
-                    <h2 class="card-title"><i class="pi pi-credit-card"></i>Mode de paiement</h2>
+            <!-- ÉTAPE 2 : Paiement -->
+            @if (activeIndex === 2) {
+                <div class="step-card">
+                    <h2 class="step-card-title">Paiement</h2>
 
-                    <div class="flex flex-column gap-3">
-                        <div class="payment-option" [class.active]="paymentMethod === 'cash'"
+                    <div class="payment-options">
+                        <div class="payment-option" [class.selected]="paymentMethod === 'cash'"
                             (click)="paymentMethod = 'cash'">
-                            <p-radioButton name="payment" value="cash" [(ngModel)]="paymentMethod"></p-radioButton>
-                            <div class="payment-info">
-                                <h4>Paiement à la livraison</h4>
-                                <p>Payez en espèces lorsque vous recevez vos articles.</p>
+                            <div class="pay-radio" [class.pay-radio-on]="paymentMethod === 'cash'"></div>
+                            <i class="pi pi-wallet pay-icon"></i>
+                            <div class="pay-text">
+                                <p class="pay-title">Paiement à la livraison</p>
+                                <p class="pay-desc">Payez en espèces à la réception.</p>
                             </div>
-                            <i class="pi pi-wallet ml-auto text-2xl text-slate-400"></i>
                         </div>
 
-                        <div class="payment-option" [class.active]="paymentMethod === 'mobile'"
+                        <div class="payment-option" [class.selected]="paymentMethod === 'mobile'"
                             (click)="paymentMethod = 'mobile'">
-                            <p-radioButton name="payment" value="mobile" [(ngModel)]="paymentMethod"></p-radioButton>
-                            <div class="payment-info">
-                                <h4>Mobile Money</h4>
-                                <p>MVola, Airtel Money ou Orange Money.</p>
-                            </div>
-                            <i class="pi pi-mobile ml-auto text-2xl text-slate-400"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ÉTAPE 4: CONFIRMATION -->
-                <div *ngIf="activeIndex === 3" class="checkout-card">
-                    <h2 class="card-title"><i class="pi pi-check-circle"></i>Vérification finale</h2>
-
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="p-4 bg-slate-50 border-round-xl h-full border-1 border-slate-200">
-                                <h3 class="text-slate-900 font-bold mt-0 mb-3 flex align-items-center gap-2">
-                                    <i class="pi pi-truck text-slate-500"></i>Livraison
-                                </h3>
-                                <p class="m-0 font-bold text-slate-900">{{ shippingInfo.fullName }}</p>
-                                <p class="m-0 text-slate-600 mt-1">{{ shippingInfo.phone }}</p>
-                                <p class="m-0 text-slate-600">{{ shippingInfo.address }}, {{ shippingInfo.city }}</p>
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="p-4 bg-slate-50 border-round-xl h-full border-1 border-slate-200">
-                                <h3 class="text-slate-900 font-bold mt-0 mb-3 flex align-items-center gap-2">
-                                    <i class="pi pi-wallet text-slate-500"></i>Paiement
-                                </h3>
-                                <p class="m-0 font-bold text-slate-900">
-                                    {{ paymentMethod === 'cash' ? 'Espèces à la livraison' : 'Mobile Money' }}
-                                </p>
-                                <p class="m-0 text-slate-600 mt-1">Transaction sécurisée</p>
+                            <div class="pay-radio" [class.pay-radio-on]="paymentMethod === 'mobile'"></div>
+                            <i class="pi pi-mobile pay-icon"></i>
+                            <div class="pay-text">
+                                <p class="pay-title">Mobile Money</p>
+                                <p class="pay-desc">MVola, Airtel Money, Orange Money.</p>
                             </div>
                         </div>
                     </div>
                 </div>
+            }
 
-                <!-- NAVIGATION -->
-                <div class="flex justify-content-between mt-5">
-                    <p-button *ngIf="activeIndex > 0" label="Retour" icon="pi pi-arrow-left" [text]="true"
-                        severity="secondary" (onClick)="prevStep()"></p-button>
-                    <div *ngIf="activeIndex === 0"></div>
+            <!-- ÉTAPE 3 : Confirmation -->
+            @if (activeIndex === 3) {
+                <div class="step-card">
+                    <h2 class="step-card-title">Confirmation</h2>
 
-                    <p-button *ngIf="activeIndex < 3" label="Continuer" icon="pi pi-arrow-right" iconPos="right"
-                        styleClass="px-5 py-3 border-round-xl shadow-lg" (onClick)="nextStep()"></p-button>
-
-                    <p-button *ngIf="activeIndex === 3" label="Confirmer la commande" icon="pi pi-check"
-                        severity="success" styleClass="px-5 py-3 border-round-xl shadow-lg p-button-raised"
-                        [loading]="isProcessing" (onClick)="placeOrder()"></p-button>
-                </div>
-            </div>
-
-            <!-- Summary Sidebar -->
-            <div class="col-12 lg:col-4">
-                <div class="summary-card">
-                    <h3 class="summary-title">Votre commande</h3>
-
-                    <div class="flex flex-column gap-3 mb-4">
-                        <div class="flex justify-content-between text-slate-600">
-                            <span>Articles</span>
-                            <span class="font-bold">{{ formatCurrency(totalAmount) }}</span>
+                    <div class="confirm-blocks">
+                        <div class="confirm-block">
+                            <div class="confirm-block-head">
+                                <i class="pi pi-map-marker"></i> Livraison
+                                <button class="edit-link" (click)="activeIndex = 1">Modifier</button>
+                            </div>
+                            <p class="confirm-line"><strong>{{ shippingInfo.fullName }}</strong></p>
+                            <p class="confirm-line">{{ shippingInfo.phone }}</p>
+                            <p class="confirm-line">{{ shippingInfo.address }}, {{ shippingInfo.city }}</p>
+                            @if (shippingInfo.notes) {
+                                <p class="confirm-line confirm-note">{{ shippingInfo.notes }}</p>
+                            }
                         </div>
-                        <div class="flex justify-content-between text-slate-600">
-                            <span>Livraison</span>
-                            <span class="text-green-600 font-bold">Gratuit</span>
+
+                        <div class="confirm-block">
+                            <div class="confirm-block-head">
+                                <i class="pi pi-wallet"></i> Paiement
+                                <button class="edit-link" (click)="activeIndex = 2">Modifier</button>
+                            </div>
+                            <p class="confirm-line">
+                                {{ paymentMethod === 'cash' ? 'Espèces à la livraison' : 'Mobile Money' }}
+                            </p>
                         </div>
                     </div>
 
-                    <div class="summary-total-box">
-                        <div class="total-label">Montant total</div>
-                        <div class="total-value">{{ formatCurrency(totalAmount) }}</div>
-                    </div>
-
-                    <div
-                        class="p-3 bg-slate-50 border-round-lg border-1 border-slate-200 text-xs text-slate-500 line-height-3">
-                        <i class="pi pi-info-circle mr-1"></i>
-                        En confirmant, vous acceptez nos conditions de vente et la politique de confidentialité.
-                    </div>
+                    <p class="terms-hint">
+                        <i class="pi pi-info-circle"></i>
+                        En confirmant vous acceptez nos conditions de vente.
+                    </p>
                 </div>
+            }
+
+            <!-- Navigation -->
+            <div class="step-nav">
+                @if (activeIndex > 0) {
+                    <button class="btn-back" (click)="prevStep()">
+                        <i class="pi pi-arrow-left"></i> Retour
+                    </button>
+                } @else {
+                    <div></div>
+                }
+
+                @if (activeIndex < 3) {
+                    <button class="btn-next" (click)="nextStep()">
+                        Continuer <i class="pi pi-arrow-right"></i>
+                    </button>
+                }
+
+                @if (activeIndex === 3) {
+                    <button class="btn-confirm" (click)="placeOrder()" [disabled]="isProcessing">
+                        <i class="pi pi-check"></i>
+                        {{ isProcessing ? 'En cours...' : 'Confirmer la commande' }}
+                    </button>
+                }
             </div>
         </div>
+
+        <!-- Right: Summary -->
+        <aside class="checkout-summary">
+            <div class="summary-card">
+                <h3 class="summary-title">Votre commande</h3>
+
+                @for (group of cartGroups; track group.shop?._id) {
+                    <div class="summary-shop-row">
+                        <span class="summary-shop-name">{{ group.shop?.name || 'Boutique' }}</span>
+                        <span class="summary-shop-count">
+                            {{ group.items.length }} article{{ group.items.length > 1 ? 's' : '' }}
+                        </span>
+                    </div>
+                }
+
+                <div class="summary-sep"></div>
+
+                <div class="summary-row">
+                    <span>Sous-total</span>
+                    <span>{{ formatCurrency(totalAmount) }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Livraison</span>
+                    <span class="free-tag">Gratuit</span>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span>{{ formatCurrency(totalAmount) }}</span>
+                </div>
+
+                <p class="summary-hint"><i class="pi pi-lock"></i> Paiement sécurisé</p>
+            </div>
+        </aside>
+
     </div>
 </div>

@@ -1,1 +1,5 @@
 Ajouter une carte pour le reperage des boutiques
+
+Profil utilisateur
+
+La meme personne peut avoir 2 boutiques

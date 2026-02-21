@@ -1,131 +1,144 @@
 <app-navbar></app-navbar>
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
 
-<div class="cart-wrapper">
-    <header class="page-header">
+<div class="cart-page">
+
+    <!-- Header -->
+    <div class="page-header">
         <div class="page-header-inner">
             <div>
                 <h1 class="page-title">Mon panier</h1>
-                <p class="page-tagline" *ngIf="totalItems > 0">{{ totalItems }} article(s) au total</p>
-                <p class="page-tagline" *ngIf="totalItems === 0">Votre panier attend d'être rempli.</p>
+                <p class="page-sub">
+                    @if (totalItems > 0) {
+                        {{ totalItems }} article{{ totalItems > 1 ? 's' : '' }}
+                    } @else {
+                        Votre panier est vide
+                    }
+                </p>
             </div>
-            <div *ngIf="totalItems > 0">
-                <p-button label="Vider le panier" icon="pi pi-trash" [text]="true" severity="danger"
-                    (onClick)="clearCart($event)"></p-button>
+            @if (totalItems > 0) {
+                <button class="btn-clear" (click)="clearCart($event)">
+                    <i class="pi pi-trash"></i> Vider le panier
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Empty state -->
+    @if (totalItems === 0) {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="pi pi-shopping-cart"></i>
             </div>
+            <h2>Votre panier est vide</h2>
+            <p>Parcourez nos articles pour les ajouter à votre panier.</p>
+            <a routerLink="/products" class="btn-primary">Découvrir les articles</a>
         </div>
-    </header>
+    }
 
-    <div class="cart-content">
-        <!-- EMPTY STATE -->
-        <div *ngIf="totalItems === 0" class="empty-cart">
-            <i class="pi pi-shopping-cart empty-icon"></i>
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">Votre panier est vide</h2>
-            <p class="text-slate-500 mb-6 max-w-sm mx-auto">Parcourez nos boutiques pour découvrir des produits
-                exceptionnels et commencez votre shopping.</p>
-            <p-button label="Découvrir les boutiques" icon="pi pi-shop" routerLink="/shops"
-                styleClass="p-button-raised"></p-button>
-        </div>
+    <!-- Cart layout -->
+    @if (totalItems > 0) {
+        <div class="cart-layout">
 
-        <!-- CART CONTENT -->
-        <div class="grid" *ngIf="totalItems > 0">
-            <!-- Items List -->
-            <div class="col-12 lg:col-8">
-                <div *ngFor="let group of cartGroups" class="shop-group">
-                    <div class="shop-group-header">
-                        <div class="shop-info">
-                            <img [src]="getShopLogo(group.shop)" alt="Logo" class="shop-logo"
-                                *ngIf="getShopLogo(group.shop)" />
-                            <span class="shop-name">{{ group.shop?.name || 'Boutique' }}</span>
+            <!-- Items column -->
+            <div class="items-col">
+                @for (group of cartGroups; track group.shop?._id) {
+                    <div class="shop-card">
+
+                        <div class="shop-card-header">
+                            <i class="pi pi-shop"></i>
+                            <span>{{ group.shop?.name || 'Boutique' }}</span>
+                            <span class="shop-pill">
+                                {{ group.items.length }} produit{{ group.items.length > 1 ? 's' : '' }}
+                            </span>
                         </div>
-                        <p-tag [value]="group.items.length + ' produit(s)'" severity="secondary"
-                            styleClass="bg-slate-100 text-slate-600 border-none"></p-tag>
-                    </div>
 
-                    <div class="cart-items-list">
-                        <div *ngFor="let item of group.items" class="cart-item">
-                            <div class="item-img-container">
-                                <img [src]="getProductImage(item.product)" [alt]="item.product.name" class="item-img" />
-                            </div>
+                        @for (item of group.items; track item.product._id) {
+                            <div class="item-row">
+                                <img [src]="getProductImage(item.product)"
+                                    [alt]="item.product.name" class="item-img" />
 
-                            <div class="item-details">
-                                <div>
-                                    <h3 class="item-name" [routerLink]="['/product', item.product._id]">{{
-                                        item.product.name }}</h3>
-                                    <div class="flex align-items-center gap-2">
-                                        <span class="item-price-unit" [class.text-red-500]="item.product.isPromotion"
-                                            [class.font-bold]="item.product.isPromotion">
+                                <div class="item-info">
+                                    <a [routerLink]="['/product', item.product._id]" class="item-name">
+                                        {{ item.product.name }}
+                                    </a>
+                                    <div class="item-price-line">
+                                        <span [class.price-promo]="item.product.isPromotion"
+                                            [class.price-normal]="!item.product.isPromotion">
                                             {{ formatCurrency(item.product.price) }}
                                         </span>
-                                        <span *ngIf="item.product.isPromotion && item.product.originalPrice"
-                                            class="original-price ml-2">
-                                            {{ formatCurrency(item.product.originalPrice) }}
-                                        </span>
-                                        <span class="text-xs text-slate-400 ml-1">par unité</span>
+                                        @if (item.product.isPromotion && item.product.originalPrice) {
+                                            <span class="price-original">
+                                                {{ formatCurrency(item.product.originalPrice) }}
+                                            </span>
+                                        }
+                                        @if (item.product.isPromotion && item.product.discount) {
+                                            <span class="discount-badge">-{{ item.product.discount }}%</span>
+                                        }
                                     </div>
                                 </div>
 
-                                <div class="item-actions">
-                                    <div class="quantity-picker">
-                                        <p-inputNumber [(ngModel)]="item.quantity" [showButtons]="true"
-                                            buttonLayout="horizontal" spinnerMode="horizontal" [min]="1"
-                                            [max]="item.product.stock.quantity || 99"
-                                            decrementButtonClass="p-button-text p-button-secondary"
-                                            incrementButtonClass="p-button-text p-button-secondary"
-                                            incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"
-                                            [inputStyle]="{'width': '3rem', 'text-align': 'center', 'border': 'none', 'background': '#f8fafc'}"
-                                            (onInput)="updateQuantity(item.product._id, item.quantity)">
-                                        </p-inputNumber>
-                                    </div>
-                                    <button class="p-button p-button-text p-button-danger p-button-sm"
-                                        (click)="removeItem(item.product._id)">
-                                        <i class="pi pi-trash mr-2"></i> Retirer
+                                <div class="qty-ctrl">
+                                    <button class="qty-btn"
+                                        (click)="updateQuantity(item.product._id, item.quantity - 1)"
+                                        [disabled]="item.quantity <= 1">
+                                        <i class="pi pi-minus"></i>
+                                    </button>
+                                    <span class="qty-val">{{ item.quantity }}</span>
+                                    <button class="qty-btn"
+                                        (click)="updateQuantity(item.product._id, item.quantity + 1)">
+                                        <i class="pi pi-plus"></i>
                                     </button>
                                 </div>
-                            </div>
 
-                            <div class="item-total-section">
-                                <span class="item-price-total">{{ formatCurrency(item.product.price * item.quantity)
-                                    }}</span>
-                                <div *ngIf="item.product.isPromotion && item.product.discount"
-                                    class="text-xs text-red-500 font-medium">
-                                    Économie de {{ item.product.discount }}%
-                                </div>
+                                <span class="item-subtotal">
+                                    {{ formatCurrency(item.product.price * item.quantity) }}
+                                </span>
+
+                                <button class="btn-remove" (click)="removeItem(item.product._id)" title="Retirer">
+                                    <i class="pi pi-times"></i>
+                                </button>
                             </div>
-                        </div>
+                            @if (!$last) {
+                                <div class="item-sep"></div>
+                            }
+                        }
+
                     </div>
-                </div>
+                }
             </div>
 
-            <!-- Summary Sidebar -->
-            <div class="col-12 lg:col-4">
+            <!-- Summary column -->
+            <div class="summary-col">
                 <div class="summary-card">
-                    <h2 class="summary-title">Récapitulatif</h2>
+                    <h3 class="summary-title">Récapitulatif</h3>
 
                     <div class="summary-row">
                         <span>Sous-total</span>
-                        <span class="font-bold text-slate-900">{{ formatCurrency(totalAmount) }}</span>
+                        <span>{{ formatCurrency(totalAmount) }}</span>
                     </div>
-
                     <div class="summary-row">
                         <span>Livraison</span>
-                        <span class="text-green-600 font-medium">Calculé au checkout</span>
+                        <span class="free-tag">Gratuit</span>
                     </div>
 
-                    <div class="summary-total-box">
-                        <div class="total-label">Total estimation</div>
-                        <div class="total-value">{{ formatCurrency(totalAmount) }}</div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>{{ formatCurrency(totalAmount) }}</span>
                     </div>
 
-                    <p-button label="Commander" icon="pi pi-arrow-right" iconPos="right"
-                        styleClass="checkout-btn p-button-primary shadow-lg" (onClick)="checkout()"></p-button>
+                    <button class="btn-checkout" (click)="checkout()">
+                        Commander <i class="pi pi-arrow-right"></i>
+                    </button>
 
-                    <div class="mt-4 flex align-items-center justify-content-center gap-2 text-slate-400 text-sm">
-                        <i class="pi pi-shield"></i>
-                        <span>Paiement 100% sécurisé</span>
-                    </div>
+                    <p class="secure-note">
+                        <i class="pi pi-lock"></i> Paiement 100% sécurisé
+                    </p>
                 </div>
             </div>
+
         </div>
-    </div>
+    }
+
 </div>
-<p-confirmDialog></p-confirmDialog>

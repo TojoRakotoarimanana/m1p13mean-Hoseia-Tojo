@@ -1,210 +1,191 @@
-<app-navbar></app-navbar>
 <p-toast></p-toast>
 <div class="pd-wrapper">
 
-  <!-- ── Back ─────────────────────────────────────── -->
+  <!-- ── Back ───────────────────────────────────────── -->
   <div class="pd-back">
     <button class="back-btn" (click)="goBack()">
-      <i class="pi pi-arrow-left"></i>
-      Retour au catalogue
+      <i class="pi pi-arrow-left"></i> Retour
     </button>
   </div>
 
-  <!-- ── Skeleton ──────────────────────────────────── -->
-  <div *ngIf="loading" class="pd-skeleton-grid">
-    <p-skeleton height="500px" borderRadius="12px"></p-skeleton>
+  <!-- ── Skeleton ────────────────────────────────────── -->
+  <div *ngIf="loading" class="pd-grid">
+    <p-skeleton height="440px" borderRadius="16px"></p-skeleton>
     <div class="pd-skeleton-info">
-      <p-skeleton width="40%" height="1.125rem" styleClass="mb-3"></p-skeleton>
-      <p-skeleton width="85%" height="2rem" styleClass="mb-2"></p-skeleton>
-      <p-skeleton width="55%" height="1.5rem" styleClass="mb-4"></p-skeleton>
-      <p-skeleton width="45%" height="2.5rem" styleClass="mb-3"></p-skeleton>
-      <p-skeleton width="100%" height="0.5rem" styleClass="mb-4"></p-skeleton>
-      <p-skeleton width="100%" height="5rem"></p-skeleton>
+      <p-skeleton width="35%" height="1.1rem" class="mb-3"></p-skeleton>
+      <p-skeleton width="80%" height="2rem" class="mb-1"></p-skeleton>
+      <p-skeleton width="60%" height="2rem" class="mb-4"></p-skeleton>
+      <p-skeleton width="100%" height="8rem" borderRadius="12px" class="mb-3"></p-skeleton>
+      <p-skeleton width="100%" height="3rem" borderRadius="8px"></p-skeleton>
     </div>
   </div>
 
-  <!-- ── Content ───────────────────────────────────── -->
+  <!-- ── Content ─────────────────────────────────────── -->
   <div *ngIf="!loading && product" class="pd-grid">
 
-    <!-- ═══════ Gallery ═══════ -->
+    <!-- ═══ GALLERY ═══ -->
     <div class="pd-gallery-col">
       <div class="pd-gallery-card">
-
-        <!-- Main image -->
         <div class="gallery-main">
           <img [src]="images[selectedImageIndex]" [alt]="product.name" class="gallery-img" />
 
-          <!-- Prev / Next arrows (visible on hover) -->
-          <button *ngIf="images.length > 1" class="gallery-nav gallery-nav--prev" type="button" (click)="prevImage()">
+          <button *ngIf="images.length > 1" class="gallery-nav gallery-nav--prev" (click)="prevImage()">
             <i class="pi pi-chevron-left"></i>
           </button>
-          <button *ngIf="images.length > 1" class="gallery-nav gallery-nav--next" type="button" (click)="nextImage()">
+          <button *ngIf="images.length > 1" class="gallery-nav gallery-nav--next" (click)="nextImage()">
             <i class="pi pi-chevron-right"></i>
           </button>
 
-          <!-- Badges overlay -->
           <div class="gallery-badges">
-            <span *ngIf="product.isPromotion && product.discount > 0" class="badge-discount">
+            <span *ngIf="product.isPromotion && product.discount > 0" class="badge-promo">
               −{{ product.discount }}%
             </span>
-            <span *ngIf="isLowStock()" class="badge-stock-low">
-              <i class="pi pi-exclamation-triangle"></i> Stock limité
-            </span>
           </div>
 
-          <!-- Counter -->
-          <div class="gallery-counter" *ngIf="images.length > 1">
-            {{ selectedImageIndex + 1 }} / {{ images.length }}
-          </div>
+          <span class="gallery-counter" *ngIf="images.length > 1">
+            {{ selectedImageIndex + 1 }}/{{ images.length }}
+          </span>
         </div>
 
-        <!-- Thumbnails -->
         <div class="gallery-thumbs" *ngIf="images.length > 1">
-          <button *ngFor="let img of images; let i = index" class="gallery-thumb"
-            [class.gallery-thumb--active]="i === selectedImageIndex" type="button" (click)="selectImage(i)">
+          <button *ngFor="let img of images; let i = index"
+            class="gallery-thumb" [class.gallery-thumb--active]="i === selectedImageIndex"
+            type="button" (click)="selectImage(i)">
             <img [src]="img" [alt]="product.name" />
           </button>
         </div>
-
       </div>
     </div>
 
-    <!-- ═══════ Info ═══════ -->
+    <!-- ═══ INFO ═══ -->
     <div class="pd-info-col">
-      <div class="pd-info-card">
 
-        <!-- Meta row: category + views -->
-        <div class="pd-meta">
-          <span *ngIf="product.category" class="tag tag--blue">
-            <i class="pi pi-tag"></i>{{ product.category.name }}
-          </span>
-          <span class="meta-views">
-            <i class="pi pi-eye"></i> {{ product.statistics.views || 0 }} vues
-          </span>
-        </div>
-
-        <!-- Title -->
-        <h1 class="pd-title">{{ product.name }}</h1>
-
-        <!-- Stock badge -->
-        <span class="stock-badge" [ngClass]="'stock-badge--' + getStockSeverity()">
+      <!-- Chips row -->
+      <div class="pd-chips">
+        <span *ngIf="product.category" class="chip chip--cat">
+          <i class="pi pi-tag"></i> {{ product.category.name }}
+        </span>
+        <span class="chip" [ngClass]="{
+            'chip--stock-ok':   getStockSeverity() === 'success',
+            'chip--stock-warn': getStockSeverity() === 'warn',
+            'chip--stock-out':  getStockSeverity() === 'danger'
+          }">
           <i class="pi" [ngClass]="{
-              'pi-check-circle': getStockSeverity() === 'success',
+              'pi-check-circle':       getStockSeverity() === 'success',
               'pi-exclamation-circle': getStockSeverity() === 'warn',
-              'pi-times-circle': getStockSeverity() === 'danger'
-            }">
-          </i>
+              'pi-times-circle':       getStockSeverity() === 'danger'
+            }"></i>
           {{ getStockStatus() }}
         </span>
+        <span class="chip chip--views">
+          <i class="pi pi-eye"></i> {{ product.statistics.views || 0 }}
+        </span>
+      </div>
 
-        <div class="pd-sep"></div>
+      <!-- Title -->
+      <h1 class="pd-title">{{ product.name }}</h1>
+
+      <!-- Purchase card -->
+      <div class="pd-buy-card">
 
         <!-- Price -->
-        <div class="price-block" [class.price-block--promo]="product.isPromotion && product.discount > 0">
-          <div class="price-row">
-            <div class="price-left">
-              <span class="price-label">Prix</span>
-              <span class="price-amount" [class.price-amount--promo]="product.isPromotion && product.discount > 0"
-                [class.price-amount--normal]="!(product.isPromotion && product.discount > 0)">
-                {{ getDiscountedPrice() | number:'1.2-2' }} Ar
-              </span>
-            </div>
-            <div *ngIf="product.isPromotion && product.discount > 0" class="price-right">
-              <span class="price-original">{{ product.price | number:'1.2-2' }} Ar</span>
-              <span class="price-pct-badge">−{{ product.discount }}%</span>
-            </div>
+        <div class="price-area">
+          <div class="price-main-row">
+            <span class="price-main"
+              [class.price-main--promo]="product.isPromotion && product.discount > 0">
+              {{ getDiscountedPrice() | number:'1.0-0' }} Ar
+            </span>
+            <span *ngIf="product.isPromotion && product.discount > 0" class="price-original">
+              {{ product.price | number:'1.0-0' }} Ar
+            </span>
           </div>
-
-          <div *ngIf="product.isPromotion && product.discount > 0" class="promo-tags">
-            <span class="promo-tag promo-tag--green">
-              <i class="pi pi-check-circle"></i>
-              Économie : {{ getTotalSavings() | number:'1.2-2' }} Ar
-            </span>
-            <span *ngIf="getPromotionEndDate()" class="promo-tag promo-tag--orange">
-              <i class="pi pi-clock"></i>
-              {{ getPromotionEndDate() }}
-            </span>
+          <div *ngIf="product.isPromotion && product.discount > 0" class="price-saving">
+            <i class="pi pi-tag"></i>
+            Économie de {{ getTotalSavings() | number:'1.0-0' }} Ar
+            <span *ngIf="getPromotionEndDate()" class="promo-ends">· {{ getPromotionEndDate() }}</span>
           </div>
         </div>
 
-        <div class="pd-sep"></div>
+        <div class="buy-divider"></div>
 
-        <!-- Stock bar -->
-        <div class="stock-section">
-          <div class="section-label">
-            <i class="pi pi-box"></i> Disponibilité
-          </div>
-          <div class="stock-bar-track">
-            <div class="stock-bar-fill" [class.stock-bar-fill--low]="isLowStock()" [style.width.%]="getStockWidth()">
-            </div>
-          </div>
-          <span class="stock-qty">{{ product.stock.quantity }} unités disponibles</span>
-          <div *ngIf="isLowStock()" class="stock-alert">
-            <i class="pi pi-exclamation-triangle"></i>
-            Plus que quelques unités — dépêchez-vous !
-          </div>
-        </div>
-
-        <div class="pd-sep" *ngIf="product.description"></div>
-
-        <!-- Add to cart -->
-        <div class="flex flex-column gap-3 mb-4 mt-2">
-          <div class="flex align-items-center gap-3">
-            <label class="font-bold text-gray-700">Quantité:</label>
-            <p-inputNumber [(ngModel)]="quantity" [showButtons]="true" buttonLayout="horizontal"
-              spinnerMode="horizontal" [min]="1" [max]="product.stock.quantity"
+        <!-- Qty + CTA -->
+        <div class="buy-controls">
+          <div class="qty-row">
+            <span class="qty-label">Quantité</span>
+            <p-inputNumber
+              [(ngModel)]="quantity"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              spinnerMode="horizontal"
+              [min]="1"
+              [max]="product.stock.quantity"
               decrementButtonClass="p-button-secondary p-button-outlined"
-              incrementButtonClass="p-button-secondary p-button-outlined" incrementButtonIcon="pi pi-plus"
-              decrementButtonIcon="pi pi-minus" [inputStyle]="{'width': '3rem', 'text-align': 'center'}">
+              incrementButtonClass="p-button-secondary p-button-outlined"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              [inputStyle]="{'width': '3rem', 'text-align': 'center'}">
             </p-inputNumber>
           </div>
-
-          <p-button label="Ajouter au Panier" icon="pi pi-shopping-cart" styleClass="w-full p-button-lg shadow-2"
-            [disabled]="product.stock.quantity === 0" [loading]="isAddingToCart" (onClick)="addToCart()">
-          </p-button>
-        </div>
-
-        <!-- Description -->
-        <div *ngIf="product.description" class="desc-section">
-          <div class="section-label">
-            <i class="pi pi-align-left"></i> Description
+          <div class="cta-wrap">
+            <p-button
+              icon="pi pi-shopping-cart"
+              label="Ajouter au panier"
+              [disabled]="product.stock.quantity === 0"
+              [loading]="isAddingToCart"
+              (onClick)="addToCart()">
+            </p-button>
           </div>
-          <p class="desc-text">{{ product.description }}</p>
-        </div>
-
-        <div class="pd-sep" *ngIf="product.shopId"></div>
-
-        <!-- Shop -->
-        <div *ngIf="product.shopId" class="shop-section">
-          <div class="section-label">
-            <i class="pi pi-shop"></i> Vendu par
-          </div>
-          <div class="shop-row" (click)="viewShop()">
-            <div class="shop-logo">
-              <img *ngIf="product.shopId.logo" [src]="'http://localhost:3000/' + product.shopId.logo"
-                [alt]="product.shopId.name" />
-              <span *ngIf="!product.shopId.logo" class="shop-initial">
-                {{ product.shopId.name.charAt(0) }}
-              </span>
-            </div>
-            <div class="shop-info">
-              <span class="shop-name">{{ product.shopId.name }}</span>
-              <span class="shop-cta">Voir tous les produits de cette boutique</span>
-            </div>
-            <i class="pi pi-chevron-right shop-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="pd-footer">
-          <span class="footer-meta">
-            <i class="pi pi-calendar"></i>
-            Ajouté le {{ product.createdAt | date:'dd/MM/yyyy' }}
-          </span>
         </div>
 
       </div>
-    </div>
 
+      <!-- Stock indicator -->
+      <div class="stock-row">
+        <span class="stock-dot" [ngClass]="{
+            'stock-dot--ok':   !isLowStock() && product.stock.quantity > 0,
+            'stock-dot--warn': isLowStock(),
+            'stock-dot--out':  product.stock.quantity === 0
+          }"></span>
+        <span class="stock-text">
+          <ng-container *ngIf="product.stock.quantity === 0">Rupture de stock</ng-container>
+          <ng-container *ngIf="product.stock.quantity > 0">
+            {{ product.stock.quantity }} unité{{ product.stock.quantity > 1 ? 's' : '' }} disponible{{ product.stock.quantity > 1 ? 's' : '' }}
+          </ng-container>
+        </span>
+        <span *ngIf="isLowStock()" class="stock-urgency">
+          <i class="pi pi-exclamation-triangle"></i> Stock limité
+        </span>
+      </div>
+
+      <!-- Description -->
+      <div *ngIf="product.description" class="pd-desc">
+        <p class="pd-desc-label">Description</p>
+        <p class="pd-desc-text">{{ product.description }}</p>
+      </div>
+
+      <!-- Shop -->
+      <div *ngIf="product.shopId" class="pd-shop-row" (click)="viewShop()">
+        <div class="shop-logo-wrap">
+          <img *ngIf="product.shopId.logo"
+            [src]="'http://localhost:3000/' + product.shopId.logo"
+            [alt]="product.shopId.name" />
+          <span *ngIf="!product.shopId.logo" class="shop-initial">
+            {{ product.shopId.name.charAt(0) }}
+          </span>
+        </div>
+        <div class="shop-text">
+          <span class="shop-sold-by">Vendu par</span>
+          <span class="shop-name">{{ product.shopId.name }}</span>
+        </div>
+        <i class="pi pi-chevron-right shop-arrow"></i>
+      </div>
+
+      <!-- Date -->
+      <p class="pd-date">
+        <i class="pi pi-calendar"></i>
+        Ajouté le {{ product.createdAt | date:'dd MMMM yyyy' }}
+      </p>
+
+    </div>
   </div>
 </div>

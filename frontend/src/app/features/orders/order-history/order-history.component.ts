@@ -4,10 +4,11 @@ import { RouterModule, Router } from '@angular/router';
 import { OrderService, Order } from '../../../core/services/order.service';
 import { CartService, CartItem } from '../../../core/services/cart.service';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { TimelineModule } from 'primeng/timeline';
+import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { SkeletonModule } from 'primeng/skeleton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { PaginatorModule } from 'primeng/paginator';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
@@ -17,10 +18,11 @@ import { ConfirmationService, MessageService } from 'primeng/api';
         CommonModule,
         RouterModule,
         ButtonModule,
-        CardModule,
-        TimelineModule,
+        TableModule,
         TagModule,
-        ConfirmDialogModule
+        SkeletonModule,
+        ConfirmDialogModule,
+        PaginatorModule
     ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './order-history.component.html',
@@ -29,6 +31,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 export class OrderHistoryComponent implements OnInit {
     orders: Order[] = [];
     loading = true;
+
+    first = 0;
+    rows = 10;
 
     constructor(
         private orderService: OrderService,
@@ -109,6 +114,16 @@ export class OrderHistoryComponent implements OnInit {
     getShortId(order: any): string {
         const id = order.orderNumber || order._id;
         return typeof id === 'string' ? id.substring(0, 8).toUpperCase() : '';
+    }
+
+    getPaginatedOrders(): Order[] {
+        return this.orders.slice(this.first, this.first + this.rows);
+    }
+
+    onPageChange(event: any) {
+        this.first = event.first;
+        this.rows = event.rows;
+        this.cdr.detectChanges();
     }
 
     formatDate(dateStr: Date | string): string {

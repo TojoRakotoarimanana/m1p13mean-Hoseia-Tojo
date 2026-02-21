@@ -1,0 +1,150 @@
+.shop-orders-container {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-section {
+    margin-bottom: 2rem;
+}
+
+.header-section h1 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.subtitle {
+    margin: 0;
+    color: var(--text-color-secondary);
+    font-size: 1rem;
+}
+
+.filters-section {
+    margin-bottom: 1.5rem;
+}
+
+.filters-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.status-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-filter label {
+    font-weight: 500;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+.orders-table-container {
+    overflow-x: auto;
+}
+
+.order-number {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.customer-name {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.customer-email {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+}
+
+.order-date {
+    color: var(--text-color);
+}
+
+.order-amount {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.status-tag {
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1rem;
+}
+
+.empty-message {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.empty-submessage {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .shop-orders-container {
+        padding: 1rem;
+    }
+
+    .header-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .status-filter {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.25rem;
+    }
+
+    .customer-info {
+        gap: 0.125rem;
+    }
+
+    .customer-name {
+        font-size: 0.875rem;
+    }
+
+    .customer-email {
+        font-size: 0.75rem;
+    }
+
+    .order-amount {
+        font-size: 0.875rem;
+    }
+}
