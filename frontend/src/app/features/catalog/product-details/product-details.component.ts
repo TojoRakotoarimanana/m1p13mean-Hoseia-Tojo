@@ -1,12 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
 import { SkeletonModule } from 'primeng/skeleton';
-import { DividerModule } from 'primeng/divider';
-import { GalleriaModule } from 'primeng/galleria';
 import { CatalogService, Product } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NavbarComponent } from '../../../core/components/navbar/navbar.component';
@@ -16,12 +11,7 @@ import { NavbarComponent } from '../../../core/components/navbar/navbar.componen
   standalone: true,
   imports: [
     CommonModule,
-    CardModule,
-    ButtonModule,
-    TagModule,
     SkeletonModule,
-    DividerModule,
-    GalleriaModule,
     NavbarComponent
   ],
   templateUrl: './product-details.component.html',
@@ -31,8 +21,8 @@ export class ProductDetailsComponent implements OnInit {
   product: Product | null = null;
   loading = true;
   productId: string = '';
-  currentImageIndex = 0;
-  images: any[] = [];
+  images: string[] = [];
+  selectedImageIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -71,28 +61,30 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   prepareImages(): void {
-    if (this.product && this.product.images && this.product.images.length > 0) {
-      this.images = this.product.images.map((img: string) => {
-        // Vérifier si l'URL est absolue (commence par http:// ou https://)
-        const imageUrl = img.startsWith('http://') || img.startsWith('https://') 
-          ? img 
-          : `http://localhost:3000/${img}`;
-        
-        return {
-          itemImageSrc: imageUrl,
-          thumbnailImageSrc: imageUrl,
-          alt: this.product!.name
-        };
-      });
-      console.log('Images préparées pour le carousel:', this.images);
+    this.selectedImageIndex = 0;
+    if (this.product?.images?.length) {
+      this.images = this.product.images.map((img: string) =>
+        img.startsWith('http://') || img.startsWith('https://')
+          ? img
+          : `http://localhost:3000/${img}`
+      );
     } else {
-      this.images = [{
-        itemImageSrc: 'https://via.placeholder.com/800x600/e0e0e0/666?text=Pas+d\'image',
-        thumbnailImageSrc: 'https://via.placeholder.com/200x150/e0e0e0/666?text=Pas+d\'image',
-        alt: 'Pas d\'image'
-      }];
-      console.log('Aucune image, utilisation du placeholder');
+      this.images = ['https://placehold.co/600x600/f1f5f9/94a3b8?text=Pas+d\'image'];
     }
+  }
+
+  selectImage(index: number): void {
+    this.selectedImageIndex = index;
+  }
+
+  prevImage(): void {
+    this.selectedImageIndex =
+      this.selectedImageIndex > 0 ? this.selectedImageIndex - 1 : this.images.length - 1;
+  }
+
+  nextImage(): void {
+    this.selectedImageIndex =
+      this.selectedImageIndex < this.images.length - 1 ? this.selectedImageIndex + 1 : 0;
   }
 
   incrementViews(): void {
@@ -102,13 +94,6 @@ export class ProductDetailsComponent implements OnInit {
         error: () => {}
       });
     }
-  }
-
-  formatPrice(price: number): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(price);
   }
 
   getDiscountedPrice(): number {
@@ -145,9 +130,7 @@ export class ProductDetailsComponent implements OnInit {
     if (!this.product || !this.product.isPromotion || !this.product.promoEndDate) return null;
     const endDate = new Date(this.product.promoEndDate);
     const now = new Date();
-    const diffTime = endDate.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+    const diffDays = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return null;
     if (diffDays === 0) return "Se termine aujourd'hui";
     if (diffDays === 1) return "Se termine demain";
@@ -164,7 +147,7 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   viewShop(): void {
-    if (this.product && this.product.shopId) {
+    if (this.product?.shopId) {
       this.router.navigate(['/shop', this.product.shopId._id]);
     }
   }

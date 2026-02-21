@@ -1,18 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
+import { FormsModule } from '@angular/forms';
 import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { DataViewModule } from 'primeng/dataview';
 import { PaginatorModule } from 'primeng/paginator';
-import { FormsModule } from '@angular/forms';
 import { CatalogService, Shop } from '../../core/services/catalog.service';
 import { CategoryService } from '../../core/services/category.service';
-import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-shops-list',
@@ -21,15 +15,9 @@ import { NavbarComponent } from '../../core/components/navbar/navbar.component';
     CommonModule,
     RouterModule,
     FormsModule,
-    CardModule,
-    ButtonModule,
-    TagModule,
     SkeletonModule,
     InputTextModule,
-    SelectModule,
-    DataViewModule,
     PaginatorModule,
-    NavbarComponent
   ],
   templateUrl: './shops-list.component.html',
   styleUrl: './shops-list.component.css'
@@ -38,19 +26,16 @@ export class ShopsListComponent implements OnInit {
   shops: Shop[] = [];
   filteredShops: Shop[] = [];
   categories: any[] = [];
-  
+
   loading = true;
   loadingCategories = true;
-  
-  // Filtres et recherche
+
   searchTerm = '';
   selectedCategory: any = null;
-  
-  // Pagination et vue
+
   first = 0;
   rows = 12;
-  totalRecords = 0;
-  
+
   constructor(
     private catalogService: CatalogService,
     private categoryService: CategoryService,
@@ -59,16 +44,8 @@ export class ShopsListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadInitialData();
-  }
-
-  loadInitialData() {
-    try {
-      this.loadShops();
-      this.loadCategories();
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-    }
+    this.loadShops();
+    this.loadCategories();
   }
 
   loadShops() {
@@ -77,12 +54,10 @@ export class ShopsListComponent implements OnInit {
       next: (response: any) => {
         this.shops = response?.shops || response || [];
         this.filteredShops = [...this.shops];
-        this.totalRecords = this.shops.length;
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des boutiques:', error);
+      error: () => {
         this.shops = [];
         this.filteredShops = [];
         this.loading = false;
@@ -95,18 +70,13 @@ export class ShopsListComponent implements OnInit {
     this.loadingCategories = true;
     this.categoryService.list().subscribe({
       next: (response: any) => {
-        const categories = response.categories || response || [];
-        // Ajouter option "Toutes" 
-        this.categories = [
-          { _id: null, name: 'Toutes les catégories' },
-          ...categories
-        ];
+        const cats = response.categories || response || [];
+        this.categories = [{ _id: null, name: 'Toutes' }, ...cats];
         this.loadingCategories = false;
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des catégories:', error);
-        this.categories = [{ _id: null, name: 'Toutes les catégories' }];
+      error: () => {
+        this.categories = [{ _id: null, name: 'Toutes' }];
         this.loadingCategories = false;
         this.cdr.detectChanges();
       }
@@ -124,27 +94,19 @@ export class ShopsListComponent implements OnInit {
 
   applyFilters() {
     let filtered = [...this.shops];
-
-    // Filtrage par terme de recherche
-    if (this.searchTerm.trim()) {
-      const term = this.searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(shop =>
-        shop.name.toLowerCase().includes(term) ||
-        shop.description?.toLowerCase().includes(term) ||
-        shop.category?.name?.toLowerCase().includes(term)
+    const term = this.searchTerm.toLowerCase().trim();
+    if (term) {
+      filtered = filtered.filter(s =>
+        s.name.toLowerCase().includes(term) ||
+        s.description?.toLowerCase().includes(term) ||
+        s.category?.name?.toLowerCase().includes(term)
       );
     }
-
-    // Filtrage par catégorie
-    if (this.selectedCategory && this.selectedCategory._id) {
-      filtered = filtered.filter(shop =>
-        shop.category._id === this.selectedCategory._id
-      );
+    if (this.selectedCategory?._id) {
+      filtered = filtered.filter(s => s.category._id === this.selectedCategory._id);
     }
-
     this.filteredShops = filtered;
-    this.totalRecords = filtered.length;
-    this.first = 0; // Reset pagination
+    this.first = 0;
     this.cdr.detectChanges();
   }
 
@@ -158,24 +120,18 @@ export class ShopsListComponent implements OnInit {
   }
 
   onViewShop(shop: Shop) {
-    // Navigation vers la page détail de la boutique
     this.router.navigate(['/shop', shop._id]);
   }
 
   getShopLogoUrl(shop: Shop): string {
-    if (shop.logo && shop.logo.startsWith('http')) {
-      return shop.logo;
-    }
-    return shop.logo ? `http://localhost:3000/uploads/shops/${shop.logo}` : '';
+    if (!shop.logo) return '';
+    if (shop.logo.startsWith('http')) return shop.logo;
+    return `http://localhost:3000/uploads/shops/${shop.logo}`;
   }
 
   clearFilters() {
     this.searchTerm = '';
-    this.selectedCategory = { _id: null, name: 'Toutes les catégories' };
+    this.selectedCategory = null;
     this.applyFilters();
-  }
-
-  getCurrentPage(): number {
-    return Math.floor(this.first / this.rows) + 1;
   }
 }

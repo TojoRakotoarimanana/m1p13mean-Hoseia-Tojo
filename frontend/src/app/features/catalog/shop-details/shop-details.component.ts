@@ -1,11 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
 import { SkeletonModule } from 'primeng/skeleton';
-import { DividerModule } from 'primeng/divider';
 import { CatalogService, Shop, Product, ShopDetailsResponse } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NavbarComponent } from '../../../core/components/navbar/navbar.component';
@@ -15,11 +11,7 @@ import { NavbarComponent } from '../../../core/components/navbar/navbar.componen
   standalone: true,
   imports: [
     CommonModule,
-    CardModule,
-    ButtonModule,
-    TagModule,
     SkeletonModule,
-    DividerModule,
     NavbarComponent
   ],
   templateUrl: './shop-details.component.html',
@@ -31,8 +23,8 @@ export class ShopDetailsComponent implements OnInit {
   loading = true;
   shopId: string = '';
 
-  daysOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-  dayLabels: { [key: string]: string } = {
+  readonly daysOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  readonly dayLabels: { [key: string]: string } = {
     monday: 'Lundi',
     tuesday: 'Mardi',
     wednesday: 'Mercredi',
@@ -52,11 +44,9 @@ export class ShopDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.shopId = this.route.snapshot.paramMap.get('id') || '';
-    console.log('Shop ID:', this.shopId);
     if (this.shopId) {
       this.loadShopDetails();
     } else {
-      console.error('Pas de shop ID');
       this.notificationService.error('ID de la boutique manquant');
       this.router.navigate(['/home']);
     }
@@ -64,24 +54,14 @@ export class ShopDetailsComponent implements OnInit {
 
   loadShopDetails(): void {
     this.loading = true;
-    console.log('Chargement des détails pour shop:', this.shopId);
     this.catalogService.getShopById(this.shopId).subscribe({
       next: (response: ShopDetailsResponse) => {
-        console.log('Réponse reçue:', response);
-        console.log('Shop data:', response.shop);
-        console.log('Products:', response.products);
-        
         this.shop = response.shop;
         this.products = response.products || [];
         this.loading = false;
-        
-        console.log('Après assignation - shop:', this.shop);
-        console.log('Après assignation - loading:', this.loading);
-        
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Erreur lors du chargement:', error);
         this.notificationService.error(error.error?.message || 'Erreur lors du chargement de la boutique');
         this.loading = false;
         this.router.navigate(['/home']);
@@ -90,32 +70,32 @@ export class ShopDetailsComponent implements OnInit {
   }
 
   getLocationString(): string {
-    if (!this.shop?.location) return 'Non spécifié';
+    if (!this.shop?.location) return '';
     const { floor, zone, shopNumber } = this.shop.location;
-    const parts = [];
+    const parts: string[] = [];
     if (floor) parts.push(`Étage ${floor}`);
     if (zone) parts.push(`Zone ${zone}`);
-    if (shopNumber) parts.push(`Boutique ${shopNumber}`);
-    return parts.length > 0 ? parts.join(' - ') : 'Non spécifié';
+    if (shopNumber) parts.push(`N° ${shopNumber}`);
+    return parts.join(' · ');
+  }
+
+  isDayOpen(day: string): boolean {
+    return !!(this.shop?.hours?.[day]?.open && this.shop?.hours?.[day]?.close);
   }
 
   getProductImage(product: Product): string {
-    if (product.images && product.images.length > 0) {
+    if (product.images?.length) {
       const img = product.images[0];
-      // Vérifier si l'URL est absolue (commence par http:// ou https://)
-      if (img.startsWith('http://') || img.startsWith('https://')) {
-        return img;
-      }
+      if (img.startsWith('http://') || img.startsWith('https://')) return img;
       return `http://localhost:3000/${img}`;
     }
-    return 'https://via.placeholder.com/400x300/667eea/ffffff?text=Pas+d\'image';
+    return 'https://placehold.co/400x300/f1f5f9/94a3b8?text=Image';
   }
 
-  formatPrice(price: number): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(price);
+  getShopLogoUrl(): string {
+    if (!this.shop?.logo) return '';
+    if (this.shop.logo.startsWith('http://') || this.shop.logo.startsWith('https://')) return this.shop.logo;
+    return `http://localhost:3000/${this.shop.logo}`;
   }
 
   getDiscountedPrice(product: Product): number {
@@ -123,6 +103,10 @@ export class ShopDetailsComponent implements OnInit {
       return product.price * (1 - product.discount / 100);
     }
     return product.price;
+  }
+
+  isLowStock(product: Product): boolean {
+    return product.stock.quantity > 0 && product.stock.quantity <= product.stock.lowStockAlert;
   }
 
   goBack(): void {

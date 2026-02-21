@@ -120,6 +120,30 @@
   cursor: not-allowed;
 }
 
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  color: #94a3b8;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.search-clear:hover {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.search-clear i {
+  font-size: 0.7rem;
+}
+
 .search-chips {
   display: flex;
   align-items: center;

@@ -147,18 +147,42 @@ export class HomeClientComponent implements OnInit {
   }
 
   onSearch(): void {
-    if (!this.searchTerm.trim()) return;
-    this.catalogService.search(this.searchTerm.trim()).subscribe({
+    const term = this.searchTerm.trim();
+    if (!term) {
+      this.clearSearch();
+      return;
+    }
+    this.loadingProducts = true;
+    this.cdr.detectChanges();
+    this.catalogService.search(term).subscribe({
       next: (results) => {
         this.featuredProducts = results?.products || [];
-        this.featuredShops = results?.shops || [];
         this.totalPages = 1;
         this.currentPage = 1;
         this.buildPaginationPages();
+        this.loadingProducts = false;
         this.cdr.detectChanges();
+        setTimeout(() => {
+          document.getElementById('catalogue')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
       },
-      error: () => {}
+      error: () => {
+        this.loadingProducts = false;
+        this.cdr.detectChanges();
+      }
     });
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.selectedCategory = null;
+    this.loadProducts(1);
+  }
+
+  onSearchInput(): void {
+    if (!this.searchTerm) {
+      this.loadProducts(1, this.selectedCategory?._id);
+    }
   }
 
   onViewProduct(product: Product): void {

@@ -1,176 +1,190 @@
-<!-- Navbar -->
-<app-navbar></app-navbar>
+<div class="sl-wrapper">
 
-<!-- Page wrapper -->
-<div class="page-wrapper">
-  <!-- Page Header -->
-  <div class="page-header">
-    <div class="container">
-      <h1 class="page-title">Boutiques du Centre Commercial</h1>
-      <p class="page-subtitle">Découvrez toutes nos boutiques partenaires</p>
+  <!-- ── Page header ────────────────────────── -->
+  <div class="sl-header">
+    <div>
+      <h1 class="sl-title">Boutiques</h1>
+      <p class="sl-subtitle">Découvrez toutes nos boutiques partenaires</p>
     </div>
+    @if (!loading) {
+      <span class="sl-total-badge">
+        {{ filteredShops.length }} boutique{{ filteredShops.length !== 1 ? 's' : '' }}
+      </span>
+    }
   </div>
 
-  <!-- Main Content -->
-  <div class="container">
-    <div class="content-layout">
-      <!-- Sidebar Filters -->
-      <aside class="sidebar-filters">
-        <div class="filter-section">
-          <h3 class="filter-title">
-            <i class="pi pi-filter"></i>
-            Filtres
-          </h3>
+  <!-- ── Body : filters + main ──────────────── -->
+  <div class="sl-body">
 
-          <!-- Search filter -->
-          <div class="filter-group">
-            <label class="filter-label">Rechercher</label>
-            <span class="p-input-icon-left filter-input-wrapper">
-              <i class="pi pi-search"></i>
-              <input 
-                type="text" 
-                pInputText 
-                placeholder="Nom de boutique..." 
-                [(ngModel)]="searchTerm"
-                (keyup.enter)="onSearch()"
-                class="filter-input"
-              />
-            </span>
+    <!-- ── Filter panel ─────────────────────── -->
+    <aside class="sl-filters">
+      <div class="sl-filters-card">
+        <p class="sl-filters-heading">
+          <i class="pi pi-sliders-h"></i>
+          Filtres
+        </p>
+
+        <!-- Search -->
+        <div class="sl-filter-group">
+          <label class="sl-filter-label">Rechercher</label>
+          <div class="sl-search-wrap">
+            <i class="pi pi-search sl-search-icon"></i>
+            <input
+              type="text"
+              pInputText
+              placeholder="Nom de boutique…"
+              [(ngModel)]="searchTerm"
+              (input)="onSearch()"
+              (keyup.enter)="onSearch()"
+              class="sl-search-input"
+            />
           </div>
+        </div>
 
-          <!-- Category filter -->
-          <div class="filter-group">
-            <label class="filter-label">Catégorie</label>
-            <div class="category-list" *ngIf="!loadingCategories">
-              <div 
-                *ngFor="let category of categories" 
-                class="category-item"
-                [class.active]="selectedCategory?._id === category._id"
-                (click)="onCategoryFilter(category)"
-              >
-                <span class="category-name">{{ category.name }}</span>
-                <i class="pi pi-angle-right"></i>
-              </div>
+        <!-- Categories -->
+        <div class="sl-filter-group">
+          <label class="sl-filter-label">Catégorie</label>
+          @if (loadingCategories) {
+            <div class="sl-cat-skel">
+              @for (i of [1,2,3,4]; track i) {
+                <p-skeleton height="2rem" class="sl-skel-item"></p-skeleton>
+              }
             </div>
-            <p-skeleton *ngIf="loadingCategories" height="200px"></p-skeleton>
-          </div>
-
-          <!-- Clear filters -->
-          <div class="filter-actions">
-            <p-button 
-              label="Effacer les filtres" 
-              icon="pi pi-times"
-              [outlined]="true"
-              (onClick)="clearFilters()"
-              class="clear-filters-btn"
-            ></p-button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Content Area -->
-      <main class="main-content">
-        <!-- Results Header -->
-        <div class="results-header">
-          <div class="results-info">
-            <h2 class="results-count">
-              <span class="count-number">{{ filteredShops.length }}</span>
-              boutique{{ filteredShops.length > 1 ? 's' : '' }} trouvée{{ filteredShops.length > 1 ? 's' : '' }}
-            </h2>
-            <p *ngIf="searchTerm || (selectedCategory && selectedCategory._id)" class="results-filters">
-              <span *ngIf="searchTerm">Recherche : "{{ searchTerm }}"</span>
-              <span *ngIf="searchTerm && selectedCategory && selectedCategory._id"> • </span>
-              <span *ngIf="selectedCategory && selectedCategory._id">Catégorie : {{ selectedCategory.name }}</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div *ngIf="loading" class="shops-loading">
-          <div class="shops-grid">
-            <div *ngFor="let item of [1,2,3,4,5,6,7,8,9]" class="shop-skeleton">
-              <p-skeleton height="140px" class="mb-2"></p-skeleton>
-              <p-skeleton width="80%" height="1.5rem" class="mb-2"></p-skeleton>
-              <p-skeleton width="60%" height="1rem"></p-skeleton>
+          } @else {
+            <div class="sl-cat-list">
+              @for (cat of categories; track cat._id) {
+                <button
+                  type="button"
+                  class="sl-cat-item"
+                  [class.sl-cat-item--active]="selectedCategory?._id === cat._id"
+                  (click)="onCategoryFilter(cat)"
+                >
+                  {{ cat.name }}
+                </button>
+              }
             </div>
-          </div>
+          }
         </div>
 
-        <!-- No Results -->
-        <div *ngIf="!loading && filteredShops.length === 0" class="no-results">
-          <div class="no-results-content">
-            <i class="pi pi-search no-results-icon"></i>
-            <h3>Aucune boutique trouvée</h3>
-            <p>Aucune boutique ne correspond à vos critères de recherche.</p>
-            <p-button 
-              label="Effacer les filtres" 
-              icon="pi pi-times"
-              (onClick)="clearFilters()"
-            ></p-button>
-          </div>
-        </div>
+        <!-- Clear -->
+        <button type="button" class="sl-clear-btn" (click)="clearFilters()">
+          <i class="pi pi-times"></i>
+          Effacer les filtres
+        </button>
+      </div>
+    </aside>
 
-        <!-- Shops Grid -->
-        <div *ngIf="!loading && filteredShops.length > 0" class="shops-grid">
-          <div 
-            *ngFor="let shop of getPaginatedShops()" 
-            class="shop-card"
-            (click)="onViewShop(shop)"
-          >
-            <!-- Shop Image/Logo -->
-            <div class="shop-image-container">
-              <img 
-                *ngIf="shop.logo" 
-                [src]="getShopLogoUrl(shop)" 
-                [alt]="shop.name"
-                class="shop-image"
-              />
-              <div *ngIf="!shop.logo" class="shop-image-placeholder">
-                {{ shop.name.charAt(0).toUpperCase() }}
-              </div>
-              <div class="shop-overlay">
-                <span class="view-shop-btn">
-                  <i class="pi pi-eye"></i>
-                  Voir la boutique
+    <!-- ── Main content ──────────────────────── -->
+    <main class="sl-main">
+
+      <!-- Results bar -->
+      @if (!loading) {
+        <div class="sl-results-bar">
+          <span class="sl-results-count">
+            <strong>{{ filteredShops.length }}</strong>
+            boutique{{ filteredShops.length !== 1 ? 's' : '' }} trouvée{{ filteredShops.length !== 1 ? 's' : '' }}
+          </span>
+          @if (searchTerm || selectedCategory?._id) {
+            <div class="sl-active-filters">
+              @if (searchTerm) {
+                <span class="sl-filter-tag">
+                  <i class="pi pi-search"></i> {{ searchTerm }}
                 </span>
-              </div>
+              }
+              @if (selectedCategory?._id) {
+                <span class="sl-filter-tag">
+                  <i class="pi pi-tag"></i> {{ selectedCategory.name }}
+                </span>
+              }
             </div>
+          }
+        </div>
+      }
 
-            <!-- Shop Info -->
-            <div class="shop-content">
-              <div class="shop-category-badge">
-                {{ shop.category.name }}
-              </div>
-              <h3 class="shop-title">{{ shop.name }}</h3>
-              <p class="shop-description">{{ shop.description || 'Description non disponible' }}</p>
-              
-              <!-- Shop Meta -->
-              <div class="shop-meta">
-                <span class="shop-meta-item" *ngIf="shop.location.floor">
-                  <i class="pi pi-map-marker"></i>
-                  {{ shop.location.floor }}
-                </span>
-                <span class="shop-meta-item">
-                  <i class="pi pi-shopping-bag"></i>
-                  {{ shop.statistics.totalProducts || 0 }} produits
-                </span>
+      <!-- Loading skeleton -->
+      @if (loading) {
+        <div class="sl-grid">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="sl-skeleton-card">
+              <p-skeleton height="160px"></p-skeleton>
+              <div class="sl-skeleton-body">
+                <p-skeleton width="55%" height="0.9rem" class="mb-2"></p-skeleton>
+                <p-skeleton width="90%" height="1.1rem" class="mb-1"></p-skeleton>
+                <p-skeleton width="70%" height="0.85rem"></p-skeleton>
               </div>
             </div>
-          </div>
+          }
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (!loading && filteredShops.length === 0) {
+        <div class="sl-empty">
+          <i class="pi pi-shop"></i>
+          <h3>Aucune boutique trouvée</h3>
+          <p>Aucune boutique ne correspond à vos critères de recherche.</p>
+          <button type="button" class="sl-empty-reset" (click)="clearFilters()">
+            <i class="pi pi-times"></i> Effacer les filtres
+          </button>
+        </div>
+      }
+
+      <!-- Shop cards grid -->
+      @if (!loading && filteredShops.length > 0) {
+        <div class="sl-grid">
+          @for (shop of getPaginatedShops(); track shop._id) {
+            <div class="sl-card" (click)="onViewShop(shop)">
+
+              <!-- Image / initial -->
+              <div class="sl-card-img">
+                @if (shop.logo) {
+                  <img [src]="getShopLogoUrl(shop)" [alt]="shop.name" />
+                } @else {
+                  <div class="sl-card-initial">{{ shop.name.charAt(0).toUpperCase() }}</div>
+                }
+              </div>
+
+              <!-- Body -->
+              <div class="sl-card-body">
+                <span class="sl-card-category">
+                  <i class="pi pi-tag"></i>
+                  {{ shop.category.name }}
+                </span>
+                <h3 class="sl-card-name">{{ shop.name }}</h3>
+                <p class="sl-card-desc">{{ shop.description || 'Aucune description disponible.' }}</p>
+                <div class="sl-card-meta">
+                  @if (shop.location.floor) {
+                    <span class="sl-meta-item">
+                      <i class="pi pi-map-marker"></i>
+                      Étage {{ shop.location.floor }}
+                    </span>
+                  }
+                  <span class="sl-meta-item">
+                    <i class="pi pi-box"></i>
+                    {{ shop.statistics.totalProducts || 0 }} produits
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          }
         </div>
 
         <!-- Pagination -->
-        <div *ngIf="!loading && filteredShops.length > rows" class="pagination-container">
-          <p-paginator 
-            [rows]="rows" 
-            [totalRecords]="filteredShops.length"
-            [first]="first"
-            (onPageChange)="onPageChange($event)"
-            [showCurrentPageReport]="true"
-            currentPageReportTemplate="Page {currentPage} sur {totalPages}"
-          ></p-paginator>
-        </div>
-      </main>
-    </div>
+        @if (filteredShops.length > rows) {
+          <div class="sl-pagination">
+            <p-paginator
+              [rows]="rows"
+              [totalRecords]="filteredShops.length"
+              [first]="first"
+              (onPageChange)="onPageChange($event)"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Page {currentPage} sur {totalPages}"
+            ></p-paginator>
+          </div>
+        }
+      }
+
+    </main>
   </div>
 </div>

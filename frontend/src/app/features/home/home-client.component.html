@@ -19,26 +19,28 @@
   <!-- ── Search ──────────────────────────────────── -->
   <div class="search-section">
     <div class="search-bar">
-      <i class="pi pi-search"></i>
+      <i class="pi pi-search search-icon"></i>
       <input
         pInputText
         type="text"
         placeholder="Rechercher des produits, boutiques, catégories…"
         [(ngModel)]="searchTerm"
         (keyup.enter)="onSearch()"
+        (input)="onSearchInput()"
         class="search-input"
       />
+      <button
+        *ngIf="searchTerm"
+        class="search-clear"
+        type="button"
+        (click)="clearSearch()"
+        title="Effacer"
+      >
+        <i class="pi pi-times"></i>
+      </button>
       <button class="search-submit" (click)="onSearch()" [disabled]="!searchTerm.trim()">
         Rechercher
       </button>
-    </div>
-    <div class="search-chips" *ngIf="categories.length > 0">
-      <span class="chips-label">Catégories :</span>
-      <button
-        *ngFor="let cat of categories.slice(0, 5)"
-        class="chip"
-        (click)="onCategoryFilter(cat)"
-      >{{ cat.name }}</button>
     </div>
   </div>
 
@@ -153,7 +155,7 @@
   </section>
 
   <!-- ── Catalogue ───────────────────────────────── -->
-  <section class="home-section">
+  <section class="home-section" id="catalogue">
     <div class="section-header">
       <div class="section-header-left">
         <h2 class="section-title">Catalogue</h2>

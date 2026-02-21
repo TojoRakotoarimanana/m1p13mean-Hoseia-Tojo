@@ -2,175 +2,215 @@
 
 <div class="pd-wrapper">
 
-  <!-- Back button -->
+  <!-- ── Back ─────────────────────────────────────── -->
   <div class="pd-back">
     <button class="back-btn" (click)="goBack()">
       <i class="pi pi-arrow-left"></i>
-      Retour
+      Retour au catalogue
     </button>
   </div>
 
-  <!-- Skeleton -->
+  <!-- ── Skeleton ──────────────────────────────────── -->
   <div *ngIf="loading" class="pd-skeleton-grid">
-    <p-skeleton height="460px" borderRadius="8px"></p-skeleton>
+    <p-skeleton height="500px" borderRadius="12px"></p-skeleton>
     <div class="pd-skeleton-info">
-      <p-skeleton width="60%" height="1.5rem" styleClass="mb-3"></p-skeleton>
-      <p-skeleton width="100%" height="1rem" styleClass="mb-2"></p-skeleton>
-      <p-skeleton width="80%" height="1rem" styleClass="mb-4"></p-skeleton>
-      <p-skeleton width="45%" height="2rem" styleClass="mb-2"></p-skeleton>
-      <p-skeleton width="30%" height="1rem" styleClass="mb-4"></p-skeleton>
-      <p-skeleton width="100%" height="6rem"></p-skeleton>
+      <p-skeleton width="40%" height="1.125rem" styleClass="mb-3"></p-skeleton>
+      <p-skeleton width="85%" height="2rem" styleClass="mb-2"></p-skeleton>
+      <p-skeleton width="55%" height="1.5rem" styleClass="mb-4"></p-skeleton>
+      <p-skeleton width="45%" height="2.5rem" styleClass="mb-3"></p-skeleton>
+      <p-skeleton width="100%" height="0.5rem" styleClass="mb-4"></p-skeleton>
+      <p-skeleton width="100%" height="5rem"></p-skeleton>
     </div>
   </div>
 
-  <!-- Content -->
+  <!-- ── Content ───────────────────────────────────── -->
   <div *ngIf="!loading && product" class="pd-grid">
 
-    <!-- ── Gallery ───────────────────────────────── -->
+    <!-- ═══════ Gallery ═══════ -->
     <div class="pd-gallery-col">
       <div class="pd-gallery-card">
-        <p-galleria
-          [value]="images"
-          [numVisible]="4"
-          [circular]="true"
-          [showIndicators]="images.length > 1"
-          [showItemNavigators]="images.length > 1"
-          [showThumbnails]="images.length > 1"
-          thumbnailsPosition="bottom"
-          [containerStyle]="{ width: '100%' }">
-          <ng-template pTemplate="item" let-item>
-            <img [src]="item.itemImageSrc" [alt]="item.alt" class="pd-main-img" />
-          </ng-template>
-          <ng-template pTemplate="thumbnail" let-item>
-            <img [src]="item.thumbnailImageSrc" [alt]="item.alt" class="pd-thumb-img" />
-          </ng-template>
-        </p-galleria>
 
-        <!-- Badges -->
-        <div class="pd-gallery-badges">
-          <span *ngIf="product.isPromotion && product.discount > 0" class="badge-discount-lg">
-            −{{ product.discount }}%
-          </span>
-          <span *ngIf="isLowStock()" class="badge-low-stock">
-            <i class="pi pi-exclamation-triangle"></i> Stock limité
-          </span>
+        <!-- Main image -->
+        <div class="gallery-main">
+          <img
+            [src]="images[selectedImageIndex]"
+            [alt]="product.name"
+            class="gallery-img"
+          />
+
+          <!-- Prev / Next arrows (visible on hover) -->
+          <button
+            *ngIf="images.length > 1"
+            class="gallery-nav gallery-nav--prev"
+            type="button"
+            (click)="prevImage()"
+          >
+            <i class="pi pi-chevron-left"></i>
+          </button>
+          <button
+            *ngIf="images.length > 1"
+            class="gallery-nav gallery-nav--next"
+            type="button"
+            (click)="nextImage()"
+          >
+            <i class="pi pi-chevron-right"></i>
+          </button>
+
+          <!-- Badges overlay -->
+          <div class="gallery-badges">
+            <span *ngIf="product.isPromotion && product.discount > 0" class="badge-discount">
+              −{{ product.discount }}%
+            </span>
+            <span *ngIf="isLowStock()" class="badge-stock-low">
+              <i class="pi pi-exclamation-triangle"></i> Stock limité
+            </span>
+          </div>
+
+          <!-- Counter -->
+          <div class="gallery-counter" *ngIf="images.length > 1">
+            {{ selectedImageIndex + 1 }} / {{ images.length }}
+          </div>
         </div>
+
+        <!-- Thumbnails -->
+        <div class="gallery-thumbs" *ngIf="images.length > 1">
+          <button
+            *ngFor="let img of images; let i = index"
+            class="gallery-thumb"
+            [class.gallery-thumb--active]="i === selectedImageIndex"
+            type="button"
+            (click)="selectImage(i)"
+          >
+            <img [src]="img" [alt]="product.name" />
+          </button>
+        </div>
+
       </div>
     </div>
 
-    <!-- ── Info ──────────────────────────────────── -->
+    <!-- ═══════ Info ═══════ -->
     <div class="pd-info-col">
       <div class="pd-info-card">
 
-        <!-- Header -->
-        <div class="pd-header">
-          <div class="pd-header-top">
-            <span *ngIf="product.category" class="pd-category-tag">
-              <i class="pi pi-tag"></i>{{ product.category.name }}
-            </span>
-            <span class="pd-stock-badge" [class]="'pd-stock-' + getStockSeverity()">
-              {{ getStockStatus() }}
-            </span>
-          </div>
-          <h1 class="pd-title">{{ product.name }}</h1>
+        <!-- Meta row: category + views -->
+        <div class="pd-meta">
+          <span *ngIf="product.category" class="tag tag--blue">
+            <i class="pi pi-tag"></i>{{ product.category.name }}
+          </span>
+          <span class="meta-views">
+            <i class="pi pi-eye"></i> {{ product.statistics.views || 0 }} vues
+          </span>
         </div>
 
-        <div class="pd-divider"></div>
+        <!-- Title -->
+        <h1 class="pd-title">{{ product.name }}</h1>
+
+        <!-- Stock badge -->
+        <span class="stock-badge" [ngClass]="'stock-badge--' + getStockSeverity()">
+          <i class="pi"
+            [ngClass]="{
+              'pi-check-circle': getStockSeverity() === 'success',
+              'pi-exclamation-circle': getStockSeverity() === 'warn',
+              'pi-times-circle': getStockSeverity() === 'danger'
+            }">
+          </i>
+          {{ getStockStatus() }}
+        </span>
+
+        <div class="pd-sep"></div>
 
         <!-- Price -->
-        <div class="pd-price-section">
-          <span class="pd-price-label">Prix</span>
-          <div class="pd-price-row">
-            <span [class]="product.isPromotion && product.discount > 0 ? 'pd-price pd-price--promo' : 'pd-price pd-price--normal'">
-              {{ getDiscountedPrice() | number:'1.2-2' }} Ar
-            </span>
-            <span *ngIf="product.isPromotion && product.discount > 0" class="pd-price-original">
-              {{ product.price | number:'1.2-2' }} Ar
-            </span>
+        <div class="price-block" [class.price-block--promo]="product.isPromotion && product.discount > 0">
+          <div class="price-row">
+            <div class="price-left">
+              <span class="price-label">Prix</span>
+              <span class="price-amount"
+                [class.price-amount--promo]="product.isPromotion && product.discount > 0"
+                [class.price-amount--normal]="!(product.isPromotion && product.discount > 0)">
+                {{ getDiscountedPrice() | number:'1.2-2' }} Ar
+              </span>
+            </div>
+            <div *ngIf="product.isPromotion && product.discount > 0" class="price-right">
+              <span class="price-original">{{ product.price | number:'1.2-2' }} Ar</span>
+              <span class="price-pct-badge">−{{ product.discount }}%</span>
+            </div>
           </div>
 
-          <div *ngIf="product.isPromotion && product.discount > 0" class="pd-promo-info">
-            <span class="pd-savings">
+          <div *ngIf="product.isPromotion && product.discount > 0" class="promo-tags">
+            <span class="promo-tag promo-tag--green">
               <i class="pi pi-check-circle"></i>
-              Économie de {{ getTotalSavings() | number:'1.2-2' }} Ar
+              Économie : {{ getTotalSavings() | number:'1.2-2' }} Ar
             </span>
-            <span *ngIf="getPromotionEndDate()" class="pd-promo-end">
+            <span *ngIf="getPromotionEndDate()" class="promo-tag promo-tag--orange">
               <i class="pi pi-clock"></i>
               {{ getPromotionEndDate() }}
             </span>
           </div>
         </div>
 
-        <div class="pd-divider"></div>
+        <div class="pd-sep"></div>
 
-        <!-- Stock -->
-        <div class="pd-stock-section">
-          <div class="pd-section-label">
-            <i class="pi pi-box"></i>
-            Disponibilité
+        <!-- Stock bar -->
+        <div class="stock-section">
+          <div class="section-label">
+            <i class="pi pi-box"></i> Disponibilité
           </div>
-          <div class="pd-stock-bar-wrap">
-            <div class="pd-stock-bar-track">
-              <div
-                class="pd-stock-bar-fill"
-                [class.pd-stock-bar-fill--low]="isLowStock()"
-                [style.width.%]="getStockWidth()">
-              </div>
+          <div class="stock-bar-track">
+            <div
+              class="stock-bar-fill"
+              [class.stock-bar-fill--low]="isLowStock()"
+              [style.width.%]="getStockWidth()">
             </div>
-            <span class="pd-stock-qty">{{ product.stock.quantity }} unités disponibles</span>
           </div>
-          <div *ngIf="isLowStock()" class="pd-stock-alert">
+          <span class="stock-qty">{{ product.stock.quantity }} unités disponibles</span>
+          <div *ngIf="isLowStock()" class="stock-alert">
             <i class="pi pi-exclamation-triangle"></i>
-            Dépêchez-vous, il n'en reste que quelques-uns !
+            Plus que quelques unités — dépêchez-vous !
           </div>
         </div>
 
-        <div class="pd-divider" *ngIf="product.description"></div>
+        <div class="pd-sep" *ngIf="product.description"></div>
 
         <!-- Description -->
-        <div *ngIf="product.description" class="pd-description-section">
-          <div class="pd-section-label">
-            <i class="pi pi-align-left"></i>
-            Description
+        <div *ngIf="product.description" class="desc-section">
+          <div class="section-label">
+            <i class="pi pi-align-left"></i> Description
           </div>
-          <p class="pd-description">{{ product.description }}</p>
+          <p class="desc-text">{{ product.description }}</p>
         </div>
 
-        <div class="pd-divider" *ngIf="product.shopId"></div>
+        <div class="pd-sep" *ngIf="product.shopId"></div>
 
         <!-- Shop -->
-        <div *ngIf="product.shopId" class="pd-shop-section">
-          <div class="pd-section-label">
-            <i class="pi pi-shop"></i>
-            Vendu par
+        <div *ngIf="product.shopId" class="shop-section">
+          <div class="section-label">
+            <i class="pi pi-shop"></i> Vendu par
           </div>
-          <div class="pd-shop-row" (click)="viewShop()">
-            <div class="pd-shop-logo">
+          <div class="shop-row" (click)="viewShop()">
+            <div class="shop-logo">
               <img
                 *ngIf="product.shopId.logo"
                 [src]="'http://localhost:3000/' + product.shopId.logo"
-                [alt]="product.shopId.name" />
-              <span *ngIf="!product.shopId.logo" class="pd-shop-initial">
+                [alt]="product.shopId.name"
+              />
+              <span *ngIf="!product.shopId.logo" class="shop-initial">
                 {{ product.shopId.name.charAt(0) }}
               </span>
             </div>
-            <span class="pd-shop-name">{{ product.shopId.name }}</span>
-            <span class="pd-shop-cta">Voir la boutique <i class="pi pi-arrow-right"></i></span>
+            <div class="shop-info">
+              <span class="shop-name">{{ product.shopId.name }}</span>
+              <span class="shop-cta">Voir tous les produits de cette boutique</span>
+            </div>
+            <i class="pi pi-chevron-right shop-arrow"></i>
           </div>
         </div>
 
-        <div class="pd-divider"></div>
-
-        <!-- Stats -->
-        <div class="pd-stats-row">
-          <div class="pd-stat">
-            <i class="pi pi-eye"></i>
-            <span>{{ product.statistics.views || 0 }} vues</span>
-          </div>
-          <div class="pd-stat">
+        <!-- Footer -->
+        <div class="pd-footer">
+          <span class="footer-meta">
             <i class="pi pi-calendar"></i>
-            <span>Ajouté le {{ product.createdAt | date:'dd/MM/yyyy' }}</span>
-          </div>
+            Ajouté le {{ product.createdAt | date:'dd/MM/yyyy' }}
+          </span>
         </div>
 
       </div>
