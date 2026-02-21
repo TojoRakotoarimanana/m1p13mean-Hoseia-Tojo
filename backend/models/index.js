@@ -7,14 +7,14 @@ function softDeletePlugin(schema) {
     deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
   });
 
-  schema.methods.softDelete = function(deletedByUserId) {
+  schema.methods.softDelete = function (deletedByUserId) {
     this.deletedAt = new Date();
     this.deletedBy = deletedByUserId;
     if (this.isActive !== undefined) this.isActive = false;
     return this.save();
   };
 
-  schema.pre(/^find/, function() {
+  schema.pre(/^find/, function () {
     if (!this.getOptions().includeDeleted) {
       this.where({ deletedAt: null });
     }
@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['admin', 'boutique', 'client'], required: true },
-  firstName: { type: String, required: function() { return this.role === 'client'; } },
-  lastName: { type: String, required: function() { return this.role === 'client'; } },
+  firstName: { type: String, required: function () { return this.role === 'client'; } },
+  lastName: { type: String, required: function () { return this.role === 'client'; } },
   phone: { type: String, trim: true },
   address: { street: String, city: String, zipCode: String, country: String },
   isActive: { type: Boolean, default: true }
@@ -34,13 +34,13 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(softDeletePlugin);
 
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
@@ -163,7 +163,7 @@ const orderSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-orderSchema.pre('save', async function() {
+orderSchema.pre('validate', async function () {
   if (!this.orderNumber) {
     this.orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
   }
@@ -184,7 +184,7 @@ const cartSchema = new mongoose.Schema({
   totalAmount: { type: Number, default: 0 }
 }, { timestamps: true });
 
-cartSchema.methods.calculateTotal = function() {
+cartSchema.methods.calculateTotal = function () {
   this.totalAmount = this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   return this.totalAmount;
 };
