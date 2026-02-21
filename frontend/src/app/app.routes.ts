@@ -16,6 +16,8 @@ import { MyProductsComponent } from './features/products/my-products/my-products
 import { ProductFormComponent } from './features/products/product-form/product-form.component';
 import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
 import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
+import { MyOrdersComponent } from './features/orders/my-orders/my-orders.component';
+import { OrderDetailComponent } from './features/orders/order-detail/order-detail.component';
 import { HomeClientComponent } from './features/home/home-client.component';
 import { ShopsListComponent } from './features/shops/shops-list.component';
 import { ShopDetailComponent } from './features/shops/shop-detail.component';
@@ -89,5 +91,7 @@ export const routes: Routes = [
     { path: 'my-products/new', component: ProductFormComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products/:id/edit', component: ProductFormComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products/stock', component: StockManagementComponent, canActivate: [boutiqueGuard] },
-    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [boutiqueGuard] }
+    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-orders', component: MyOrdersComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-orders/:id', component: OrderDetailComponent, canActivate: [boutiqueGuard] }
 ];

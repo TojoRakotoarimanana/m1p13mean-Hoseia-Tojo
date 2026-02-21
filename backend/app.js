@@ -15,6 +15,7 @@ var categoriesRouter = require('./routes/categories');
 var productsRouter = require('./routes/products');
 var catalogRouter = require('./routes/catalog');
 var adminRouter = require('./routes/admin');
+var orderShopRouter = require('./routes/orderShop');
 
 var app = express();
 var corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:4200';
@@ -41,6 +42,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/catalog', catalogRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/shop/orders', orderShopRouter);
 
 mongoose.connect(mongoUri)
   .then(() => console.log('Connexion à MongoDB réussie !'))

@@ -1,0 +1,249 @@
+<div class="orders-wrapper">
+
+  <!-- En-tête -->
+  <div class="header flex justify-content-between align-items-center mb-4">
+    <div class="flex align-items-center gap-3">
+      <h1>Mes commandes</h1>
+      <span *ngIf="pendingCount > 0" class="pending-badge">
+        {{ pendingCount }} en attente
+      </span>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <p-card [style]="{ width: '100%', marginBottom: '1.5rem' }">
+    <div class="filters grid">
+      <div class="col-12 md:col-3">
+        <label class="field-label">Client</label>
+        <input
+          pInputText
+          [(ngModel)]="filters.client"
+          placeholder="Nom du client..."
+          class="w-full" />
+      </div>
+      <div class="col-12 md:col-3">
+        <label class="field-label">Statut</label>
+        <p-select
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="filters.status"
+          styleClass="w-full">
+        </p-select>
+      </div>
+      <div class="col-12 md:col-2">
+        <label class="field-label">Du</label>
+        <input
+          pInputText
+          type="date"
+          [(ngModel)]="filters.startDate"
+          class="w-full" />
+      </div>
+      <div class="col-12 md:col-2">
+        <label class="field-label">Au</label>
+        <input
+          pInputText
+          type="date"
+          [(ngModel)]="filters.endDate"
+          class="w-full" />
+      </div>
+      <div class="col-12 md:col-2 filter-actions flex gap-2">
+        <p-button label="Filtrer" icon="pi pi-filter" severity="secondary" (onClick)="onFilter()"></p-button>
+        <p-button icon="pi pi-times" severity="secondary" [text]="true" (onClick)="resetFilters()"></p-button>
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Tableau -->
+  <p-card>
+    <p-table [value]="orders" [loading]="loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N° Commande</th>
+          <th>Client</th>
+          <th>Articles</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr>
+          <td>
+            <span class="order-number">{{ order.orderNumber }}</span>
+          </td>
+          <td>
+            <div class="client-info">
+              <span class="client-name">{{ getClientName(order) }}</span>
+              <span class="client-email text-secondary text-sm">{{ order.customerId?.email || '' }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="items-count">{{ order.items?.length || 0 }} article(s)</span>
+          </td>
+          <td>
+            <span class="amount">{{ getOrderSubtotal(order) | number:'1.0-0' }} Ar</span>
+          </td>
+          <td>
+            <p-tag
+              [value]="getStatusLabel(order.shopStatus || order.status)"
+              [severity]="getStatusSeverity(order.shopStatus || order.status)">
+            </p-tag>
+          </td>
+          <td>
+            <span class="date">{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </td>
+          <td class="actions">
+            <p-button
+              icon="pi pi-eye"
+              severity="secondary"
+              [rounded]="true"
+              [text]="true"
+              pTooltip="Voir détails"
+              (onClick)="openDetail(order)">
+            </p-button>
+            <p-button
+              *ngIf="canChangeStatus(order.shopStatus || order.status)"
+              icon="pi pi-sync"
+              severity="warn"
+              [rounded]="true"
+              [text]="true"
+              pTooltip="Changer le statut"
+              (onClick)="openStatusChange(order)">
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center py-4">
+            <i class="pi pi-inbox" style="font-size: 2rem; color: #9ca3af;"></i>
+            <p class="mt-2 text-secondary">Aucune commande trouvée.</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-paginator
+      [rows]="limit"
+      [totalRecords]="total"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="onPageChange($event)">
+    </p-paginator>
+  </p-card>
+</div>
+
+<!-- Dialog Détails commande -->
+<p-dialog
+  header="Détails de la commande"
+  [(visible)]="detailDialog"
+  [modal]="true"
+  [style]="{ width: '640px' }"
+  [dismissableMask]="true">
+
+  <div *ngIf="selectedOrder" class="order-detail">
+    <div class="detail-row">
+      <span class="detail-label">N° commande</span>
+      <span class="detail-value order-number">{{ selectedOrder.orderNumber }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Client</span>
+      <span class="detail-value">{{ getClientName(selectedOrder) }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Email</span>
+      <span class="detail-value">{{ selectedOrder.customerId?.email || '-' }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Statut commande</span>
+      <p-tag
+        [value]="getStatusLabel(selectedOrder.shopStatus || selectedOrder.status)"
+        [severity]="getStatusSeverity(selectedOrder.shopStatus || selectedOrder.status)">
+      </p-tag>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Livraison</span>
+      <span class="detail-value">{{ selectedOrder.deliveryInfo?.method === 'delivery' ? 'Livraison' : 'Retrait' }}</span>
+    </div>
+    <div class="detail-row" *ngIf="selectedOrder.notes">
+      <span class="detail-label">Notes</span>
+      <span class="detail-value">{{ selectedOrder.notes }}</span>
+    </div>
+
+    <h4 class="mt-4 mb-2">Articles de votre boutique</h4>
+    <p-table [value]="selectedOrder.items || []">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Produit</th>
+          <th>Qté</th>
+          <th>Prix unit.</th>
+          <th>Sous-total</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.price | number:'1.0-0' }} Ar</td>
+          <td>{{ item.subtotal | number:'1.0-0' }} Ar</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="total-row mt-3">
+      <span class="total-label">Total boutique</span>
+      <span class="total-value">{{ getOrderSubtotal(selectedOrder) | number:'1.0-0' }} Ar</span>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      *ngIf="selectedOrder && canChangeStatus(selectedOrder.shopStatus || selectedOrder.status)"
+      label="Changer le statut"
+      icon="pi pi-sync"
+      severity="warn"
+      (onClick)="detailDialog = false; openStatusChange(selectedOrder)">
+    </p-button>
+    <p-button label="Fermer" severity="secondary" (onClick)="detailDialog = false"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Dialog Changement de statut -->
+<p-dialog
+  header="Changer le statut"
+  [(visible)]="statusDialog"
+  [modal]="true"
+  [style]="{ width: '400px' }">
+
+  <div *ngIf="statusTarget" class="status-change-form">
+    <p class="mb-3">
+      Commande <strong>{{ statusTarget.orderNumber }}</strong>
+    </p>
+    <div class="field">
+      <label class="field-label">Nouveau statut</label>
+      <p-select
+        [options]="changeStatusOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="newStatus"
+        styleClass="w-full">
+      </p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Annuler" severity="secondary" (onClick)="statusDialog = false"></p-button>
+    <p-button
+      label="Confirmer"
+      icon="pi pi-check"
+      [loading]="statusLoading"
+      [disabled]="!newStatus"
+      (onClick)="applyStatusChange()">
+    </p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

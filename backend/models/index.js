@@ -159,7 +159,11 @@ const orderSchema = new mongoose.Schema({
     shopId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop' },
     status: { type: String, default: 'pending' },
     items: [{ type: mongoose.Schema.Types.ObjectId }],
-    subtotal: Number
+    subtotal: Number,
+    statusHistory: [{
+      status: { type: String },
+      changedAt: { type: Date, default: Date.now }
+    }]
   }]
 }, { timestamps: true });
 
