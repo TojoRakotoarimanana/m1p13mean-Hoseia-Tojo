@@ -15,6 +15,7 @@ import { MenuItem } from 'primeng/api';
 
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-navbar',
@@ -28,6 +29,7 @@ import { CartService } from '../../services/cart.service';
     ButtonModule,
     AvatarModule,
     ChipModule,
+    NotificationBellComponent,
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
@@ -137,6 +139,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
       ];
     } else if (role === 'boutique') {
       this.items = [
+        {
+          label: 'Tableau de bord',
+          icon: 'pi pi-th-large',
+          command: () => this.router.navigate(['/boutique-dashboard']),
+        },
         {
           separator: true,
         },

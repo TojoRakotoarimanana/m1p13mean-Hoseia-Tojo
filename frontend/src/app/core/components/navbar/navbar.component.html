@@ -1,25 +1,29 @@
 @if (authService.isLoggedIn()) {
   <div class="sidebar">
-    <div class="sidebar-header" (click)="navigateToHome()">
-      <div class="logo-container">
+    <div class="sidebar-header">
+      <div class="logo-container" (click)="navigateToHome()">
         <i class="pi pi-shopping-bag logo-icon"></i>
         <div class="logo-text">
           <h2 class="app-name">Mall Center</h2>
           <span class="app-subtitle">Management</span>
         </div>
       </div>
+
+      @if (user?.role === 'client' || user?.role === 'boutique') {
+        <app-notification-bell></app-notification-bell>
+      }
     </div>
 
     <nav class="sidebar-nav">
       <p-menu [model]="items"></p-menu>
     </nav>
-    
+
     <div class="sidebar-footer">
       @if (user) {
         <div class="user-profile">
-          <p-avatar 
-            [label]="user.firstName?.charAt(0) + user.lastName?.charAt(0)" 
-            size="normal" 
+          <p-avatar
+            [label]="user.firstName?.charAt(0) + user.lastName?.charAt(0)"
+            size="normal"
             shape="circle"
             [style]="{'background-color': '#2563eb', 'color': '#ffffff'}">
           </p-avatar>
@@ -28,9 +32,9 @@
             <span class="user-role">{{ user.role }}</span>
           </div>
         </div>
-        <p-button 
-          icon="pi pi-power-off" 
-          severity="secondary" 
+        <p-button
+          icon="pi pi-power-off"
+          severity="secondary"
           [text]="true"
           label="Déconnexion"
           (onClick)="logout()"

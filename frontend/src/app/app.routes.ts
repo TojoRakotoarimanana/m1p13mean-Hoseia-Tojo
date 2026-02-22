@@ -17,6 +17,7 @@ import { ProductFormComponent } from './features/products/product-form/product-f
 import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
 import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
 import { MyOrdersComponent } from './features/orders/my-orders/my-orders.component';
+import { BoutiqueDashboardComponent } from './features/boutique-dashboard/boutique-dashboard.component';
 import { OrderDetailComponent } from './features/orders/order-detail/order-detail.component';
 import { ShopOrdersComponent } from './features/orders/shop-orders/shop-orders.component';
 import { HomeClientComponent } from './features/home/home-client.component';
@@ -52,7 +53,7 @@ const redirectIfLoggedIn: any = () => {
                     router.navigate(['/home']);
                     break;
                 case 'boutique':
-                    router.navigate(['/my-shop']);
+                    router.navigate(['/boutique-dashboard']);
                     break;
                 case 'admin':
                     router.navigate(['/dashboard']);
@@ -105,6 +106,7 @@ export const routes: Routes = [
     { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [adminGuard] },
 
     // Routes boutique
+    { path: 'boutique-dashboard', component: BoutiqueDashboardComponent, canActivate: [boutiqueGuard] },
     { path: 'my-shop', component: MyShopComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products', component: MyProductsComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products/new', component: ProductFormComponent, canActivate: [boutiqueGuard] },

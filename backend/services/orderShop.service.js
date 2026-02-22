@@ -1,4 +1,5 @@
 const { Order, Shop } = require('../models');
+const NotificationService = require('./notification.service');
 
 class OrderShopService {
   async _getShop(userId) {
@@ -114,6 +115,28 @@ class OrderShopService {
     }
 
     await order.save();
+
+    // Notifier le client du changement de statut
+    const statusLabels = {
+      confirmed: 'confirmée',
+      preparing: 'en cours de préparation',
+      ready: 'prête pour retrait/livraison',
+      completed: 'complétée',
+      cancelled: 'annulée par la boutique'
+    };
+    try {
+      await NotificationService.createNotification({
+        userId: order.customerId,
+        type: 'order',
+        title: 'Statut de commande mis à jour',
+        message: `Votre commande ${order.orderNumber} est maintenant ${statusLabels[status] || status}.`,
+        relatedId: order._id,
+        relatedModel: 'Order'
+      });
+    } catch (notifError) {
+      console.error('Erreur notification client:', notifError.message);
+    }
+
     return order;
   }
 
