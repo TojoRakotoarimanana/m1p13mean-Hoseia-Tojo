@@ -5,8 +5,10 @@
 }
 
 .header h1 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.025em;
   margin: 0;
 }
 
@@ -18,8 +20,9 @@
 }
 
 .value {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
+  color: #0f172a;
 }
 
 .tables {

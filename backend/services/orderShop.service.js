@@ -16,6 +16,7 @@ class OrderShopService {
     const shop = await this._getShop(userId);
     const {
       status,
+      search,
       page = 1,
       limit = 10,
       sortBy = 'createdAt',
@@ -23,7 +24,11 @@ class OrderShopService {
     } = query;
 
     const filters = { 'items.shopId': shop._id };
-    if (status) filters.status = status;
+    // Filtrer sur le statut spécifique à cette boutique (shopOrders[].status)
+    if (status) {
+      filters.shopOrders = { $elemMatch: { shopId: shop._id, status: status } };
+    }
+    if (search) filters.orderNumber = { $regex: search, $options: 'i' };
 
     const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
     const limitNumber = Math.max(parseInt(limit, 10) || 10, 1);

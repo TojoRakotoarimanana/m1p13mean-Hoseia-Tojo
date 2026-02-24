@@ -1,64 +1,156 @@
-<div class="my-shop-wrapper">
-  <h1>Ma boutique</h1>
+<div class="ms-wrapper">
 
-  <p-card *ngIf="shop" [style]="{ width: '100%' }">
-    <div class="shop-header">
-      <div>
-        <h2>{{ shop.name }}</h2>
-        <p class="muted">{{ shop.category?.name }}</p>
-      </div>
-      <p-tag [value]="shop.status" [severity]="shop.status === 'active' ? 'success' : 'warn'"></p-tag>
+  <!-- Loading -->
+  <div *ngIf="loading" class="ms-skeleton">
+    <div class="ms-skeleton-header"></div>
+    <p-skeleton height="160px" borderRadius="16px"></p-skeleton>
+    <div class="ms-skeleton-row">
+      <p-skeleton height="240px" borderRadius="12px"></p-skeleton>
+      <p-skeleton height="240px" borderRadius="12px"></p-skeleton>
     </div>
+  </div>
 
-    <div class="actions" *ngIf="!isEditing">
-      <p-button label="Modifier contact & horaires" icon="pi pi-pencil" (onClick)="startEdit()"></p-button>
-    </div>
+  <!-- Not found -->
+  <div *ngIf="!loading && notFound" class="ms-empty">
+    <i class="pi pi-shop"></i>
+    <p>Aucune boutique approuvée trouvée.</p>
+  </div>
 
-    <div class="actions" *ngIf="isEditing">
-      <p-button label="Annuler" severity="secondary" (onClick)="cancelEdit()"></p-button>
-      <p-button label="Enregistrer" icon="pi pi-save" (onClick)="saveChanges()" [loading]="isSaving"></p-button>
-    </div>
+  <!-- Content -->
+  <div *ngIf="!loading && shop">
 
-    <div class="grid">
-      <div class="col">
-        <h4>Description</h4>
-        <p>{{ shop.description || 'Aucune description' }}</p>
-      </div>
-      <div class="col">
-        <h4>Contact</h4>
-        <div *ngIf="!isEditing">
-          <p>{{ shop.contact?.phone || '-' }}</p>
-          <p>{{ shop.contact?.email || '-' }}</p>
+    <!-- Page header + actions -->
+    <header class="page-header">
+      <div class="page-header-inner">
+        <div>
+          <h1 class="page-title">Ma Boutique</h1>
+          <p class="page-tagline">Gérez les informations de votre boutique</p>
         </div>
-        <div *ngIf="isEditing" class="edit-block">
-          <input pInputText [(ngModel)]="editContact.phone" placeholder="Téléphone" class="w-full" />
-          <input pInputText [(ngModel)]="editContact.email" placeholder="Email" class="w-full" />
+        <div class="header-actions">
+          <button *ngIf="!isEditing" class="btn-edit" (click)="startEdit()">
+            <i class="pi pi-pencil"></i> Modifier
+          </button>
+          <button *ngIf="isEditing" class="btn-cancel" (click)="cancelEdit()">
+            Annuler
+          </button>
+          <button *ngIf="isEditing" class="btn-save" (click)="saveChanges()" [disabled]="isSaving">
+            <i class="pi pi-save"></i>
+            {{ isSaving ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
         </div>
       </div>
-      <div class="col">
-        <h4>Localisation</h4>
-        <p>Étage: {{ shop.location?.floor || '-' }}</p>
-        <p>Zone: {{ shop.location?.zone || '-' }}</p>
-        <p>Numéro: {{ shop.location?.shopNumber || '-' }}</p>
+    </header>
+
+    <!-- Hero -->
+    <div class="ms-hero">
+      <div class="ms-hero-logo">
+        <img *ngIf="shop.logo" [src]="getShopLogoUrl()" [alt]="shop.name" />
+        <span *ngIf="!shop.logo" class="ms-hero-initial">{{ shop.name.charAt(0) }}</span>
+      </div>
+
+      <div class="ms-hero-info">
+        <div class="ms-hero-top">
+          <h2 class="ms-hero-name">{{ shop.name }}</h2>
+          <span class="ms-status-badge" [class.ms-status-inactive]="shop.status !== 'active'">
+            <span class="ms-status-dot"></span>
+            {{ shop.status === 'active' ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <div class="ms-hero-tags">
+          <span *ngIf="shop.category" class="tag tag--blue">
+            <i class="pi pi-tag"></i>{{ shop.category.name }}
+          </span>
+          <span *ngIf="getLocationString()" class="tag tag--gray">
+            <i class="pi pi-map-marker"></i>{{ getLocationString() }}
+          </span>
+        </div>
+
+        <p class="ms-hero-desc">{{ shop.description || 'Aucune description renseignée.' }}</p>
       </div>
     </div>
 
-    <div class="hours">
-      <h4>Horaires</h4>
-      <div class="hours-row" *ngFor="let day of days">
-        <span class="day">{{ day | titlecase }}</span>
+    <!-- Info row -->
+    <div class="ms-info-row">
+
+      <!-- Horaires -->
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <i class="pi pi-clock"></i>
+          <h3>Horaires d'ouverture</h3>
+        </div>
+        <div class="hours-list">
+          <div *ngFor="let day of days" class="hour-item" [class.hour-item--open]="isDayOpen(day) && !isEditing">
+            <span class="hour-day">{{ dayLabels[day] }}</span>
+            <ng-container *ngIf="!isEditing">
+              <span *ngIf="isDayOpen(day)" class="hour-time">
+                {{ shop.hours[day].open }} – {{ shop.hours[day].close }}
+              </span>
+              <span *ngIf="!isDayOpen(day)" class="hour-closed">Fermé</span>
+            </ng-container>
+            <ng-container *ngIf="isEditing">
+              <div class="hour-edit">
+                <input pInputText [(ngModel)]="editHours[day].open" placeholder="08:00" />
+                <span class="hour-sep">–</span>
+                <input pInputText [(ngModel)]="editHours[day].close" placeholder="18:00" />
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <i class="pi pi-phone"></i>
+          <h3>Contact</h3>
+        </div>
+
         <ng-container *ngIf="!isEditing">
-          <span>{{ shop.hours?.[day]?.open || '-' }} - {{ shop.hours?.[day]?.close || '-' }}</span>
+          <div class="contact-list">
+            <div *ngIf="shop.contact?.phone" class="contact-item">
+              <div class="contact-icon"><i class="pi pi-phone"></i></div>
+              <div class="contact-body">
+                <span class="contact-label">Téléphone</span>
+                <span class="contact-value">{{ shop.contact.phone }}</span>
+              </div>
+            </div>
+            <div *ngIf="shop.contact?.email" class="contact-item">
+              <div class="contact-icon"><i class="pi pi-envelope"></i></div>
+              <div class="contact-body">
+                <span class="contact-label">Email</span>
+                <span class="contact-value">{{ shop.contact.email }}</span>
+              </div>
+            </div>
+            <div *ngIf="!shop.contact?.phone && !shop.contact?.email" class="contact-empty">
+              <i class="pi pi-info-circle"></i>
+              Aucun contact renseigné
+            </div>
+          </div>
         </ng-container>
+
         <ng-container *ngIf="isEditing">
-          <input pInputText [(ngModel)]="editHours[day].open" placeholder="Ouverture" class="w-full" />
-          <input pInputText [(ngModel)]="editHours[day].close" placeholder="Fermeture" class="w-full" />
+          <div class="contact-edit">
+            <div class="edit-field">
+              <label class="edit-label">Téléphone</label>
+              <div class="edit-input-wrap">
+                <i class="pi pi-phone"></i>
+                <input pInputText [(ngModel)]="editContact.phone" placeholder="034 XX XXX XX" />
+              </div>
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">Email</label>
+              <div class="edit-input-wrap">
+                <i class="pi pi-envelope"></i>
+                <input pInputText [(ngModel)]="editContact.email" placeholder="boutique@mail.com" />
+              </div>
+            </div>
+          </div>
         </ng-container>
       </div>
-    </div>
-  </p-card>
 
-  <p *ngIf="!loading && notFound" class="empty">Aucune boutique approuvée trouvée.</p>
+    </div>
+  </div>
 </div>
 
 <p-toast></p-toast>

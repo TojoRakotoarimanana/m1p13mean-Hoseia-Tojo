@@ -1,106 +1,140 @@
-<div class="shop-orders-container">
-    <div class="header-section">
-        <h1>Mes commandes</h1>
-        <p class="subtitle">Gérez les commandes reçues dans votre boutique</p>
+<div class="mp-wrapper">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <h1 class="page-title">Mes commandes</h1>
+        <p class="page-tagline">Gérez les commandes reçues dans votre boutique</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters bar -->
+  <div class="mp-filters-card">
+
+    <!-- Recherche -->
+    <div class="mp-filter-search">
+      <div class="mp-input-wrap">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          [(ngModel)]="searchQuery"
+          placeholder="N° commande…"
+          (keyup.enter)="onSearch()" />
+      </div>
     </div>
 
-    <div class="filters-section">
-        <div class="filters-row">
-            <div class="status-filter">
-                <label for="statusFilter">Filtrer par statut:</label>
-                <p-select 
-                    id="statusFilter"
-                    [(ngModel)]="selectedStatus" 
-                    [options]="statusOptions"
-                    optionLabel="label" 
-                    optionValue="value"
-                    (onSelectionChange)="onStatusFilterChange()"
-                    placeholder="Tous les statuts"
-                    [style]="{ width: '200px' }">
-                </p-select>
+    <!-- Filtre statut -->
+    <div class="mp-filter-field">
+      <label class="mp-label">Statut</label>
+      <p-select
+        [(ngModel)]="selectedStatus"
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Tous les statuts"
+        [style]="{'width': '100%'}">
+      </p-select>
+    </div>
+
+    <button class="btn-filter" (click)="onSearch()" type="button">
+      <i class="pi pi-filter"></i> Filtrer
+    </button>
+
+    @if (totalRecords > 0) {
+      <div class="summary-chips">
+        <span class="chip chip-total">
+          <i class="pi pi-receipt"></i> {{ totalRecords }} commande(s)
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Table -->
+  <div class="mp-table-card">
+    <p-table
+      [value]="orders"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      [lazy]="true"
+      (onLazyLoad)="onPageChange($event)"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first}–{last} sur {totalRecords}"
+      [rowsPerPageOptions]="[5, 10, 20]">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="min-width:140px">N° Commande</th>
+          <th style="min-width:190px">Client</th>
+          <th style="min-width:110px">Date</th>
+          <th style="min-width:150px">Statut</th>
+          <th style="min-width:150px">Montant</th>
+          <th style="min-width:80px"></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr>
+
+          <!-- N° commande -->
+          <td>
+            <div class="order-num">
+              <i class="pi pi-receipt"></i>
+              <span>#{{ order.orderNumber }}</span>
             </div>
-        </div>
-    </div>
+          </td>
 
-    <p-card>
-        <div class="orders-table-container">
-            <p-table 
-                [value]="orders" 
-                [loading]="loading"
-                [paginator]="true" 
-                [rows]="10"
-                [totalRecords]="totalRecords"
-                [lazy]="true"
-                (onLazyLoad)="onPageChange($event)"
-                [showCurrentPageReport]="true"
-                currentPageReportTemplate="{first} - {last} sur {totalRecords} commandes"
-                responsiveLayout="scroll">
-                
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>N° Commande</th>
-                        <th>Client</th>
-                        <th>Date</th>
-                        <th>Statut</th>
-                        <th>Montant</th>
-                        <th>Actions</th>
-                    </tr>
-                </ng-template>
+          <!-- Client -->
+          <td>
+            <div class="customer-info">
+              <span class="customer-name">
+                {{ order.customerId?.firstName }} {{ order.customerId?.lastName }}
+              </span>
+              <span class="customer-email">{{ order.customerId?.email }}</span>
+            </div>
+          </td>
 
-                <ng-template pTemplate="body" let-order>
-                    <tr>
-                        <td>
-                            <span class="order-number">#{{ order.orderNumber }}</span>
-                        </td>
-                        <td>
-                            <div class="customer-info">
-                                <span class="customer-name">
-                                    {{ order.customerId?.firstName }} {{ order.customerId?.lastName }}
-                                </span>
-                                <small class="customer-email">{{ order.customerId?.email }}</small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="order-date">{{ formatDate(order.createdAt) }}</span>
-                        </td>
-                        <td>
-                            <p-tag 
-                                [value]="order.shopStatus || order.status" 
-                                [severity]="getStatusSeverity(order.shopStatus || order.status)"
-                                styleClass="status-tag">
-                            </p-tag>
-                        </td>
-                        <td>
-                            <span class="order-amount">{{ formatCurrency(order.totalAmount) }}</span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <p-button 
-                                    icon="pi pi-eye" 
-                                    size="small"
-                                    severity="secondary"
-                                    (onClick)="viewOrder(order._id)"
-                                    pTooltip="Voir les détails">
-                                </p-button>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
+          <!-- Date -->
+          <td class="cell-muted">{{ formatDate(order.createdAt) }}</td>
 
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="6" class="text-center">
-                            <div class="empty-state">
-                                <i class="pi pi-shopping-cart empty-icon"></i>
-                                <p class="empty-message">Aucune commande trouvée</p>
-                                <small class="empty-submessage">
-                                    Les commandes contenant vos produits apparaîtront ici
-                                </small>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </p-card>
+          <!-- Statut -->
+          <td>
+            <span class="status-badge status-{{ order.shopStatus || order.status }}">
+              {{ getStatusLabel(order.shopStatus || order.status) }}
+            </span>
+          </td>
+
+          <!-- Montant -->
+          <td>
+            <span class="order-amount">{{ formatCurrency(order.totalAmount) }}</span>
+          </td>
+
+          <!-- Action -->
+          <td class="td-right">
+            <button class="view-btn" (click)="viewOrder(order._id)" type="button">
+              <i class="pi pi-eye"></i> Voir
+            </button>
+          </td>
+
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="mp-empty">
+              <i class="pi pi-shopping-cart"></i>
+              <p>Aucune commande trouvée.</p>
+              <small>Les commandes contenant vos produits apparaîtront ici.</small>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
+
 </div>

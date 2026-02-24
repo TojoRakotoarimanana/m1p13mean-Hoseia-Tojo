@@ -80,7 +80,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.router.navigate(['/home']);
         break;
       case 'boutique':
-        this.router.navigate(['/my-shop']);
+        this.router.navigate(['/boutique-dashboard']);
         break;
       case 'admin':
         this.router.navigate(['/dashboard']);
@@ -148,35 +148,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
           separator: true,
         },
         {
-          label: 'Mon Espace',
-          icon: 'pi pi-briefcase',
-          items: [
-            {
-              label: 'Ma Boutique',
-              icon: 'pi pi-building',
-              command: () => this.router.navigate(['/my-shop']),
-            },
-            {
-              label: 'Mes Produits',
-              icon: 'pi pi-box',
-              command: () => this.router.navigate(['/my-products']),
-            },
-            {
-              label: 'Gestion Stock',
-              icon: 'pi pi-list',
-              command: () => this.router.navigate(['/my-products/stock']),
-            },
-            {
-              label: 'Statistiques',
-              icon: 'pi pi-chart-line',
-              command: () => this.router.navigate(['/my-products/stats']),
-            },
-            {
-              label: 'Commandes',
-              icon: 'pi pi-receipt',
-              command: () => this.router.navigate(['/my-orders']),
-            },
-          ],
+          label: 'Ma Boutique',
+          icon: 'pi pi-building',
+          command: () => this.router.navigate(['/my-shop']),
+        },
+        {
+          label: 'Mes Produits',
+          icon: 'pi pi-box',
+          command: () => this.router.navigate(['/my-products']),
+        },
+        {
+          label: 'Commandes',
+          icon: 'pi pi-receipt',
+          command: () => this.router.navigate(['/my-orders']),
+        },
+        {
+          label: 'Gestion Stock',
+          icon: 'pi pi-list',
+          command: () => this.router.navigate(['/my-products/stock']),
         },
         {
           separator: true,

@@ -62,17 +62,18 @@ class ShopService {
       throw error;
     }
 
-    const shop = await Shop.findOne({ userId, status: 'active', isActive: true })
+    const shops = await Shop.find({ userId, status: 'active', isActive: true })
       .populate('userId', 'firstName lastName email')
-      .populate('category', 'name description');
+      .populate('category', 'name description')
+      .sort({ createdAt: 1 });
 
-    if (!shop) {
+    if (!shops.length) {
       const error = new Error('Aucune boutique active trouvée.');
       error.status = 404;
       throw error;
     }
 
-    return shop;
+    return shops;
   }
 
   async getById(shopId) {

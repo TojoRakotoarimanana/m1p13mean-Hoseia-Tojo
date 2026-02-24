@@ -1,10 +1,8 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
@@ -15,7 +13,7 @@ import { ShopService } from '../../core/services/shop.service';
 @Component({
   selector: 'app-my-shop',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardModule, TagModule, ButtonModule, InputTextModule, ToastModule],
+  imports: [CommonModule, FormsModule, InputTextModule, SkeletonModule, ToastModule],
   providers: [MessageService],
   templateUrl: './my-shop.component.html',
   styleUrl: './my-shop.component.css'
@@ -28,15 +26,18 @@ export class MyShopComponent implements OnInit {
   isSaving = false;
   editContact = { phone: '', email: '' };
   editHours: Record<string, { open: string; close: string }> = {};
-  readonly days: string[] = [
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-    'sunday'
-  ];
+
+  readonly days: string[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+  readonly dayLabels: Record<string, string> = {
+    monday: 'Lundi',
+    tuesday: 'Mardi',
+    wednesday: 'Mercredi',
+    thursday: 'Jeudi',
+    friday: 'Vendredi',
+    saturday: 'Samedi',
+    sunday: 'Dimanche'
+  };
 
   constructor(
     private authService: AuthService,
@@ -48,15 +49,13 @@ export class MyShopComponent implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getUser();
-    if (!user?.id) {
-      this.notFound = true;
-      return;
-    }
+    if (!user?.id) { this.notFound = true; return; }
 
     this.loading = true;
     this.shopService.getByUser(user.id).subscribe({
-      next: (shop) => {
-        this.shop = shop;
+      next: (response: any) => {
+        const shops: any[] = Array.isArray(response) ? response : [response];
+        this.shop = shops[0] ?? null;
         this.setEditValues();
         this.loading = false;
         this.cdr.detectChanges();
@@ -67,6 +66,24 @@ export class MyShopComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  getShopLogoUrl(): string {
+    return 'http://localhost:3000/' + this.shop?.logo;
+  }
+
+  getLocationString(): string {
+    const loc = this.shop?.location;
+    if (!loc) return '';
+    const parts: string[] = [];
+    if (loc.floor) parts.push(`Étage ${loc.floor}`);
+    if (loc.zone) parts.push(`Zone ${loc.zone}`);
+    if (loc.shopNumber) parts.push(`N° ${loc.shopNumber}`);
+    return parts.join(' · ');
+  }
+
+  isDayOpen(day: string): boolean {
+    return !!(this.shop?.hours?.[day]?.open && this.shop?.hours?.[day]?.close);
   }
 
   startEdit() {
@@ -81,7 +98,6 @@ export class MyShopComponent implements OnInit {
 
   saveChanges() {
     if (!this.shop?._id) return;
-
     this.isSaving = true;
     const payload = {
       name: this.shop?.name,

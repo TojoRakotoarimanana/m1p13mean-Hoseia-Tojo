@@ -1,20 +1,20 @@
 <div class="dashboard-wrapper">
 
   <!-- Header -->
-  <div class="dashboard-header">
-    <div class="header-content">
+  <header class="page-header">
+    <div class="page-header-inner">
       <div>
-        <h1 class="dashboard-title">Tableau de bord</h1>
+        <h1 class="page-greeting">Tableau de bord</h1>
         @if (user) {
-          <p class="dashboard-subtitle">Bonjour, <strong>{{ user.firstName }} {{ user.lastName }}</strong> 👋</p>
+          <p class="page-tagline">Bonjour, {{ user.firstName }} {{ user.lastName }}</p>
         }
       </div>
-      <div class="header-date">
+      <time class="page-date">
         <i class="pi pi-calendar"></i>
-        <span>{{ currentDate | date:'EEEE dd MMMM yyyy':'':'fr' }}</span>
-      </div>
+        {{ currentDate | date:'EEEE d MMMM yyyy':'':'fr' }}
+      </time>
     </div>
-  </div>
+  </header>
 
   <!-- Stats cards -->
   <div class="stats-grid">
@@ -143,6 +143,75 @@
             />
           </div>
         }
+      </div>
+    }
+  </div>
+
+  <!-- Product stats -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Statistiques produits</h2>
+    </div>
+
+    @if (statsLoading) {
+      <p-skeleton width="100%" height="64px" styleClass="mb-3" />
+      <div class="top-lists">
+        <p-skeleton width="100%" height="180px" />
+        <p-skeleton width="100%" height="180px" />
+      </div>
+    } @else if (productStats) {
+      <div class="stats-mini-bar">
+        <div class="stats-mini-item">
+          <span class="stats-mini-value">{{ productStats.total ?? 0 }}</span>
+          <span class="stats-mini-label">Total</span>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <span class="stats-mini-value">{{ productStats.active ?? 0 }}</span>
+          <span class="stats-mini-label">Actifs</span>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <span class="stats-mini-value accent-promo">{{ productStats.promotion ?? 0 }}</span>
+          <span class="stats-mini-label">En promotion</span>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <span class="stats-mini-value accent-warn">{{ productStats.lowStock ?? 0 }}</span>
+          <span class="stats-mini-label">Stock bas</span>
+        </div>
+      </div>
+
+      <div class="top-lists">
+        <div class="top-list-card">
+          <p class="top-list-title"><i class="pi pi-star"></i> Plus vendus</p>
+          @if (topSold.length === 0) {
+            <p class="top-list-empty">Aucune donnée</p>
+          } @else {
+            @for (product of topSold; track product._id; let i = $index) {
+              <div class="top-list-row">
+                <span class="top-list-rank">{{ i + 1 }}</span>
+                <span class="top-list-name">{{ product.name }}</span>
+                <span class="top-list-count">{{ product.statistics?.sold || 0 }} vendus</span>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="top-list-card">
+          <p class="top-list-title"><i class="pi pi-eye"></i> Plus consultés</p>
+          @if (topViewed.length === 0) {
+            <p class="top-list-empty">Aucune donnée</p>
+          } @else {
+            @for (product of topViewed; track product._id; let i = $index) {
+              <div class="top-list-row">
+                <span class="top-list-rank">{{ i + 1 }}</span>
+                <span class="top-list-name">{{ product.name }}</span>
+                <span class="top-list-count">{{ product.statistics?.views || 0 }} vues</span>
+              </div>
+            }
+          }
+        </div>
       </div>
     }
   </div>

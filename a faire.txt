@@ -2,4 +2,6 @@ Ajouter une carte pour le reperage des boutiques
 
 Profil utilisateur
 
-La meme personne peut avoir 2 boutiques
+Les notification s'affiche seulement dans la page home du client 
+
+On peut cliqué livré/récupéré dans l'etat des commandes pour que le chiffre d'affaire soit compté

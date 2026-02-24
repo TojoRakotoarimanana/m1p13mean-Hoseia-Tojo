@@ -7,9 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { CardModule } from 'primeng/card';
-import { debounceTime, finalize, Subject, takeUntil } from 'rxjs';
+import { finalize, Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-shop-orders',
@@ -21,9 +19,7 @@ import { debounceTime, finalize, Subject, takeUntil } from 'rxjs';
         ButtonModule,
         InputTextModule,
         SelectModule,
-        TableModule,
-        TagModule,
-        CardModule
+        TableModule
     ],
     templateUrl: './shop-orders.component.html',
     styleUrl: './shop-orders.component.css'
@@ -67,15 +63,14 @@ export class ShopOrdersComponent implements OnInit, OnDestroy {
 
     loadOrders() {
         this.loading = true;
-        
+
         const params: any = {
             page: this.currentPage,
             limit: 10
         };
 
-        if (this.selectedStatus) {
-            params.status = this.selectedStatus;
-        }
+        if (this.selectedStatus) params.status = this.selectedStatus;
+        if (this.searchQuery?.trim()) params.search = this.searchQuery.trim();
 
         this.orderShopService.list(params).pipe(
             takeUntil(this.destroy$),
@@ -96,13 +91,14 @@ export class ShopOrdersComponent implements OnInit, OnDestroy {
         });
     }
 
-    onStatusFilterChange() {
+    onSearch() {
         this.currentPage = 1;
         this.loadOrders();
     }
 
     onPageChange(event: any) {
-        this.currentPage = event.page + 1;
+        // onLazyLoad envoie { first, rows } — pas event.page
+        this.currentPage = Math.floor((event.first ?? 0) / (event.rows ?? 10)) + 1;
         this.loadOrders();
     }
 
@@ -132,6 +128,18 @@ export class ShopOrdersComponent implements OnInit, OnDestroy {
             currency: 'MGA',
             minimumFractionDigits: 0
         }).format(amount).replace('MGA', 'Ar');
+    }
+
+    getStatusLabel(status: string): string {
+        const labels: Record<string, string> = {
+            pending: 'En attente',
+            confirmed: 'Confirmé',
+            preparing: 'En préparation',
+            ready: 'Prêt',
+            completed: 'Terminé',
+            cancelled: 'Annulé'
+        };
+        return labels[status] ?? status;
     }
 
     formatDate(date: string): string {
