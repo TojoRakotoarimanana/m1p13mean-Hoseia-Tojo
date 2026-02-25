@@ -1,7 +1,10 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 const mongoose = require('mongoose');
+require('dotenv').config();
 const { User, Category, Shop, Product } = require('../models');
 
-const DB_URI = 'mongodb://localhost:27017/m1p13mean';
+const DB_URI = process.env.MONGO_URI;
 
 const shopCategories = [
   { name: 'Mode & Vêtements', description: 'Magasins de vêtements et accessoires', type: 'boutique', icon: 'pi-shopping-bag' },
