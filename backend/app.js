@@ -23,7 +23,7 @@ var orderShopRouter = require('./routes/orderShop');
 var notificationsRouter = require('./routes/notifications');
 
 var app = express();
-var corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:4200';
+var corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200').split(',');
 var mongoUri = process.env.MONGO_URI || 'mongodb+srv://user:root@mean.b0d13bz.mongodb.net/?appName=Mean'
 
 app.set('views', path.join(__dirname, 'views'));
@@ -34,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-  origin: corsOrigin,
+  origin: corsOrigins,
   credentials: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
