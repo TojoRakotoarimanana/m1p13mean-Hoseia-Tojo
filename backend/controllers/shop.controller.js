@@ -63,6 +63,15 @@ exports.suspend = async (req, res) => {
   }
 };
 
+exports.reactivate = async (req, res) => {
+  try {
+    const result = await ShopService.reactivate(req.params.id);
+    res.json(result);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la réactivation.' });
+  }
+};
+
 exports.approve = async (req, res) => {
   try {
     const result = await ShopService.approve(req.params.id, req.body.location);

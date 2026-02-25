@@ -44,6 +44,10 @@ export class ShopService {
     return this.http.post(`${this.apiUrl}/${id}/suspend`, {});
   }
 
+  reactivate(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/reactivate`, {});
+  }
+
   approve(id: string, location: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/approve`, { location });
   }
