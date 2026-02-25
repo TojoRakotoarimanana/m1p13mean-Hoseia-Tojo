@@ -64,16 +64,14 @@
                                         {{ item.product.name }}
                                     </a>
                                     <div class="item-price-line">
-                                        <span [class.price-promo]="item.product.isPromotion"
-                                            [class.price-normal]="!item.product.isPromotion">
+                                        <span [class.price-promo]="item.product.isPromotion && item.product.discount > 0"
+                                            [class.price-normal]="!(item.product.isPromotion && item.product.discount > 0)">
                                             {{ formatCurrency(item.product.price) }}
                                         </span>
-                                        @if (item.product.isPromotion && item.product.originalPrice) {
+                                        @if (item.product.isPromotion && item.product.discount > 0 && item.product.originalPrice) {
                                             <span class="price-original">
                                                 {{ formatCurrency(item.product.originalPrice) }}
                                             </span>
-                                        }
-                                        @if (item.product.isPromotion && item.product.discount) {
                                             <span class="discount-badge">-{{ item.product.discount }}%</span>
                                         }
                                     </div>

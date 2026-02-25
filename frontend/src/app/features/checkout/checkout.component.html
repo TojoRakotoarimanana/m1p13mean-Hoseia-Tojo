@@ -65,11 +65,11 @@
                                 <div class="recap-info">
                                     <p class="recap-name">{{ item.product.name }}</p>
                                     <div class="recap-price-line">
-                                        <span [class.recap-price-promo]="item.product.isPromotion"
-                                            [class.recap-price-normal]="!item.product.isPromotion">
+                                        <span [class.recap-price-promo]="item.product.isPromotion && item.product.discount > 0"
+                                            [class.recap-price-normal]="!(item.product.isPromotion && item.product.discount > 0)">
                                             {{ formatCurrency(item.product.price) }}
                                         </span>
-                                        @if (item.product.isPromotion && item.product.originalPrice) {
+                                        @if (item.product.isPromotion && item.product.discount > 0 && item.product.originalPrice) {
                                             <span class="recap-price-original">
                                                 {{ formatCurrency(item.product.originalPrice) }}
                                             </span>

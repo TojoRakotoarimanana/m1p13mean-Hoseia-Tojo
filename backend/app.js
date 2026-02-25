@@ -1,3 +1,5 @@
+var dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -21,8 +23,8 @@ var orderShopRouter = require('./routes/orderShop');
 var notificationsRouter = require('./routes/notifications');
 
 var app = express();
-var corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:4200';
-var mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/m1p13mean';
+var corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200').split(',');
+var mongoUri = process.env.MONGO_URI || 'mongodb+srv://user:root@mean.b0d13bz.mongodb.net/?appName=Mean'
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -32,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-  origin: corsOrigin,
+  origin: corsOrigins,
   credentials: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -50,9 +52,9 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/shop/orders', orderShopRouter);
 app.use('/api/notifications', notificationsRouter);
 
-mongoose.connect(mongoUri)
+mongoose.connect(mongoUri, { family: 4 })
   .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+  .catch((err) => console.log('Connexion à MongoDB échouée !', err.message));
 
 app.use(function (req, res, next) {
   next(createError(404));

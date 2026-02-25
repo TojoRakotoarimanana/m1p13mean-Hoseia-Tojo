@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, Subscription, interval } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ApiNotification {
   _id: string;
@@ -18,7 +19,7 @@ export interface ApiNotification {
 
 @Injectable({ providedIn: 'root' })
 export class ApiNotificationService implements OnDestroy {
-  private readonly apiUrl = 'http://localhost:3000/api/notifications';
+  private readonly apiUrl = `${environment.apiUrl}/api/notifications`;
   private pollingSub?: Subscription;
   private eventSource?: EventSource;
   private sseActive = false;

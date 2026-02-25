@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { Product } from './catalog.service';
+import { environment } from '../../../environments/environment';
 
 export interface CartItem {
     itemId?: string; // Mongo _id of the cart line (backend expects this for update/remove)
@@ -20,7 +21,7 @@ export interface CartState {
     providedIn: 'root'
 })
 export class CartService {
-    private apiUrl = 'http://localhost:3000/api/cart';
+    private apiUrl = `${environment.apiUrl}/api/cart`;
     private cartState = new BehaviorSubject<CartState>({ items: [], totalAmount: 0, totalItems: 0 });
 
     cart$ = this.cartState.asObservable();
@@ -137,8 +138,8 @@ export class CartService {
 
     // Retourne le prix de vente effectif en tenant compte de la promotion
     private effectivePrice(product: any): number {
-        if (product?.isPromotion && product.discount > 0 && product.originalPrice > 0) {
-            return Number((product.originalPrice * (1 - product.discount / 100)).toFixed(2));
+        if (product?.isPromotion && product.discount > 0) {
+            return Number((product.price * (1 - product.discount / 100)).toFixed(2));
         }
         return product?.price || 0;
     }
@@ -146,9 +147,11 @@ export class CartService {
     private applyServerCart(cart: any) {
         const items: CartItem[] = (cart?.items || []).map((i: any) => {
             const raw = i.productId;
-            // Normaliser le prix : si en promotion, recalculer depuis originalPrice × (1 - discount%)
+            // Normaliser le prix : si en promotion, recalculer depuis price × (1 - discount%)
+            // car le prix de base est stocké dans 'price' dans le backend
             const product = {
                 ...raw,
+                originalPrice: raw.price, // Sauvegarder le prix original pour l'affichage
                 price: this.effectivePrice(raw)
             };
             const shop = i.shopId || raw?.shopId;

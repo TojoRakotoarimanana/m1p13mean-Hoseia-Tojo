@@ -178,9 +178,6 @@ class ProductService {
         product.priceHistory.push({ oldPrice: product.price, newPrice });
       }
       product.price = newPrice;
-      if (!product.isPromotion && data.originalPrice === undefined) {
-        product.originalPrice = newPrice;
-      }
     }
     if (data.originalPrice !== undefined) product.originalPrice = Number(data.originalPrice);
     if (data.discount !== undefined) product.discount = Number(data.discount);
@@ -257,14 +254,10 @@ class ProductService {
     const promoEndDate = data.promoEndDate ? new Date(data.promoEndDate) : null;
 
     if (enablePromotion) {
-      const promoPrice = Number((originalPrice * (1 - discount / 100)).toFixed(2));
-      if (product.price !== promoPrice) {
-        product.priceHistory.push({ oldPrice: product.price, newPrice: promoPrice });
-      }
       product.isPromotion = true;
       product.discount = discount;
       product.originalPrice = originalPrice;
-      product.price = promoPrice;
+      // product.price = promoPrice; // On ne change plus le prix de base
       product.promoEndDate = promoEndDate;
       product.promotionHistory.push({
         discount,
@@ -273,12 +266,9 @@ class ProductService {
         action: 'enabled'
       });
     } else {
-      if (product.price !== originalPrice) {
-        product.priceHistory.push({ oldPrice: product.price, newPrice: originalPrice });
-      }
       product.isPromotion = false;
       product.discount = 0;
-      product.price = originalPrice;
+      // product.price = originalPrice; // On ne change plus le prix de base
       product.promoEndDate = null;
       const lastPromo = product.promotionHistory[product.promotionHistory.length - 1];
       if (lastPromo) {

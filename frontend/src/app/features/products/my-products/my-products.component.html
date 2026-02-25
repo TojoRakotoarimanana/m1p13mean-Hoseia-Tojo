@@ -95,11 +95,11 @@
           </td>
           <td class="cell-category">{{ product.category?.name || '-' }}</td>
           <td>
-            <div *ngIf="product.isPromotion" class="price-stack">
-              <span class="price-original">{{ product.originalPrice | number:'1.0-2' }} Ar</span>
-              <span class="price-promo">{{ product.price | number:'1.0-2' }} Ar</span>
+            <div *ngIf="product.isPromotion && product.discount > 0" class="price-stack">
+              <span class="price-original">{{ product.price | number:'1.0-2' }} Ar</span>
+              <span class="price-promo">{{ getEffectivePrice(product) | number:'1.0-2' }} Ar</span>
             </div>
-            <span *ngIf="!product.isPromotion" class="price-regular">{{ product.price | number:'1.0-2' }} Ar</span>
+            <span *ngIf="!(product.isPromotion && product.discount > 0)" class="price-regular">{{ product.price | number:'1.0-2' }} Ar</span>
           </td>
           <td>
             <p-tag

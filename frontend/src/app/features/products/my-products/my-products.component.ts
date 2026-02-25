@@ -271,6 +271,13 @@ export class MyProductsComponent implements OnInit {
     this.router.navigate(['/my-products/new']);
   }
 
+  getEffectivePrice(product: any): number {
+    if (product?.isPromotion && product.discount > 0) {
+      return Number((product.price * (1 - product.discount / 100)).toFixed(2));
+    }
+    return product?.price || 0;
+  }
+
   editProduct(product: any) {
     this.router.navigate(['/my-products', product._id, 'edit']);
   }
