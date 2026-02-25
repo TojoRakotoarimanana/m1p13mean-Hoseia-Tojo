@@ -10,11 +10,11 @@ const authenticateToken = async (req, res, next) => {
   }
 
   try {
-    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
+    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-it';
     const decoded = jwt.verify(token, jwtSecret);
     
     // Vérifier que l'utilisateur existe toujours
-    const user = await User.findById(decoded._id).select('-password');
+    const user = await User.findById(decoded.userId).select('-password');
     if (!user || !user.isActive) {
       return res.status(401).json({ message: 'Utilisateur non trouvé ou inactif.' });
     }

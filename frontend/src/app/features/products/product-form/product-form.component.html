@@ -1,92 +1,115 @@
 <div class="product-form-wrapper">
-  <div class="header flex justify-content-between align-items-center mb-4">
-    <h1>{{ isEdit ? 'Modifier produit' : 'Nouveau produit' }}</h1>
+  <div class="hero">
+    <p class="hero-kicker">Catalogue</p>
+    <h1>{{ isEdit ? 'Modifier un produit' : 'Creer un nouveau produit' }}</h1>
+    <p class="hero-subtitle">
+      Renseigne les informations essentielles, les prix et le stock avant publication.
+    </p>
   </div>
 
-  <p-card>
+  <p-card styleClass="product-form-card">
     <div class="dialog-body">
-      <div class="field">
-        <label class="field-label">Nom</label>
-        <input pInputText [(ngModel)]="productForm.name" class="w-full" />
-      </div>
+      <section class="form-section">
+        <h2>Informations principales</h2>
+        <div class="field">
+          <label class="field-label">Nom du produit</label>
+          <input pInputText [(ngModel)]="productForm.name" class="w-full" placeholder="Ex: Sneakers City Run" />
+        </div>
 
-      <div class="field">
-        <label class="field-label">Description</label>
-        <input pInputText [(ngModel)]="productForm.description" class="w-full" />
-      </div>
+        <div class="field">
+          <label class="field-label">Description</label>
+          <input pInputText [(ngModel)]="productForm.description" class="w-full" placeholder="Decris ton produit en une phrase" />
+        </div>
+      </section>
 
-      <div class="grid">
-        <div class="col-12 md:col-4">
-          <label class="field-label">Prix</label>
-          <input pInputText [(ngModel)]="productForm.price" type="number" class="w-full" />
+      <section class="form-section">
+        <h2>Prix et remise</h2>
+        <div class="grid">
+          <div class="col-12 md:col-4">
+            <label class="field-label">Prix</label>
+            <input pInputText [(ngModel)]="productForm.price" type="number" class="w-full" />
+          </div>
+          <div class="col-12 md:col-4">
+            <label class="field-label">Prix original</label>
+            <input pInputText [(ngModel)]="productForm.originalPrice" type="number" class="w-full" />
+          </div>
+          <div class="col-12 md:col-4">
+            <label class="field-label">Remise (%)</label>
+            <input pInputText [(ngModel)]="productForm.discount" type="number" class="w-full" />
+          </div>
         </div>
-        <div class="col-12 md:col-4">
-          <label class="field-label">Prix original</label>
-          <input pInputText [(ngModel)]="productForm.originalPrice" type="number" class="w-full" />
-        </div>
-        <div class="col-12 md:col-4">
-          <label class="field-label">Remise (%)</label>
-          <input pInputText [(ngModel)]="productForm.discount" type="number" class="w-full" />
-        </div>
-      </div>
+      </section>
 
-      <div class="grid">
-        <div class="col-12 md:col-6">
-          <label class="field-label">Catégorie</label>
-          <p-select
-            [options]="categories"
-            optionLabel="displayName"
-            optionValue="_id"
-            [(ngModel)]="productForm.category"
-            placeholder="Sélectionner"
-            styleClass="w-full">
-          </p-select>
+      <section class="form-section">
+        <h2>Publication</h2>
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <label class="field-label">Categorie</label>
+            <p-select
+              [options]="categories"
+              optionLabel="displayName"
+              optionValue="_id"
+              [(ngModel)]="productForm.category"
+              placeholder="Selectionner"
+              styleClass="w-full">
+            </p-select>
+          </div>
+          <div class="col-12 md:col-3">
+            <label class="field-label">Promotion</label>
+            <p-select
+              [options]="promotionOptions"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="productForm.isPromotion"
+              styleClass="w-full">
+            </p-select>
+          </div>
+          <div class="col-12 md:col-3">
+            <label class="field-label">Statut</label>
+            <p-select
+              [options]="activeOptions"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="productForm.isActive"
+              styleClass="w-full">
+            </p-select>
+          </div>
         </div>
-        <div class="col-12 md:col-3">
-          <label class="field-label">Promotion</label>
-          <p-select
-            [options]="promotionOptions"
-            optionLabel="label"
-            optionValue="value"
-            [(ngModel)]="productForm.isPromotion"
-            styleClass="w-full">
-          </p-select>
-        </div>
-        <div class="col-12 md:col-3">
-          <label class="field-label">Statut</label>
-          <p-select
-            [options]="activeOptions"
-            optionLabel="label"
-            optionValue="value"
-            [(ngModel)]="productForm.isActive"
-            styleClass="w-full">
-          </p-select>
-        </div>
-      </div>
+      </section>
 
-      <div class="grid">
-        <div class="col-12 md:col-6">
-          <label class="field-label">Quantité en stock</label>
-          <input pInputText [(ngModel)]="productForm.stockQuantity" type="number" class="w-full" />
+      <section class="form-section">
+        <h2>Stock</h2>
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <label class="field-label">Quantite en stock</label>
+            <input pInputText [(ngModel)]="productForm.stockQuantity" type="number" class="w-full" />
+          </div>
+          <div class="col-12 md:col-6">
+            <label class="field-label">Seuil stock bas</label>
+            <input pInputText [(ngModel)]="productForm.lowStockAlert" type="number" class="w-full" />
+          </div>
         </div>
-        <div class="col-12 md:col-6">
-          <label class="field-label">Seuil stock bas</label>
-          <input pInputText [(ngModel)]="productForm.lowStockAlert" type="number" class="w-full" />
-        </div>
-      </div>
+      </section>
 
-      <div class="field">
-        <label class="field-label">Images (max 5)</label>
-        <input type="file" multiple accept="image/*" (change)="onFilesSelected($event)" />
+      <section class="form-section">
+        <h2>Images produit</h2>
+        <label class="upload-zone">
+          <span class="upload-title">Importer jusqu'a 5 images</span>
+          <span class="upload-subtitle">Formats recommandes: JPG, PNG</span>
+          <input class="upload-input" type="file" multiple accept="image/*" (change)="onFilesSelected($event)" />
+        </label>
+
         <div class="preview-list" *ngIf="previewUrls.length">
           <img *ngFor="let url of previewUrls" [src]="url" alt="preview" />
         </div>
-      </div>
+      </section>
     </div>
 
     <ng-template pTemplate="footer">
-      <p-button label="Annuler" severity="secondary" (onClick)="cancel()"></p-button>
-      <p-button label="Enregistrer" (onClick)="saveProduct()" [loading]="loading"></p-button>
+      <div class="form-footer">
+        <p-button label="Annuler" severity="secondary" (onClick)="cancel()"></p-button>
+        <p-button label="Enregistrer le produit" (onClick)="saveProduct()" [loading]="loading"></p-button>
+      </div>
     </ng-template>
   </p-card>
 </div>

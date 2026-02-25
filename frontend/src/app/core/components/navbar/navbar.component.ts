@@ -14,6 +14,8 @@ import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 
 import { AuthService } from '../../services/auth.service';
+import { CartService } from '../../services/cart.service';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-navbar',
@@ -27,6 +29,7 @@ import { AuthService } from '../../services/auth.service';
     ButtonModule,
     AvatarModule,
     ChipModule,
+    NotificationBellComponent,
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
@@ -34,23 +37,36 @@ import { AuthService } from '../../services/auth.service';
 export class NavbarComponent implements OnInit, OnDestroy {
   user: any = null;
   items: MenuItem[] = [];
+  cartItemsCount = 0;
   private userSubscription?: Subscription;
+  private cartSubscription?: Subscription;
 
   constructor(
     public authService: AuthService,
+    private cartService: CartService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userSubscription = this.authService.user$.subscribe((user) => {
       this.user = user;
       this.loadMenuItems();
     });
+
+    this.cartSubscription = this.cartService.cart$.subscribe(state => {
+      this.cartItemsCount = state.totalItems;
+      if (this.user?.role === 'client') {
+        this.loadMenuItems(); // Recharger le menu pour mettre à jour le badge
+      }
+    });
   }
 
   ngOnDestroy(): void {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
+    }
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
     }
   }
   navigateTo(path: string): void {
@@ -64,7 +80,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.router.navigate(['/home']);
         break;
       case 'boutique':
-        this.router.navigate(['/my-shop']);
+        this.router.navigate(['/boutique-dashboard']);
         break;
       case 'admin':
         this.router.navigate(['/dashboard']);
@@ -124,33 +140,32 @@ export class NavbarComponent implements OnInit, OnDestroy {
     } else if (role === 'boutique') {
       this.items = [
         {
+          label: 'Tableau de bord',
+          icon: 'pi pi-th-large',
+          command: () => this.router.navigate(['/boutique-dashboard']),
+        },
+        {
           separator: true,
         },
         {
-          label: 'Mon Espace',
-          icon: 'pi pi-briefcase',
-          items: [
-            {
-              label: 'Ma Boutique',
-              icon: 'pi pi-building',
-              command: () => this.router.navigate(['/my-shop']),
-            },
-            {
-              label: 'Mes Produits',
-              icon: 'pi pi-box',
-              command: () => this.router.navigate(['/my-products']),
-            },
-            {
-              label: 'Gestion Stock',
-              icon: 'pi pi-list',
-              command: () => this.router.navigate(['/my-products/stock']),
-            },
-            {
-              label: 'Statistiques',
-              icon: 'pi pi-chart-line',
-              command: () => this.router.navigate(['/my-products/stats']),
-            },
-          ],
+          label: 'Ma Boutique',
+          icon: 'pi pi-building',
+          command: () => this.router.navigate(['/my-shop']),
+        },
+        {
+          label: 'Mes Produits',
+          icon: 'pi pi-box',
+          command: () => this.router.navigate(['/my-products']),
+        },
+        {
+          label: 'Commandes',
+          icon: 'pi pi-receipt',
+          command: () => this.router.navigate(['/my-orders']),
+        },
+        {
+          label: 'Gestion Stock',
+          icon: 'pi pi-list',
+          command: () => this.router.navigate(['/my-products/stock']),
         },
         {
           separator: true,
@@ -178,7 +193,35 @@ export class NavbarComponent implements OnInit, OnDestroy {
               icon: 'pi pi-building',
               command: () => this.router.navigate(['/shops']),
             },
+            {
+              label: 'Tous les articles',
+              icon: 'pi pi-th-large',
+              command: () => this.router.navigate(['/products']),
+            },
           ],
+        },
+        {
+          label: 'Mes Achats',
+          icon: 'pi pi-shopping-bag',
+          items: [
+            {
+              label: 'Panier',
+              icon: 'pi pi-shopping-cart',
+              badge: this.cartItemsCount > 0 ? this.cartItemsCount.toString() : undefined,
+              badgeStyleClass: 'bg-primary text-white',
+              command: () => this.router.navigate(['/cart']),
+            },
+            {
+              label: 'Mes Commandes',
+              icon: 'pi pi-receipt',
+              command: () => this.router.navigate(['/orders/my-orders']),
+            },
+            {
+              label: 'Historique d\'Achats',
+              icon: 'pi pi-history',
+              command: () => this.router.navigate(['/orders/history']),
+            },
+          ]
         },
         {
           separator: true,
@@ -192,7 +235,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       ];
     }
   }
-  
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);

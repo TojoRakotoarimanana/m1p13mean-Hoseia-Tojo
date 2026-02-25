@@ -1,0 +1,103 @@
+<div class="history-wrapper">
+
+    <!-- En-tête -->
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div class="header-left">
+                <div>
+                    <h1 class="page-title">Historique des commandes</h1>
+                    <p class="page-sub">Toutes vos commandes passées</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu -->
+    <div class="page-content">
+
+        <!-- Loading -->
+        <div *ngIf="loading">
+            <p-skeleton width="100%" height="3rem" class="mb-2 border-round-lg"></p-skeleton>
+            <p-skeleton width="100%" height="3rem" class="mb-2 border-round-lg"></p-skeleton>
+            <p-skeleton width="100%" height="3rem" class="border-round-lg"></p-skeleton>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="!loading && orders.length === 0" class="empty-state">
+            <i class="pi pi-history empty-icon"></i>
+            <p class="empty-title">Aucun historique disponible</p>
+            <p class="empty-sub">Vous n'avez pas encore de commande terminée ou annulée.</p>
+            <p-button label="Voir mes commandes en cours" icon="pi pi-arrow-left" [outlined]="true"
+                routerLink="/orders/my-orders" size="small"></p-button>
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!loading && orders.length > 0" class="table-card">
+            <p-table [value]="getPaginatedOrders()" class="p-datatable-sm">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>N° Commande</th>
+                        <th>Date</th>
+                        <th>Boutiques</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th style="width: 7rem"></th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-order>
+                    <tr class="order-row">
+                        <td>
+                            <span class="order-ref" [routerLink]="['/orders', order._id]">
+                                #{{ getShortId(order) }}
+                            </span>
+                        </td>
+                        <td class="cell-muted">{{ formatDate(order.createdAt) }}</td>
+                        <td>
+                            <span class="shops-pill">
+                                <i class="pi pi-shop"></i>
+                                {{ order.shopOrders?.length || 1 }}
+                            </span>
+                        </td>
+                        <td class="cell-bold">{{ formatCurrency(order.totalAmount) }}</td>
+                        <td>
+                            <p-tag
+                                [value]="order.status === 'completed' ? 'Terminée' : 'Annulée'"
+                                [severity]="order.status === 'completed' ? 'success' : 'danger'">
+                            </p-tag>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small"
+                                    pTooltip="Détails" tooltipPosition="top"
+                                    [routerLink]="['/orders', order._id]"></p-button>
+                                <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" size="small"
+                                    severity="success" pTooltip="Recommander" tooltipPosition="top"
+                                    (onClick)="reorder(order, $event)"></p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+
+            <!-- Pagination -->
+            @if (orders.length > rows) {
+            <div class="history-pagination">
+                <p-paginator
+                    [rows]="rows"
+                    [totalRecords]="orders.length"
+                    [first]="first"
+                    (onPageChange)="onPageChange($event)"
+                    [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Page {currentPage} sur {totalPages}"
+                ></p-paginator>
+            </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+<p-confirmDialog></p-confirmDialog>

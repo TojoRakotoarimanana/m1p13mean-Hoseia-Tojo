@@ -46,6 +46,13 @@ export class MyProductsComponent implements OnInit {
 
   readonly imageBaseUrl = 'http://localhost:3000';
 
+  getProductImageUrl(product: any): string {
+    const img = product?.images?.[0];
+    if (!img) return 'https://placehold.co/80x80/f1f5f9/94a3b8?text=Photo';
+    if (img.startsWith('http://') || img.startsWith('https://')) return img;
+    return `${this.imageBaseUrl}/${img}`.replace(/([^:])\/\//g, '$1/');
+  }
+
   loading = false;
   page = 1;
   limit = 10;
@@ -103,9 +110,11 @@ export class MyProductsComponent implements OnInit {
       next: (data) => {
         this.historyTarget = data;
         this.historyLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.historyLoading = false;
+        this.cdr.detectChanges();
         this.notificationService.error(error.error?.message || 'Erreur chargement historique', 'Erreur');
       }
     });
@@ -186,9 +195,11 @@ export class MyProductsComponent implements OnInit {
     if (!user?.id) return;
 
     this.shopService.getByUser(user.id).subscribe({
-      next: (shop) => {
-        this.shopId = shop._id;
-        this.loadProducts();
+      next: (response: any) => {
+        const shops: any[] = Array.isArray(response) ? response : [response];
+        this.shopId = shops[0]?._id ?? null;
+        if (this.shopId) this.loadProducts();
+        else this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
       },
       error: () => {
         this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
@@ -266,10 +277,6 @@ export class MyProductsComponent implements OnInit {
 
   manageStock() {
     this.router.navigate(['/my-products/stock']);
-  }
-
-  viewStats() {
-    this.router.navigate(['/my-products/stats']);
   }
 
   deleteProduct(product: any) {

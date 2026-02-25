@@ -1,0 +1,178 @@
+<div class="order-details-wrapper">
+
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <h1 class="page-title">Détails de la commande</h1>
+                <p class="page-tagline" *ngIf="order">
+                    Référence&nbsp;: <span class="order-ref">#{{ order.orderNumber || order._id | slice:0:8 | uppercase }}</span>
+                </p>
+            </div>
+            <div class="page-actions" *ngIf="order">
+                <p-button icon="pi pi-arrow-left" label="Retour" [text]="true"
+                    routerLink="/orders/my-orders" severity="secondary"></p-button>
+                <p-button *ngIf="canCancel()" label="Annuler la commande" icon="pi pi-times"
+                    severity="danger" [outlined]="true" (onClick)="cancelOrder($event)"></p-button>
+            </div>
+        </div>
+    </header>
+
+    <div class="details-content">
+
+        <!-- LOADING -->
+        <div *ngIf="loading">
+            <p-skeleton width="100%" height="6rem" styleClass="mb-3 border-round-2xl"></p-skeleton>
+            <p-skeleton width="100%" height="20rem" styleClass="border-round-2xl"></p-skeleton>
+        </div>
+
+        <div *ngIf="!loading && order">
+
+            <!-- STATUS BANNER -->
+            <div class="status-banner" [ngClass]="'banner-' + order.status">
+                <div class="banner-icon">
+                    <i class="pi" [ngClass]="getStatusIcon(order.status)"></i>
+                </div>
+                <div class="banner-body">
+                    <p class="banner-title">{{ getStatusLabel(order.status) }}</p>
+                    <p class="banner-sub">Passée le {{ order.createdAt | date:'dd MMMM yyyy à HH:mm' }}</p>
+                </div>
+                <div class="banner-right" *ngIf="order.shopOrders && order.shopOrders.length > 1">
+                    <span class="shops-count-badge">
+                        <i class="pi pi-shop"></i>
+                        {{ order.shopOrders.length }} boutiques
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid mt-0">
+
+                <!-- COLONNE PRINCIPALE -->
+                <div class="col-12 lg:col-8">
+
+                    <div *ngFor="let shopOrder of order.shopOrders; let i = index" class="shop-section">
+
+                        <!-- En-tête boutique -->
+                        <div class="shop-header">
+                            <div class="shop-header-left">
+                                <div class="shop-avatar">
+                                    <i class="pi pi-shop"></i>
+                                </div>
+                                <div>
+                                    <h3 class="shop-name">
+                                        <a class="shop-link" [routerLink]="['/shop', shopOrder.shopId?._id || shopOrder.shopId]">
+                                            {{ shopOrder.shopId?.name || 'Boutique' }}
+                                        </a>
+                                    </h3>
+                                    <p class="shop-item-count">{{ getItemCount(shopOrder) }} article(s)</p>
+                                </div>
+                            </div>
+                            <p-tag
+                                [value]="getShopStatusLabel(shopOrder.status)"
+                                [severity]="getShopStatusSeverity(shopOrder.status)">
+                            </p-tag>
+                        </div>
+
+                        <!-- Progression statut boutique -->
+                        <div class="shop-steps" *ngIf="shopOrder.status !== 'cancelled'">
+                            <ng-container *ngFor="let step of shopStatusFlow; let last = last">
+                                <div class="step-node">
+                                    <div class="step-dot" [ngClass]="getStepClass(shopOrder.status, step.key)">
+                                        <i class="pi pi-check" *ngIf="isStepDone(shopOrder.status, step.key)"></i>
+                                    </div>
+                                    <span class="step-label" [ngClass]="{'step-active': isCurrentStep(shopOrder.status, step.key), 'step-done-label': isStepDone(shopOrder.status, step.key)}">
+                                        {{ step.label }}
+                                    </span>
+                                </div>
+                                <div *ngIf="!last" class="step-connector" [ngClass]="{'connector-done': isStepDone(shopOrder.status, step.key)}"></div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Notice annulation boutique -->
+                        <div class="cancelled-notice" *ngIf="shopOrder.status === 'cancelled'">
+                            <i class="pi pi-times-circle"></i>
+                            <span>Cette partie de la commande a été annulée</span>
+                        </div>
+
+                        <!-- Liste des articles -->
+                        <div class="items-list">
+                            <ng-container *ngFor="let item of order.items">
+                                <div *ngIf="isItemFromShop(item, shopOrder)" class="item-row">
+                                    <img [src]="getProductImage(item)" [alt]="item.name" class="item-img" />
+                                    <div class="item-info">
+                                        <h4 class="item-name" [routerLink]="['/product', getProductId(item)]">
+                                            {{ item.name || 'Produit indisponible' }}
+                                        </h4>
+                                        <p class="item-qty">Qté : {{ item.quantity }} × {{ formatCurrency(item.price) }}</p>
+                                    </div>
+                                    <div class="item-price">
+                                        <span class="item-subtotal">{{ formatCurrency(item.subtotal) }}</span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <!-- Pied de carte boutique -->
+                        <div class="shop-footer">
+                            <span class="shop-footer-label">Sous-total — {{ shopOrder.shopId?.name || 'Boutique' }}</span>
+                            <span class="shop-footer-total">{{ formatCurrency(shopOrder.subtotal) }}</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SIDEBAR -->
+                <div class="col-12 lg:col-4">
+
+                    <!-- Récapitulatif paiement -->
+                    <div class="info-card">
+                        <h2 class="card-title"><i class="pi pi-credit-card"></i>Récapitulatif</h2>
+                        <div class="info-row">
+                            <span class="info-label">Montant total</span>
+                            <span class="info-value">{{ formatCurrency(order.totalAmount) }}</span>
+                        </div>
+                        <div class="total-box">
+                            <span class="total-box-label">Total payé</span>
+                            <span class="total-box-amount">{{ formatCurrency(order.totalAmount) }}</span>
+                        </div>
+                        <div class="payment-method-row">
+                            <i class="pi pi-wallet"></i>
+                            <span>{{ order.paymentInfo?.method === 'cash' ? 'Espèces à la livraison' : 'Paiement Mobile' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Adresse de livraison -->
+                    <div class="info-card">
+                        <h2 class="card-title"><i class="pi pi-truck"></i>Livraison</h2>
+                        <div class="delivery-block">
+                            <p class="delivery-name">{{ order.customer?.firstName }} {{ order.customer?.lastName }}</p>
+                            <p class="delivery-line"><i class="pi pi-map-marker"></i>{{ order.deliveryInfo?.address?.street }}</p>
+                            <p class="delivery-line delivery-indent">{{ order.deliveryInfo?.address?.city }}</p>
+                            <p class="delivery-line mt-2"><i class="pi pi-phone"></i>{{ order.deliveryInfo?.phone }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Résumé multi-boutiques (seulement si > 1) -->
+                    <div class="info-card" *ngIf="order.shopOrders && order.shopOrders.length > 1">
+                        <h2 class="card-title"><i class="pi pi-list"></i>Suivi par boutique</h2>
+                        <div *ngFor="let shopOrder of order.shopOrders" class="shop-summary-row">
+                            <div class="shop-summary-left">
+                                <i class="pi pi-shop shop-summary-icon"></i>
+                                <a class="shop-summary-link" [routerLink]="['/shop', shopOrder.shopId?._id || shopOrder.shopId]">
+                                    {{ shopOrder.shopId?.name || 'Boutique' }}
+                                </a>
+                            </div>
+                            <p-tag
+                                [value]="getShopStatusLabel(shopOrder.status)"
+                                [severity]="getShopStatusSeverity(shopOrder.status)"
+                                styleClass="text-xs">
+                            </p-tag>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog></p-confirmDialog>

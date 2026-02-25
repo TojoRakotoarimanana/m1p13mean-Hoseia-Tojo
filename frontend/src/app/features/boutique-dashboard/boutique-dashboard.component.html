@@ -1,0 +1,219 @@
+<div class="dashboard-wrapper">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <h1 class="page-greeting">Tableau de bord</h1>
+        @if (user) {
+          <p class="page-tagline">Bonjour, {{ user.firstName }} {{ user.lastName }}</p>
+        }
+      </div>
+      <time class="page-date">
+        <i class="pi pi-calendar"></i>
+        {{ currentDate | date:'EEEE d MMMM yyyy':'':'fr' }}
+      </time>
+    </div>
+  </header>
+
+  <!-- Stats cards -->
+  <div class="stats-grid">
+
+    <div class="stat-card pending-card">
+      @if (loading) {
+        <p-skeleton width="100%" height="90px" />
+      } @else {
+        <div class="stat-card-content">
+          <div class="stat-icon-wrap pending-icon">
+            <i class="pi pi-clock"></i>
+          </div>
+          <div class="stat-details">
+            <p class="stat-label">En attente</p>
+            <h2 class="stat-value">{{ stats?.pending ?? 0 }}</h2>
+            <p class="stat-sub">commande(s) à traiter</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="stat-card active-card">
+      @if (loading) {
+        <p-skeleton width="100%" height="90px" />
+      } @else {
+        <div class="stat-card-content">
+          <div class="stat-icon-wrap active-icon">
+            <i class="pi pi-sync"></i>
+          </div>
+          <div class="stat-details">
+            <p class="stat-label">En cours</p>
+            <h2 class="stat-value">{{ (stats?.confirmed ?? 0) + (stats?.preparing ?? 0) + (stats?.ready ?? 0) }}</h2>
+            <p class="stat-sub">commande(s) actives</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="stat-card completed-card">
+      @if (loading) {
+        <p-skeleton width="100%" height="90px" />
+      } @else {
+        <div class="stat-card-content">
+          <div class="stat-icon-wrap completed-icon">
+            <i class="pi pi-check-circle"></i>
+          </div>
+          <div class="stat-details">
+            <p class="stat-label">Complétées</p>
+            <h2 class="stat-value">{{ stats?.completed ?? 0 }}</h2>
+            <p class="stat-sub">sur {{ stats?.total ?? 0 }} au total</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="stat-card revenue-card">
+      @if (loading) {
+        <p-skeleton width="100%" height="90px" />
+      } @else {
+        <div class="stat-card-content">
+          <div class="stat-icon-wrap revenue-icon">
+            <i class="pi pi-wallet"></i>
+          </div>
+          <div class="stat-details">
+            <p class="stat-label">Chiffre d'affaires</p>
+            <h2 class="stat-value revenue-value">{{ formatCurrency(stats?.totalRevenue ?? 0) }}</h2>
+            <p class="stat-sub">commandes livrées</p>
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- Quick actions -->
+  <div class="section">
+    <h2 class="section-title">Accès rapide</h2>
+    <div class="quick-actions-grid">
+      @for (action of quickActions; track action.route) {
+        <button class="action-card action-{{ action.color }}" (click)="navigate(action.route)" type="button">
+          <i class="{{ action.icon }} action-icon"></i>
+          <span class="action-label">{{ action.label }}</span>
+          <i class="pi pi-arrow-right action-arrow"></i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Recent orders -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Dernières commandes</h2>
+      <button class="see-all-btn" (click)="navigate('/my-orders')" type="button">
+        Voir tout <i class="pi pi-arrow-right"></i>
+      </button>
+    </div>
+
+    @if (loading) {
+      <div class="orders-skeleton">
+        @for (i of [1,2,3]; track i) {
+          <p-skeleton width="100%" height="56px" styleClass="mb-2" />
+        }
+      </div>
+    } @else if (!stats?.recentOrders?.length) {
+      <div class="empty-orders">
+        <i class="pi pi-inbox empty-icon"></i>
+        <p>Aucune commande pour le moment.</p>
+      </div>
+    } @else {
+      <div class="orders-list">
+        @for (order of stats.recentOrders; track order._id) {
+          <div class="order-row" (click)="navigate('/my-orders/' + order._id)" role="button" tabindex="0">
+            <div class="order-num">
+              <i class="pi pi-receipt"></i>
+              <span>{{ order.orderNumber }}</span>
+            </div>
+            <div class="order-customer">
+              {{ order.customerId?.firstName }} {{ order.customerId?.lastName }}
+            </div>
+            <div class="order-amount">
+              {{ formatCurrency(order.totalAmount) }}
+            </div>
+            <p-tag
+              [value]="getStatusLabel(order.status)"
+              [severity]="getStatusSeverity(order.status)"
+            />
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Product stats -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Statistiques produits</h2>
+    </div>
+
+    @if (statsLoading) {
+      <p-skeleton width="100%" height="64px" styleClass="mb-3" />
+      <div class="top-lists">
+        <p-skeleton width="100%" height="180px" />
+        <p-skeleton width="100%" height="180px" />
+      </div>
+    } @else if (productStats) {
+      <div class="stats-mini-bar">
+        <div class="stats-mini-item">
+          <span class="stats-mini-value">{{ productStats.total ?? 0 }}</span>
+          <span class="stats-mini-label">Total</span>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <span class="stats-mini-value">{{ productStats.active ?? 0 }}</span>
+          <span class="stats-mini-label">Actifs</span>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <span class="stats-mini-value accent-promo">{{ productStats.promotion ?? 0 }}</span>
+          <span class="stats-mini-label">En promotion</span>
+        </div>
+        <div class="stats-mini-sep"></div>
+        <div class="stats-mini-item">
+          <span class="stats-mini-value accent-warn">{{ productStats.lowStock ?? 0 }}</span>
+          <span class="stats-mini-label">Stock bas</span>
+        </div>
+      </div>
+
+      <div class="top-lists">
+        <div class="top-list-card">
+          <p class="top-list-title"><i class="pi pi-star"></i> Plus vendus</p>
+          @if (topSold.length === 0) {
+            <p class="top-list-empty">Aucune donnée</p>
+          } @else {
+            @for (product of topSold; track product._id; let i = $index) {
+              <div class="top-list-row">
+                <span class="top-list-rank">{{ i + 1 }}</span>
+                <span class="top-list-name">{{ product.name }}</span>
+                <span class="top-list-count">{{ product.statistics?.sold || 0 }} vendus</span>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="top-list-card">
+          <p class="top-list-title"><i class="pi pi-eye"></i> Plus consultés</p>
+          @if (topViewed.length === 0) {
+            <p class="top-list-empty">Aucune donnée</p>
+          } @else {
+            @for (product of topViewed; track product._id; let i = $index) {
+              <div class="top-list-row">
+                <span class="top-list-rank">{{ i + 1 }}</span>
+                <span class="top-list-name">{{ product.name }}</span>
+                <span class="top-list-count">{{ product.statistics?.views || 0 }} vues</span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

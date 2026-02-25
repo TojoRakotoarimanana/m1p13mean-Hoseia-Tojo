@@ -1,0 +1,233 @@
+<div class="detail-wrapper">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Chargement de la commande…</span>
+  </div>
+
+  <ng-container *ngIf="!loading && order">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="page-header-inner">
+        <div class="header-left">
+          <button class="btn-back" (click)="goBack()" type="button">
+            <i class="pi pi-arrow-left"></i> Retour
+          </button>
+          <div>
+            <h1 class="page-title">
+              Commande <span class="order-num-chip">#{{ order.orderNumber }}</span>
+            </h1>
+            <p class="page-tagline">Reçue le {{ order.createdAt | date:'dd MMMM yyyy à HH:mm' }}</p>
+          </div>
+        </div>
+        <span class="status-badge status-{{ currentStatus() }}">
+          {{ getStatusLabel(currentStatus()) }}
+        </span>
+      </div>
+    </header>
+
+    <!-- Status stepper -->
+    <div class="detail-card stepper-card" *ngIf="!isCancelled()">
+      <div class="status-steps">
+        <div *ngFor="let step of statusFlow; let i = index; let last = last" class="step-item">
+          <div class="step-circle" [class.done]="getStepSeverity(step.key) === 'success'">
+            <i class="pi pi-check" *ngIf="getStepSeverity(step.key) === 'success'"></i>
+            <span *ngIf="getStepSeverity(step.key) !== 'success'">{{ i + 1 }}</span>
+          </div>
+          <span class="step-label" [class.done-label]="getStepSeverity(step.key) === 'success'">
+            {{ step.label }}
+          </span>
+          <div *ngIf="!last" class="step-line" [class.done-line]="getStepSeverity(step.key) === 'success'"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two-column grid -->
+    <div class="detail-grid">
+
+      <!-- ── Left column ── -->
+      <div class="left-col">
+
+        <!-- Client info -->
+        <div class="detail-card">
+          <h2 class="card-title"><i class="pi pi-user"></i> Informations client</h2>
+          <div class="info-list">
+            <div class="info-row">
+              <i class="pi pi-user-circle"></i>
+              <span>{{ getClientName() }}</span>
+            </div>
+            <div class="info-row" *ngIf="order.customerId?.email">
+              <i class="pi pi-envelope"></i>
+              <span>{{ order.customerId.email }}</span>
+            </div>
+            <div class="info-row" *ngIf="order.deliveryInfo?.phone">
+              <i class="pi pi-phone"></i>
+              <span>{{ order.deliveryInfo.phone }}</span>
+            </div>
+            <div class="info-row">
+              <i class="pi pi-truck"></i>
+              <span>{{ order.deliveryInfo?.method === 'delivery' ? 'Livraison à domicile' : 'Retrait en boutique' }}</span>
+            </div>
+            <div class="info-row"
+              *ngIf="order.deliveryInfo?.method === 'delivery' && order.deliveryInfo?.address?.street">
+              <i class="pi pi-map-marker"></i>
+              <span>
+                {{ order.deliveryInfo.address.street }},
+                {{ order.deliveryInfo.address.city }}
+                {{ order.deliveryInfo.address.zipCode }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="detail-card" *ngIf="order.notes">
+          <h2 class="card-title"><i class="pi pi-comment"></i> Notes</h2>
+          <p class="notes-text">{{ order.notes }}</p>
+        </div>
+
+        <!-- Status history -->
+        <div class="detail-card">
+          <h2 class="card-title"><i class="pi pi-history"></i> Historique des statuts</h2>
+          <div *ngIf="order.statusHistory?.length > 0" class="history-list">
+            <div *ngFor="let event of order.statusHistory" class="history-row">
+              <div class="history-dot dot-{{ getStatusSeverity(event.status) }}"></div>
+              <div class="history-content">
+                <span class="status-badge status-{{ event.status }}">
+                  {{ getStatusLabel(event.status) }}
+                </span>
+                <span class="history-date">{{ event.changedAt | date:'dd/MM/yyyy · HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+          <p *ngIf="!order.statusHistory?.length" class="empty-history">
+            Aucun historique disponible.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- ── Right column ── -->
+      <div class="right-col">
+
+        <!-- Articles commandés -->
+        <div class="detail-card">
+          <h2 class="card-title"><i class="pi pi-shopping-bag"></i> Articles commandés</h2>
+
+          <p-table [value]="order.items || []">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="min-width:200px">Produit</th>
+                <th style="min-width:60px; text-align:center">Qté</th>
+                <th style="min-width:110px; text-align:right">Prix unit.</th>
+                <th style="min-width:110px; text-align:right">Sous-total</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+              <tr>
+                <td>
+                  <div class="product-cell">
+                    <img
+                      *ngIf="item.image"
+                      [src]="getItemImageUrl(item)"
+                      [alt]="item.name"
+                      class="product-thumb"
+                      (error)="$any($event.target).src='https://placehold.co/40x40/f1f5f9/94a3b8?text=?'" />
+                    <span class="product-name-cell">{{ item.name }}</span>
+                  </div>
+                </td>
+                <td class="td-center">{{ item.quantity }}</td>
+                <td class="td-right cell-muted">{{ item.price | number:'1.0-0' }} Ar</td>
+                <td class="td-right cell-bold">{{ item.subtotal | number:'1.0-0' }} Ar</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <!-- Total -->
+          <div class="total-section">
+            <div class="total-row">
+              <span>Paiement</span>
+              <span>
+                {{ order.paymentInfo?.method === 'card' ? 'Carte'
+                  : order.paymentInfo?.method === 'mobile' ? 'Mobile'
+                  : 'Espèces' }}
+              </span>
+            </div>
+            <div class="total-divider"></div>
+            <div class="total-row total-final">
+              <span>Total boutique</span>
+              <span class="total-amount">{{ getSubtotal() | number:'1.0-0' }} Ar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-card actions-card" *ngIf="!isCompleted() && !isCancelled()">
+          <h2 class="card-title"><i class="pi pi-bolt"></i> Actions</h2>
+          <div class="actions-list">
+
+            <ng-container [ngSwitch]="currentStatus()">
+
+              <!-- pending -->
+              <ng-container *ngSwitchCase="'pending'">
+                <button class="action-btn btn-primary-action" (click)="changeStatus('confirmed')" [disabled]="actionLoading">
+                  <i class="pi" [class.pi-check]="!actionLoading" [class.pi-spin]="actionLoading" [class.pi-spinner]="actionLoading"></i>
+                  Confirmer la commande
+                </button>
+                <button class="action-btn btn-danger-action" (click)="changeStatus('cancelled')" [disabled]="actionLoading">
+                  <i class="pi pi-times"></i> Annuler la commande
+                </button>
+              </ng-container>
+
+              <!-- confirmed -->
+              <ng-container *ngSwitchCase="'confirmed'">
+                <button class="action-btn btn-primary-action" (click)="changeStatus('preparing')" [disabled]="actionLoading">
+                  <i class="pi" [class.pi-wrench]="!actionLoading" [class.pi-spin]="actionLoading" [class.pi-spinner]="actionLoading"></i>
+                  Commencer la préparation
+                </button>
+                <button class="action-btn btn-danger-action" (click)="changeStatus('cancelled')" [disabled]="actionLoading">
+                  <i class="pi pi-times"></i> Annuler la commande
+                </button>
+              </ng-container>
+
+              <!-- preparing -->
+              <ng-container *ngSwitchCase="'preparing'">
+                <button class="action-btn btn-success-action" (click)="changeStatus('ready')" [disabled]="actionLoading">
+                  <i class="pi" [class.pi-box]="!actionLoading" [class.pi-spin]="actionLoading" [class.pi-spinner]="actionLoading"></i>
+                  Marquer comme Prêt
+                </button>
+                <button class="action-btn btn-danger-action" (click)="changeStatus('cancelled')" [disabled]="actionLoading">
+                  <i class="pi pi-times"></i> Annuler la commande
+                </button>
+              </ng-container>
+
+              <!-- ready -->
+              <ng-container *ngSwitchCase="'ready'">
+                <button class="action-btn btn-success-action" (click)="changeStatus('completed')" [disabled]="actionLoading">
+                  <i class="pi" [class.pi-check-circle]="!actionLoading" [class.pi-spin]="actionLoading" [class.pi-spinner]="actionLoading"></i>
+                  Terminer la commande
+                </button>
+              </ng-container>
+
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- État final -->
+        <div class="detail-card" *ngIf="isCompleted() || isCancelled()">
+          <div class="final-state" [class.final-completed]="isCompleted()" [class.final-cancelled]="isCancelled()">
+            <i class="pi" [class.pi-check-circle]="isCompleted()" [class.pi-times-circle]="isCancelled()"></i>
+            <span>{{ isCompleted() ? 'Commande terminée' : 'Commande annulée' }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>
+
+<p-toast></p-toast>

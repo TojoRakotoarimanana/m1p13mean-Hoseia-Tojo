@@ -1,0 +1,197 @@
+/* ── Wrapper ─────────────────────────────────────────────────────────────────── */
+.orders-wrapper {
+    min-height: 100vh;
+    padding: 0 0 2rem;
+}
+
+/* ── En-tête ────────────────────────────────────────────────────────────────── */
+.page-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 0;
+    margin-bottom: 1.25rem;
+}
+
+.page-header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.page-sub {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0.1rem 0 0;
+}
+
+/* ── Contenu ────────────────────────────────────────────────────────────────── */
+.page-content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+/* ── Filtres ────────────────────────────────────────────────────────────────── */
+.filters-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.search-wrap {
+    position: relative;
+    flex: 1;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    font-size: 0.875rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.search-input:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 2px #eff6ff;
+}
+
+:host ::ng-deep .status-select {
+    font-size: 0.875rem;
+}
+
+:host ::ng-deep .status-select .p-select {
+    border-radius: 8px;
+    border-color: #e2e8f0;
+    font-size: 0.875rem;
+}
+
+/* ── Table card ─────────────────────────────────────────────────────────────── */
+.table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
+/* ── Ligne cliquable ────────────────────────────────────────────────────────── */
+.order-row {
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.order-row:hover {
+    background: #f8fafc !important;
+}
+
+/* ── Cellules ───────────────────────────────────────────────────────────────── */
+.order-ref {
+    font-family: monospace;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #1d4ed8;
+}
+
+.cell-muted {
+    color: #64748b;
+}
+
+.cell-bold {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.shops-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+.cell-chevron {
+    color: #cbd5e1;
+    font-size: 0.75rem;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────────── */
+.empty-cell {
+    text-align: center;
+    padding: 3rem !important;
+}
+
+.empty-icon {
+    display: block;
+    font-size: 2.5rem;
+    color: #cbd5e1;
+    margin-bottom: 0.75rem;
+}
+
+.empty-text {
+    font-size: 0.9375rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .page-header-inner,
+    .page-content {
+        padding: 0 0.875rem;
+    }
+
+    .filters-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

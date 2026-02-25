@@ -1,0 +1,184 @@
+/* ── Wrapper ─────────────────────────────────────────────────────────────────── */
+.history-wrapper {
+    min-height: 100vh;
+    padding: 0 0 2rem;
+}
+
+/* ── En-tête ────────────────────────────────────────────────────────────────── */
+.page-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 0;
+    margin-bottom: 1.25rem;
+}
+
+.page-header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.page-sub {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0.1rem 0 0;
+}
+
+/* ── Contenu ────────────────────────────────────────────────────────────────── */
+.page-content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-icon {
+    display: block;
+    font-size: 2.5rem;
+    color: #cbd5e1;
+    margin-bottom: 0.75rem;
+}
+
+.empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #475569;
+    margin: 0 0 0.375rem;
+}
+
+.empty-sub {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    margin: 0 0 1.25rem;
+}
+
+/* ── Table card ─────────────────────────────────────────────────────────────── */
+.table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable-sm .p-datatable-thead > tr > th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+:host ::ng-deep .p-datatable-sm .p-datatable-tbody > tr > td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-datatable-sm .p-datatable-tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
+/* ── Ligne ──────────────────────────────────────────────────────────────────── */
+.order-row:hover {
+    background: #f8fafc !important;
+}
+
+/* ── Cellules ───────────────────────────────────────────────────────────────── */
+.order-ref {
+    font-family: monospace;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #1d4ed8;
+    cursor: pointer;
+}
+
+.order-ref:hover { text-decoration: underline; }
+
+.cell-muted { color: #64748b; }
+
+.cell-bold {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.shops-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+.row-actions {
+    display: flex;
+    gap: 0.125rem;
+    justify-content: flex-end;
+}
+
+/* ── Pagination ─────────────────────────────────────────────────────────────── */
+.history-pagination {
+    border-top: 1px solid #f1f5f9;
+}
+
+::ng-deep .history-pagination .p-paginator {
+    background: #ffffff;
+    border: none;
+    border-radius: 0;
+    padding: 0.625rem 0.75rem;
+    box-shadow: none;
+}
+
+::ng-deep .history-pagination .p-paginator-page {
+    border-radius: 7px !important;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.855rem;
+    color: #64748b;
+}
+
+::ng-deep .history-pagination .p-paginator-page.p-highlight {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+::ng-deep .history-pagination .p-paginator-page:hover:not(.p-highlight) {
+    background: #f8fafc !important;
+}
+
+::ng-deep .history-pagination .p-paginator-current {
+    color: #64748b;
+    font-size: 0.8125rem;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .page-header-inner,
+    .page-content { padding: 0 0.875rem; }
+}

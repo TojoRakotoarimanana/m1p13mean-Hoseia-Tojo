@@ -1,0 +1,81 @@
+<div class="orders-wrapper">
+
+    <!-- En-tête -->
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <h1 class="page-title">Mes commandes</h1>
+                <p class="page-sub">Suivez l'état de vos achats</p>
+            </div>
+            <p-button label="Historique" icon="pi pi-history" [outlined]="true" severity="secondary"
+                routerLink="/orders/history" size="small"></p-button>
+        </div>
+    </header>
+
+    <!-- Contenu -->
+    <div class="page-content">
+
+        <!-- Barre de filtres -->
+        <div class="filters-bar">
+            <div class="search-wrap">
+                <i class="pi pi-search search-icon"></i>
+                <input pInputText type="text" [(ngModel)]="searchQuery" (input)="onFilterChange()"
+                    placeholder="N° de commande…" class="search-input" />
+            </div>
+            <p-select [options]="statusOptions" [(ngModel)]="selectedStatus" (onChange)="onFilterChange()"
+                optionLabel="label" optionValue="value" placeholder="Tous les statuts"
+                styleClass="status-select"></p-select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <p-table [value]="orders" [loading]="loading" [paginator]="true" [rows]="10"
+                [totalRecords]="totalRecords" (onPage)="onPageChange($event)"
+                styleClass="p-datatable-sm">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>N° Commande</th>
+                        <th>Date</th>
+                        <th>Boutiques</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th style="width: 3rem"></th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-order>
+                    <tr class="order-row" (click)="viewDetails(order._id)">
+                        <td><span class="order-ref">{{ getShortId(order) }}</span></td>
+                        <td class="cell-muted">{{ formatDate(order.createdAt) }}</td>
+                        <td>
+                            <span class="shops-pill">
+                                <i class="pi pi-shop"></i>
+                                {{ order.shopOrders?.length || 1 }}
+                            </span>
+                        </td>
+                        <td class="cell-bold">{{ formatCurrency(order.totalAmount) }}</td>
+                        <td>
+                            <p-tag [value]="getStatusLabel(order.status)"
+                                [severity]="getStatusSeverity(order.status)"></p-tag>
+                        </td>
+                        <td>
+                            <i class="pi pi-chevron-right cell-chevron"></i>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6" class="empty-cell">
+                            <i class="pi pi-inbox empty-icon"></i>
+                            <span class="empty-text">Aucune commande trouvée</span>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+
+    </div>
+</div>

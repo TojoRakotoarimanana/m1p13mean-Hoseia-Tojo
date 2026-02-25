@@ -1,0 +1,58 @@
+<div class="notification-wrapper">
+  <button
+    class="notif-btn"
+    [class.shaking]="bellShaking"
+    (click)="togglePanel($event)"
+    title="Notifications"
+    type="button">
+    <i class="pi pi-bell notif-icon"></i>
+    @if ((unreadCount$ | async)! > 0) {
+      <span class="notif-badge">{{ (unreadCount$ | async)! > 99 ? '99+' : (unreadCount$ | async) }}</span>
+    }
+  </button>
+
+  <p-popover #op>
+    @if (notifications$ | async; as notifications) {
+      <div class="notif-header">
+        <span class="notif-title-label">Notifications</span>
+        @if ((unreadCount$ | async)! > 0) {
+          <button class="mark-all-btn" (click)="markAllRead()" type="button">
+            Tout marquer lu
+          </button>
+        }
+      </div>
+
+      <p-divider />
+
+      @if (notifications.length === 0) {
+        <div class="no-notif">
+          <i class="pi pi-inbox no-notif-icon"></i>
+          <span>Aucune notification</span>
+        </div>
+      } @else {
+        <div class="notif-list">
+          @for (n of notifications; track n._id) {
+            <div
+              class="notif-item"
+              [class.unread]="!n.isRead"
+              (click)="onNotificationClick(n)"
+              role="button"
+              tabindex="0">
+              <div class="notif-item-icon">
+                <i class="pi pi-shopping-bag"></i>
+              </div>
+              <div class="notif-item-content">
+                <span class="notif-item-title">{{ n.title }}</span>
+                <p class="notif-item-msg">{{ n.message }}</p>
+                <small class="notif-item-date">{{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+              </div>
+              @if (!n.isRead) {
+                <span class="unread-dot"></span>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </p-popover>
+</div>

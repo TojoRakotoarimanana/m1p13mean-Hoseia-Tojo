@@ -2,18 +2,26 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
+import { ButtonModule } from 'primeng/button';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { CatalogService, Product } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { NavbarComponent } from '../../../core/components/navbar/navbar.component';
-
+import { CartService } from '../../../core/services/cart.service';
 @Component({
   selector: 'app-product-details',
   standalone: true,
   imports: [
     CommonModule,
     SkeletonModule,
-    NavbarComponent
+    ButtonModule,
+    InputNumberModule,
+    FormsModule,
+    ToastModule,
   ],
+  providers: [MessageService],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css'
 })
@@ -23,14 +31,18 @@ export class ProductDetailsComponent implements OnInit {
   productId: string = '';
   images: string[] = [];
   selectedImageIndex = 0;
+  quantity = 1;
+  isAddingToCart = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private catalogService: CatalogService,
     private notificationService: NotificationService,
+    private cartService: CartService,
+    private messageService: MessageService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.productId = this.route.snapshot.paramMap.get('id') || '';
@@ -90,8 +102,8 @@ export class ProductDetailsComponent implements OnInit {
   incrementViews(): void {
     if (this.productId) {
       this.catalogService.incrementProductViews(this.productId).subscribe({
-        next: () => {},
-        error: () => {}
+        next: () => { },
+        error: () => { }
       });
     }
   }
@@ -150,5 +162,24 @@ export class ProductDetailsComponent implements OnInit {
     if (this.product?.shopId) {
       this.router.navigate(['/shop', this.product.shopId._id]);
     }
+  }
+
+  addToCart(): void {
+    if (!this.product) return;
+
+    this.isAddingToCart = true;
+    this.cartService.addToCart(this.product, this.quantity).subscribe({
+      next: () => {
+        this.isAddingToCart = false;
+        this.messageService.add({ severity: 'success', summary: 'Succès', detail: `${this.quantity} article(s) ajouté(s) au panier` });
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isAddingToCart = false;
+        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible d\'ajouter au panier' });
+        console.error(err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

@@ -43,7 +43,7 @@
 
         <div class="sd-hero-tags">
           <span class="tag tag--blue">
-            <i class="pi pi-tag"></i>{{ shop.category?.name || 'Non catégorisé' }}
+            <i class="pi pi-tag"></i>{{ shop.category.name || 'Non catégorisé' }}
           </span>
           <span *ngIf="getLocationString()" class="tag tag--gray">
             <i class="pi pi-map-marker"></i>{{ getLocationString() }}
@@ -88,21 +88,21 @@
           <h2>Contact</h2>
         </div>
         <div class="contact-list">
-          <a *ngIf="shop.contact?.phone" [href]="'tel:' + shop.contact.phone" class="contact-item">
+          <a *ngIf="shop.contact.phone" [href]="'tel:' + shop.contact.phone" class="contact-item">
             <div class="contact-icon"><i class="pi pi-phone"></i></div>
             <div class="contact-body">
               <span class="contact-label">Téléphone</span>
               <span class="contact-value">{{ shop.contact.phone }}</span>
             </div>
           </a>
-          <a *ngIf="shop.contact?.email" [href]="'mailto:' + shop.contact.email" class="contact-item">
+          <a *ngIf="shop.contact.email" [href]="'mailto:' + shop.contact.email" class="contact-item">
             <div class="contact-icon"><i class="pi pi-envelope"></i></div>
             <div class="contact-body">
               <span class="contact-label">Email</span>
               <span class="contact-value">{{ shop.contact.email }}</span>
             </div>
           </a>
-          <div *ngIf="!shop.contact?.phone && !shop.contact?.email" class="contact-empty">
+          <div *ngIf="!shop.contact.phone && !shop.contact.email" class="contact-empty">
             <i class="pi pi-info-circle"></i>
             Aucun contact renseigné
           </div>
@@ -126,11 +126,7 @@
 
       <!-- Grid -->
       <div *ngIf="products.length > 0" class="sd-products-grid">
-        <article
-          *ngFor="let product of products"
-          class="product-card"
-          (click)="viewProduct(product._id)"
-        >
+        <article *ngFor="let product of products" class="product-card" (click)="viewProduct(product._id)">
           <div class="product-card-img">
             <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy" />
             <span *ngIf="product.isPromotion && product.discount > 0" class="badge-discount">

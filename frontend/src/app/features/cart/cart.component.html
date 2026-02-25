@@ -1,0 +1,144 @@
+<app-navbar></app-navbar>
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="cart-page">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <h1 class="page-title">Mon panier</h1>
+                <p class="page-sub">
+                    @if (totalItems > 0) {
+                        {{ totalItems }} article{{ totalItems > 1 ? 's' : '' }}
+                    } @else {
+                        Votre panier est vide
+                    }
+                </p>
+            </div>
+            @if (totalItems > 0) {
+                <button class="btn-clear" (click)="clearCart($event)">
+                    <i class="pi pi-trash"></i> Vider le panier
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Empty state -->
+    @if (totalItems === 0) {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="pi pi-shopping-cart"></i>
+            </div>
+            <h2>Votre panier est vide</h2>
+            <p>Parcourez nos articles pour les ajouter à votre panier.</p>
+            <a routerLink="/products" class="btn-primary">Découvrir les articles</a>
+        </div>
+    }
+
+    <!-- Cart layout -->
+    @if (totalItems > 0) {
+        <div class="cart-layout">
+
+            <!-- Items column -->
+            <div class="items-col">
+                @for (group of cartGroups; track group.shop?._id) {
+                    <div class="shop-card">
+
+                        <div class="shop-card-header">
+                            <i class="pi pi-shop"></i>
+                            <span>{{ group.shop?.name || 'Boutique' }}</span>
+                            <span class="shop-pill">
+                                {{ group.items.length }} produit{{ group.items.length > 1 ? 's' : '' }}
+                            </span>
+                        </div>
+
+                        @for (item of group.items; track item.product._id) {
+                            <div class="item-row">
+                                <img [src]="getProductImage(item.product)"
+                                    [alt]="item.product.name" class="item-img" />
+
+                                <div class="item-info">
+                                    <a [routerLink]="['/product', item.product._id]" class="item-name">
+                                        {{ item.product.name }}
+                                    </a>
+                                    <div class="item-price-line">
+                                        <span [class.price-promo]="item.product.isPromotion"
+                                            [class.price-normal]="!item.product.isPromotion">
+                                            {{ formatCurrency(item.product.price) }}
+                                        </span>
+                                        @if (item.product.isPromotion && item.product.originalPrice) {
+                                            <span class="price-original">
+                                                {{ formatCurrency(item.product.originalPrice) }}
+                                            </span>
+                                        }
+                                        @if (item.product.isPromotion && item.product.discount) {
+                                            <span class="discount-badge">-{{ item.product.discount }}%</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="qty-ctrl">
+                                    <button class="qty-btn"
+                                        (click)="updateQuantity(item.product._id, item.quantity - 1)"
+                                        [disabled]="item.quantity <= 1">
+                                        <i class="pi pi-minus"></i>
+                                    </button>
+                                    <span class="qty-val">{{ item.quantity }}</span>
+                                    <button class="qty-btn"
+                                        (click)="updateQuantity(item.product._id, item.quantity + 1)">
+                                        <i class="pi pi-plus"></i>
+                                    </button>
+                                </div>
+
+                                <span class="item-subtotal">
+                                    {{ formatCurrency(item.product.price * item.quantity) }}
+                                </span>
+
+                                <button class="btn-remove" (click)="removeItem(item.product._id)" title="Retirer">
+                                    <i class="pi pi-times"></i>
+                                </button>
+                            </div>
+                            @if (!$last) {
+                                <div class="item-sep"></div>
+                            }
+                        }
+
+                    </div>
+                }
+            </div>
+
+            <!-- Summary column -->
+            <div class="summary-col">
+                <div class="summary-card">
+                    <h3 class="summary-title">Récapitulatif</h3>
+
+                    <div class="summary-row">
+                        <span>Sous-total</span>
+                        <span>{{ formatCurrency(totalAmount) }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Livraison</span>
+                        <span class="free-tag">Gratuit</span>
+                    </div>
+
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>{{ formatCurrency(totalAmount) }}</span>
+                    </div>
+
+                    <button class="btn-checkout" (click)="checkout()">
+                        Commander <i class="pi pi-arrow-right"></i>
+                    </button>
+
+                    <p class="secure-note">
+                        <i class="pi pi-lock"></i> Paiement 100% sécurisé
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>
