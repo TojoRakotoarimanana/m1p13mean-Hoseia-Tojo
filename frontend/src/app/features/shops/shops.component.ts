@@ -17,6 +17,10 @@ import { UserService } from '../../core/services/user.service';
 import { CategoryService } from '../../core/services/category.service';
 import { AuthService } from '../../core/services/auth.service';
 
+import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
+import { TextareaModule } from 'primeng/textarea';
+
 @Component({
   selector: 'app-shops',
   standalone: true,
@@ -31,7 +35,10 @@ import { AuthService } from '../../core/services/auth.service';
     SelectModule,
     ToastModule,
     TagModule,
-    PaginatorModule
+    PaginatorModule,
+    AvatarModule,
+    TooltipModule,
+    TextareaModule
   ],
   templateUrl: './shops.component.html',
   styleUrl: './shops.component.css'
@@ -145,6 +152,18 @@ export class ShopsComponent implements OnInit {
     this.loadShops();
   }
 
+  resetFilters() {
+    this.filters = {
+      category: '',
+      status: '',
+      floor: '',
+      zone: '',
+      shopNumber: ''
+    };
+    this.page = 1;
+    this.loadShops();
+  }
+
   onPageChange(event: any) {
     this.page = event.page + 1;
     this.limit = event.rows;
@@ -204,6 +223,18 @@ export class ShopsComponent implements OnInit {
       },
       error: (error) => {
         this.notificationService.error(error.error?.message || 'Erreur lors de la suspension', 'Erreur');
+      }
+    });
+  }
+
+  reactivateShop(shop: any) {
+    this.shopService.reactivate(shop._id).subscribe({
+      next: () => {
+        this.notificationService.success('Boutique réactivée.', 'Succès');
+        this.loadShops();
+      },
+      error: (error) => {
+        this.notificationService.error(error.error?.message || 'Erreur lors de la réactivation', 'Erreur');
       }
     });
   }

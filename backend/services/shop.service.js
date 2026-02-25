@@ -183,6 +183,31 @@ class ShopService {
     };
   }
 
+  async reactivate(shopId) {
+    if (!shopId) {
+      const error = new Error('shopId est obligatoire.');
+      error.status = 400;
+      throw error;
+    }
+
+    const shop = await Shop.findByIdAndUpdate(
+      shopId,
+      { status: 'active', isActive: true },
+      { new: true }
+    );
+
+    if (!shop) {
+      const error = new Error('Boutique introuvable.');
+      error.status = 404;
+      throw error;
+    }
+
+    return {
+      message: 'Boutique réactivée.',
+      shop
+    };
+  }
+
   async approve(shopId, location) {
     if (!shopId) {
       const error = new Error('shopId est obligatoire.');

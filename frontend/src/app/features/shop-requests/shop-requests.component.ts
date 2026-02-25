@@ -11,10 +11,14 @@ import { ToastModule } from 'primeng/toast';
 import { NotificationService } from '../../core/services/notification.service';
 import { ShopService } from '../../core/services/shop.service';
 
+import { TagModule } from 'primeng/tag';
+import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
+
 @Component({
   selector: 'app-shop-requests',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardModule, TableModule, ButtonModule, DialogModule, InputTextModule, ToastModule],
+  imports: [CommonModule, FormsModule, CardModule, TableModule, ButtonModule, DialogModule, InputTextModule, ToastModule, TagModule, AvatarModule, TooltipModule],
   templateUrl: './shop-requests.component.html',
   styleUrl: './shop-requests.component.css'
 })
@@ -50,6 +54,21 @@ export class ShopRequestsComponent implements OnInit {
         this.notificationService.error(error.error?.message || 'Erreur lors du chargement', 'Erreur');
       }
     });
+  }
+
+  getStatusSeverity(status: string) {
+    switch (status?.toLowerCase()) {
+      case 'active':
+      case 'approved':
+        return 'success';
+      case 'pending':
+        return 'warn';
+      case 'rejected':
+      case 'inactive':
+        return 'danger';
+      default:
+        return 'info';
+    }
   }
 
   openApprove(shop: any) {
