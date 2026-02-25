@@ -6,7 +6,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { CatalogService, Shop } from '../../core/services/catalog.service';
-import { CategoryService } from '../../core/services/category.service';
 
 @Component({
   selector: 'app-shops-list',
@@ -38,49 +37,44 @@ export class ShopsListComponent implements OnInit {
 
   constructor(
     private catalogService: CatalogService,
-    private categoryService: CategoryService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.loadShops();
-    this.loadCategories();
   }
 
   loadShops() {
     this.loading = true;
-    this.catalogService.getShops().subscribe({
+    this.loadingCategories = true;
+    this.catalogService.getShops({ limit: 200 } as any).subscribe({
       next: (response: any) => {
         this.shops = response?.shops || response || [];
         this.filteredShops = [...this.shops];
+        this.extractCategories();
         this.loading = false;
         this.cdr.detectChanges();
       },
       error: () => {
         this.shops = [];
         this.filteredShops = [];
+        this.categories = [{ _id: null, name: 'Toutes' }];
         this.loading = false;
+        this.loadingCategories = false;
         this.cdr.detectChanges();
       }
     });
   }
 
-  loadCategories() {
-    this.loadingCategories = true;
-    this.categoryService.list().subscribe({
-      next: (response: any) => {
-        const cats = response.categories || response || [];
-        this.categories = [{ _id: null, name: 'Toutes' }, ...cats];
-        this.loadingCategories = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.categories = [{ _id: null, name: 'Toutes' }];
-        this.loadingCategories = false;
-        this.cdr.detectChanges();
-      }
+  private extractCategories() {
+    const catMap = new Map<string, any>();
+    this.shops.forEach(s => {
+      if (s.category?._id) catMap.set(s.category._id, s.category);
     });
+    const cats = Array.from(catMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    this.categories = [{ _id: null, name: 'Toutes' }, ...cats];
+    this.loadingCategories = false;
   }
 
   onSearch() {

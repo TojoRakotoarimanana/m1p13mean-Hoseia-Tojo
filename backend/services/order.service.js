@@ -162,6 +162,25 @@ class OrderService {
             console.error('Erreur lors de la création de la notification:', notifError.message);
         }
 
+        // 11. Créer une notification pour chaque boutique concernée
+        for (const [shopIdStr, shopOrder] of shopOrdersMap.entries()) {
+            try {
+                const shopDoc = await Shop.findById(shopIdStr, 'userId name');
+                if (shopDoc?.userId) {
+                    await NotificationService.createNotification({
+                        userId: shopDoc.userId,
+                        type: 'order',
+                        title: 'Nouvelle commande',
+                        message: `Nouvelle commande ${order.orderNumber} reçue. Montant: ${shopOrder.subtotal.toLocaleString()} Ar.`,
+                        relatedId: order._id,
+                        relatedModel: 'Order'
+                    });
+                }
+            } catch (notifError) {
+                console.error('Erreur notification boutique:', notifError.message);
+            }
+        }
+
         return {
             message: 'Commande passée avec succès.',
             order

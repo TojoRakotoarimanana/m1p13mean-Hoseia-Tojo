@@ -10,8 +10,6 @@ import { MessageService } from 'primeng/api';
 import { CatalogService, Product } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { CartService } from '../../../core/services/cart.service';
-import { NavbarComponent } from '../../../core/components/navbar/navbar.component';
-
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -22,7 +20,6 @@ import { NavbarComponent } from '../../../core/components/navbar/navbar.componen
     InputNumberModule,
     FormsModule,
     ToastModule,
-    NavbarComponent
   ],
   providers: [MessageService],
   templateUrl: './product-details.component.html',

@@ -1,77 +1,103 @@
-<div class="history-container max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
-    <div class="flex align-items-center mb-5">
-        <p-button icon="pi pi-arrow-left" [text]="true" routerLink="/orders/my-orders" class="mr-3"></p-button>
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900 m-0">Historique des commandes</h1>
-            <p class="text-gray-500 mt-2 mb-0">Retrouvez toutes vos anciennes commandes et recommandez facilement.</p>
+<div class="history-wrapper">
+
+    <!-- En-tête -->
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div class="header-left">
+                <div>
+                    <h1 class="page-title">Historique des commandes</h1>
+                    <p class="page-sub">Toutes vos commandes passées</p>
+                </div>
+            </div>
         </div>
+    </header>
+
+    <!-- Contenu -->
+    <div class="page-content">
+
+        <!-- Loading -->
+        <div *ngIf="loading">
+            <p-skeleton width="100%" height="3rem" class="mb-2 border-round-lg"></p-skeleton>
+            <p-skeleton width="100%" height="3rem" class="mb-2 border-round-lg"></p-skeleton>
+            <p-skeleton width="100%" height="3rem" class="border-round-lg"></p-skeleton>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="!loading && orders.length === 0" class="empty-state">
+            <i class="pi pi-history empty-icon"></i>
+            <p class="empty-title">Aucun historique disponible</p>
+            <p class="empty-sub">Vous n'avez pas encore de commande terminée ou annulée.</p>
+            <p-button label="Voir mes commandes en cours" icon="pi pi-arrow-left" [outlined]="true"
+                routerLink="/orders/my-orders" size="small"></p-button>
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="!loading && orders.length > 0" class="table-card">
+            <p-table [value]="getPaginatedOrders()" class="p-datatable-sm">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>N° Commande</th>
+                        <th>Date</th>
+                        <th>Boutiques</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th style="width: 7rem"></th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-order>
+                    <tr class="order-row">
+                        <td>
+                            <span class="order-ref" [routerLink]="['/orders', order._id]">
+                                #{{ getShortId(order) }}
+                            </span>
+                        </td>
+                        <td class="cell-muted">{{ formatDate(order.createdAt) }}</td>
+                        <td>
+                            <span class="shops-pill">
+                                <i class="pi pi-shop"></i>
+                                {{ order.shopOrders?.length || 1 }}
+                            </span>
+                        </td>
+                        <td class="cell-bold">{{ formatCurrency(order.totalAmount) }}</td>
+                        <td>
+                            <p-tag
+                                [value]="order.status === 'completed' ? 'Terminée' : 'Annulée'"
+                                [severity]="order.status === 'completed' ? 'success' : 'danger'">
+                            </p-tag>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <p-button icon="pi pi-eye" [text]="true" [rounded]="true" size="small"
+                                    pTooltip="Détails" tooltipPosition="top"
+                                    [routerLink]="['/orders', order._id]"></p-button>
+                                <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" size="small"
+                                    severity="success" pTooltip="Recommander" tooltipPosition="top"
+                                    (onClick)="reorder(order, $event)"></p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+
+            <!-- Pagination -->
+            @if (orders.length > rows) {
+            <div class="history-pagination">
+                <p-paginator
+                    [rows]="rows"
+                    [totalRecords]="orders.length"
+                    [first]="first"
+                    (onPageChange)="onPageChange($event)"
+                    [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Page {currentPage} sur {totalPages}"
+                ></p-paginator>
+            </div>
+            }
+        </div>
+
     </div>
-
-    <p-card styleClass="border-round-xl shadow-2">
-        <div *ngIf="loading" class="text-center p-5">
-            <i class="pi pi-spin pi-spinner text-4xl text-primary mb-3"></i>
-            <p>Chargement de l'historique...</p>
-        </div>
-
-        <div *ngIf="!loading && orders.length === 0" class="text-center p-6">
-            <i class="pi pi-history text-6xl text-gray-300 mb-4 block"></i>
-            <h3 class="text-xl font-bold text-gray-700">Aucun historique disponible</h3>
-            <p class="text-gray-500 mb-4">Vous n'avez pas encore passé de commande ou vos commandes ne sont pas encore
-                terminées.</p>
-            <p-button label="Voir mes achats en cours" routerLink="/orders/my-orders"></p-button>
-        </div>
-
-        <div *ngIf="!loading && orders.length > 0" class="px-2 md:px-5 py-4">
-            <p-timeline [value]="orders" align="left" styleClass="customized-timeline">
-                <ng-template pTemplate="marker" let-order>
-                    <span class="custom-marker shadow-2 bg-primary text-white">
-                        <i class="pi pi-box"></i>
-                    </span>
-                </ng-template>
-                <ng-template pTemplate="content" let-order>
-                    <p-card
-                        styleClass="mb-5 shadow-1 border-1 border-200 hover:shadow-3 transition-shadow transition-duration-300">
-                        <div
-                            class="flex flex-column lg:flex-row justify-content-between lg:align-items-center mb-3 border-bottom-1 border-200 pb-3">
-                            <div>
-                                <h3 class="mt-0 mb-2 font-bold text-lg text-gray-800">
-                                    Commande <span class="text-primary cursor-pointer hover:underline"
-                                        [routerLink]="['/orders', order._id]">#{{ getShortId(order) }}</span>
-                                </h3>
-                                <div class="flex align-items-center gap-3 text-sm text-gray-600">
-                                    <span><i class="pi pi-calendar mr-1"></i>{{ formatDate(order.createdAt) }}</span>
-                                    <p-tag
-                                        [value]="order.status === 'completed' ? 'Terminée' : order.status === 'cancelled' ? 'Annulée' : order.status"
-                                        [severity]="order.status === 'completed' ? 'success' : order.status === 'cancelled' ? 'danger' : 'info'">
-                                    </p-tag>
-                                </div>
-                            </div>
-
-                            <div class="text-left lg:text-right mt-3 lg:mt-0">
-                                <div class="text-xl font-bold text-gray-900">{{ formatCurrency(order.totalAmount) }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <!-- Afficher quelques images de produits si possible, sinon un résumé statique -->
-                            <div
-                                class="bg-gray-50 p-3 border-round w-full flex align-items-center justify-content-between">
-                                <span class="text-gray-600"><i class="pi pi-shopping-bag mr-2"></i>{{
-                                    order.shopOrders?.length || 1 }} boutique(s) partenaires</span>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-content-end gap-3 pt-3 border-top-1 border-200">
-                            <p-button label="Détails" icon="pi pi-eye" [outlined]="true"
-                                [routerLink]="['/orders', order._id]"></p-button>
-                            <p-button label="Recommander" icon="pi pi-refresh" severity="success"
-                                (onClick)="reorder(order, $event)"></p-button>
-                        </div>
-                    </p-card>
-                </ng-template>
-            </p-timeline>
-        </div>
-    </p-card>
 </div>
+
 <p-confirmDialog></p-confirmDialog>

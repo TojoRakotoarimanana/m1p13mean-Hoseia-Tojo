@@ -1,43 +1,148 @@
-<div class="stock-wrapper">
-  <div class="header flex justify-content-between align-items-center mb-4">
-    <h1>Gestion des stocks</h1>
+<div class="mp-wrapper">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <h1 class="page-title">Gestion des stocks</h1>
+        <p class="page-tagline">Ajustez les quantités et les seuils d'alerte</p>
+      </div>
+      <button class="btn-back" (click)="goBack()" type="button">
+        <i class="pi pi-arrow-left"></i> Retour aux produits
+      </button>
+    </div>
+  </header>
+
+  <!-- Search + summary bar -->
+  <div class="mp-filters-card">
+    <div class="mp-filter-search">
+      <div class="mp-input-wrap">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          [(ngModel)]="search"
+          placeholder="Rechercher un produit…"
+          (keyup.enter)="onSearch()" />
+      </div>
+    </div>
+    <button class="btn-filter" (click)="onSearch()" type="button">
+      <i class="pi pi-filter"></i> Filtrer
+    </button>
+
+    @if (!loading && total > 0) {
+      <div class="summary-chips">
+        <span class="chip chip-total">
+          <i class="pi pi-box"></i> {{ total }} produit(s)
+        </span>
+        @if (lowStockCount > 0) {
+          <span class="chip chip-low">
+            <i class="pi pi-exclamation-triangle"></i> {{ lowStockCount }} stock bas
+          </span>
+        }
+      </div>
+    }
   </div>
 
-  <p-card>
+  <!-- Table -->
+  <div class="mp-table-card">
     <p-table [value]="products" [loading]="loading">
       <ng-template pTemplate="header">
         <tr>
-          <th>Produit</th>
-          <th>Stock</th>
-          <th>Seuil</th>
-          <th>Alerte</th>
-          <th>Actions</th>
+          <th style="min-width:200px">Produit</th>
+          <th style="min-width:130px">Catégorie</th>
+          <th class="th-center" style="min-width:160px">Stock actuel</th>
+          <th class="th-center" style="min-width:120px">Seuil alerte</th>
+          <th class="th-center" style="min-width:110px">Statut</th>
+          <th style="min-width:140px"></th>
         </tr>
       </ng-template>
+
       <ng-template pTemplate="body" let-product>
-        <tr [class.low-stock]="isLowStock(product)">
-          <td>{{ product.name }}</td>
+        <tr [class.row-low]="isLowStock(product)">
+
+          <!-- Produit -->
           <td>
-            <input pInputText type="number" [(ngModel)]="product.stock.quantity" class="w-full" />
+            <div class="product-info">
+              <img
+                class="product-thumb"
+                [src]="getProductImageUrl(product)"
+                [alt]="product.name"
+                (error)="$any($event.target).src='https://placehold.co/44x44/f1f5f9/94a3b8?text=?'" />
+              <span class="product-name">{{ product.name }}</span>
+            </div>
           </td>
-          <td>
-            <input pInputText type="number" [(ngModel)]="product.stock.lowStockAlert" class="w-full" />
+
+          <!-- Catégorie -->
+          <td class="cell-muted">{{ product.category?.name || '—' }}</td>
+
+          <!-- Stock actuel -->
+          <td class="td-center">
+            <p-inputNumber
+              [(ngModel)]="product.stock.quantity"
+              [min]="0"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              decrementButtonIcon="pi pi-minus"
+              incrementButtonIcon="pi pi-plus"
+              class="qty-input">
+            </p-inputNumber>
           </td>
-          <td>
-            <span>{{ isLowStock(product) ? 'Stock bas' : 'OK' }}</span>
+
+          <!-- Seuil alerte -->
+          <td class="td-center">
+            <p-inputNumber
+              [(ngModel)]="product.stock.lowStockAlert"
+              [min]="0"
+              [showButtons]="false"
+              class="alert-input">
+            </p-inputNumber>
           </td>
-          <td>
-            <p-button icon="pi pi-save" (onClick)="saveStock(product)"></p-button>
+
+          <!-- Statut -->
+          <td class="td-center">
+            <span class="stock-badge"
+              [class.badge-ok]="!isLowStock(product)"
+              [class.badge-low]="isLowStock(product)">
+              <i class="pi"
+                [class.pi-check-circle]="!isLowStock(product)"
+                [class.pi-exclamation-triangle]="isLowStock(product)">
+              </i>
+              {{ isLowStock(product) ? 'Stock bas' : 'OK' }}
+            </span>
           </td>
+
+          <!-- Action -->
+          <td class="td-right">
+            <button class="save-btn" (click)="saveStock(product)" type="button">
+              <i class="pi pi-save"></i> Enregistrer
+            </button>
+          </td>
+
         </tr>
       </ng-template>
+
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5">Aucun produit.</td>
+          <td colspan="6">
+            <div class="mp-empty">
+              <i class="pi pi-box"></i>
+              <p>Aucun produit trouvé.</p>
+            </div>
+          </td>
         </tr>
       </ng-template>
     </p-table>
-  </p-card>
+
+    <div class="mp-paginator-wrap">
+      <p-paginator
+        [rows]="limit"
+        [totalRecords]="total"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        (onPageChange)="onPageChange($event)">
+      </p-paginator>
+    </div>
+  </div>
+
 </div>
 
 <p-toast></p-toast>

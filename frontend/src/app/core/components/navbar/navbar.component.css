@@ -17,21 +17,29 @@
 }
 
 .sidebar-header {
-    padding: 24px 20px 20px;
+    padding: 16px 16px 16px 20px;
     background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.sidebar-header:hover {
-    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .logo-container {
     display: flex;
     align-items: center;
     gap: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 6px 8px;
+    flex: 1;
+    min-width: 0;
+    transition: background 0.2s ease;
+}
+
+.logo-container:hover {
+    background: #f3f4f6;
 }
 
 .logo-icon {
@@ -375,6 +383,7 @@
     margin-top: auto;
     border-top: 1px solid #e5e7eb;
 }
+
 
 .user-profile {
     display: flex;

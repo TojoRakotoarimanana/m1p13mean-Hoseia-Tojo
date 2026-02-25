@@ -1,57 +1,72 @@
-<div class="products-wrapper">
-  <div class="header flex justify-content-between align-items-center mb-4">
-    <h1>Mes produits</h1>
-    <div class="actions">
-      <p-button label="Stock" icon="pi pi-box" severity="secondary" (onClick)="manageStock()"></p-button>
-      <p-button label="Stats" icon="pi pi-chart-bar" severity="secondary" (onClick)="viewStats()"></p-button>
-      <p-button label="Nouveau produit" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+<div class="mp-wrapper">
+
+  <!-- Page header -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <div>
+        <h1 class="page-title">Mes Produits</h1>
+        <p class="page-tagline">Gérez votre catalogue de produits</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="manageStock()" type="button">
+          <i class="pi pi-box"></i> Stock
+        </button>
+        <button class="btn-primary" (click)="openNew()" type="button">
+          <i class="pi pi-plus"></i> Nouveau produit
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <div class="mp-filters-card">
+    <div class="mp-filter-field mp-filter-search">
+      <label class="mp-label">Recherche</label>
+      <div class="mp-input-wrap">
+        <i class="pi pi-search"></i>
+        <input pInputText [(ngModel)]="filters.search" placeholder="Nom, description…" />
+      </div>
+    </div>
+    <div class="mp-filter-field">
+      <label class="mp-label">Catégorie</label>
+      <p-select
+        [options]="categories"
+        optionLabel="displayName"
+        optionValue="_id"
+        [(ngModel)]="filters.category"
+        placeholder="Toutes"
+        [style]="{'width': '100%'}">
+      </p-select>
+    </div>
+    <div class="mp-filter-field mp-filter-sm">
+      <label class="mp-label">Promotion</label>
+      <p-select
+        [options]="promotionOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="filters.promotion"
+        [style]="{'width': '100%'}">
+      </p-select>
+    </div>
+    <div class="mp-filter-field mp-filter-sm">
+      <label class="mp-label">Stock</label>
+      <p-select
+        [options]="stockOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="filters.stockStatus"
+        [style]="{'width': '100%'}">
+      </p-select>
+    </div>
+    <div class="mp-filter-action">
+      <button class="btn-filter" (click)="onFilter()" type="button">
+        <i class="pi pi-filter"></i> Filtrer
+      </button>
     </div>
   </div>
 
-  <p-card [style]="{ width: '100%', marginBottom: '1.5rem' }">
-    <div class="filters grid">
-      <div class="col-12 md:col-4">
-        <label class="field-label">Recherche</label>
-        <input pInputText [(ngModel)]="filters.search" placeholder="Nom, description..." class="w-full" />
-      </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Catégorie</label>
-        <p-select
-          [options]="categories"
-          optionLabel="displayName"
-          optionValue="_id"
-          [(ngModel)]="filters.category"
-          placeholder="Toutes"
-          styleClass="w-full">
-        </p-select>
-      </div>
-      <div class="col-12 md:col-2">
-        <label class="field-label">Promotion</label>
-        <p-select
-          [options]="promotionOptions"
-          optionLabel="label"
-          optionValue="value"
-          [(ngModel)]="filters.promotion"
-          styleClass="w-full">
-        </p-select>
-      </div>
-      <div class="col-12 md:col-2">
-        <label class="field-label">Stock</label>
-        <p-select
-          [options]="stockOptions"
-          optionLabel="label"
-          optionValue="value"
-          [(ngModel)]="filters.stockStatus"
-          styleClass="w-full">
-        </p-select>
-      </div>
-      <div class="col-12 md:col-2 filter-actions">
-        <p-button label="Filtrer" icon="pi pi-filter" severity="secondary" (onClick)="onFilter()"></p-button>
-      </div>
-    </div>
-  </p-card>
-
-  <p-card>
+  <!-- Table -->
+  <div class="mp-table-card">
     <p-table [value]="products" [loading]="loading">
       <ng-template pTemplate="header">
         <tr>
@@ -69,30 +84,29 @@
             <div class="product-info">
               <img
                 class="product-thumb"
-                [src]="product.images?.[0] ? imageBaseUrl + product.images[0] : 'assets/images/placeholder-product.png'"
-                [alt]="product.name" />
+                [src]="getProductImageUrl(product)"
+                [alt]="product.name"
+                (error)="$any($event.target).src='https://placehold.co/80x80/f1f5f9/94a3b8?text=Photo'" />
               <div>
                 <div class="product-name">{{ product.name }}</div>
-                <div class="text-secondary text-sm">{{ product.description || '-' }}</div>
+                <div class="product-desc">{{ product.description || '-' }}</div>
               </div>
             </div>
           </td>
-          <td>{{ product.category?.name || '-' }}</td>
+          <td class="cell-category">{{ product.category?.name || '-' }}</td>
           <td>
             <div *ngIf="product.isPromotion" class="price-stack">
               <span class="price-original">{{ product.originalPrice | number:'1.0-2' }} Ar</span>
               <span class="price-promo">{{ product.price | number:'1.0-2' }} Ar</span>
             </div>
-            <div *ngIf="!product.isPromotion">
-              {{ product.price | number:'1.0-2' }} Ar
-            </div>
+            <span *ngIf="!product.isPromotion" class="price-regular">{{ product.price | number:'1.0-2' }} Ar</span>
           </td>
           <td>
             <p-tag
               [value]="product.stock?.quantity"
               [severity]="getStockSeverity(product)">
             </p-tag>
-            <div class="text-secondary text-sm">Alerte: {{ product.stock?.lowStockAlert }}</div>
+            <div class="stock-alert">Alerte : {{ product.stock?.lowStockAlert }}</div>
           </td>
           <td>
             <p-tag
@@ -100,41 +114,51 @@
               [severity]="product.isPromotion ? 'success' : 'secondary'">
             </p-tag>
           </td>
-          <td class="actions">
-            <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editProduct(product)"></p-button>
-            <p-button
-              [icon]="product.isPromotion ? 'pi pi-stop-circle' : 'pi pi-bolt'"
-              [severity]="product.isPromotion ? 'warn' : 'success'"
-              (onClick)="product.isPromotion ? stopPromotion(product) : openPromotion(product)">
-            </p-button>
-            <p-button icon="pi pi-history" severity="secondary" (onClick)="openHistory(product)"></p-button>
-            <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteProduct(product)"></p-button>
+          <td>
+            <div class="table-actions">
+              <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editProduct(product)"></p-button>
+              <p-button
+                [icon]="product.isPromotion ? 'pi pi-stop-circle' : 'pi pi-bolt'"
+                [severity]="product.isPromotion ? 'warn' : 'success'"
+                (onClick)="product.isPromotion ? stopPromotion(product) : openPromotion(product)">
+              </p-button>
+              <p-button icon="pi pi-history" severity="secondary" (onClick)="openHistory(product)"></p-button>
+              <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteProduct(product)"></p-button>
+            </div>
           </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6">Aucun produit trouvé.</td>
+          <td colspan="6">
+            <div class="mp-empty">
+              <i class="pi pi-box"></i>
+              <p>Aucun produit trouvé.</p>
+            </div>
+          </td>
         </tr>
       </ng-template>
     </p-table>
 
-    <p-paginator
-      [rows]="limit"
-      [totalRecords]="total"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      (onPageChange)="onPageChange($event)">
-    </p-paginator>
-  </p-card>
+    <div class="mp-paginator-wrap">
+      <p-paginator
+        [rows]="limit"
+        [totalRecords]="total"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        (onPageChange)="onPageChange($event)">
+      </p-paginator>
+    </div>
+  </div><!-- /mp-table-card -->
 </div>
 
+<!-- Promo dialog -->
 <p-dialog
   header="Promotion"
   [(visible)]="promoDialog"
   [modal]="true"
   [style]="{ width: '360px' }">
   <div class="field">
-    <label class="field-label">Pourcentage de remise</label>
+    <label class="mp-label">Pourcentage de remise</label>
     <p-inputNumber
       [(ngModel)]="promoValue"
       [min]="0"
@@ -144,7 +168,7 @@
     </p-inputNumber>
   </div>
   <div class="field">
-    <label class="field-label">Date limite</label>
+    <label class="mp-label">Date limite</label>
     <input pInputText type="date" [(ngModel)]="promoEndDate" class="w-full" />
   </div>
   <ng-template pTemplate="footer">
@@ -164,16 +188,19 @@
   </ng-template>
 </p-dialog>
 
+<!-- History dialog -->
 <p-dialog
   header="Historique"
   [(visible)]="historyDialog"
   [modal]="true"
   [style]="{ width: '720px' }"
   (onHide)="closeHistory()">
-  <div *ngIf="historyLoading">Chargement...</div>
-  <div *ngIf="!historyLoading">
-    <h4>Historique promotions</h4>
-    <p-table [value]="historyTarget?.promotionHistory || []">
+  <div *ngIf="historyLoading" style="padding: 1rem; color: #64748b;">
+    <i class="pi pi-spin pi-spinner" style="margin-right: 0.5rem;"></i> Chargement...
+  </div>
+  <div *ngIf="!historyLoading && historyTarget">
+    <p class="history-section-title">Historique promotions</p>
+    <p-table [value]="historyTarget.promotionHistory || []">
       <ng-template pTemplate="header">
         <tr>
           <th>Action</th>
@@ -184,19 +211,19 @@
       </ng-template>
       <ng-template pTemplate="body" let-row>
         <tr>
-          <td>{{ row.action }}</td>
+          <td>{{ row.action === 'enabled' ? 'Activée' : 'Désactivée' }}</td>
           <td>{{ row.discount }}%</td>
-          <td>{{ row.startDate | date:'short' }}</td>
-          <td>{{ row.endDate ? (row.endDate | date:'short') : '-' }}</td>
+          <td>{{ row.startDate | date:'dd/MM/yyyy' }}</td>
+          <td>{{ row.endDate ? (row.endDate | date:'dd/MM/yyyy') : '-' }}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="4">Aucun historique promo.</td></tr>
+        <tr><td colspan="4" class="history-empty">Aucun historique promotion.</td></tr>
       </ng-template>
     </p-table>
 
-    <h4 class="mt-4">Historique prix</h4>
-    <p-table [value]="historyTarget?.priceHistory || []">
+    <p class="history-section-title" style="margin-top: 1.25rem;">Historique prix</p>
+    <p-table [value]="historyTarget.priceHistory || []">
       <ng-template pTemplate="header">
         <tr>
           <th>Ancien prix</th>
@@ -208,11 +235,11 @@
         <tr>
           <td>{{ row.oldPrice | number:'1.0-2' }} Ar</td>
           <td>{{ row.newPrice | number:'1.0-2' }} Ar</td>
-          <td>{{ row.changedAt | date:'short' }}</td>
+          <td>{{ row.changedAt | date:'dd/MM/yyyy' }}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
-        <tr><td colspan="3">Aucun historique prix.</td></tr>
+        <tr><td colspan="3" class="history-empty">Aucun historique prix.</td></tr>
       </ng-template>
     </p-table>
   </div>

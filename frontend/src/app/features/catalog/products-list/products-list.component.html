@@ -1,0 +1,196 @@
+<div class="pl-wrapper">
+
+  <!-- ── Page header ────────────────────────── -->
+  <div class="pl-header">
+    <div>
+      <h1 class="pl-title">Articles</h1>
+      <p class="pl-subtitle">Découvrez tous les produits de nos boutiques</p>
+    </div>
+    @if (!loading) {
+      <span class="pl-total-badge">
+        {{ totalProducts }} article{{ totalProducts !== 1 ? 's' : '' }}
+      </span>
+    }
+  </div>
+
+  <!-- ── Body : filters + main ──────────────── -->
+  <div class="pl-body">
+
+    <!-- ── Filter panel ─────────────────────── -->
+    <aside class="pl-filters">
+      <div class="pl-filters-card">
+        <p class="pl-filters-heading">
+          <i class="pi pi-sliders-h"></i>
+          Filtres
+        </p>
+
+        <!-- Search -->
+        <div class="pl-filter-group">
+          <label class="pl-filter-label">Rechercher</label>
+          <div class="pl-search-wrap">
+            <i class="pi pi-search pl-search-icon"></i>
+            <input
+              type="text"
+              pInputText
+              placeholder="Nom, boutique…"
+              [(ngModel)]="searchTerm"
+              (input)="onSearch()"
+              (keyup.enter)="onSearch()"
+              class="pl-search-input"
+            />
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="pl-filter-group">
+          <label class="pl-filter-label">Catégorie</label>
+          @if (loadingCategories) {
+            <div class="pl-cat-skel">
+              @for (i of [1,2,3,4]; track i) {
+                <p-skeleton height="2rem" class="pl-skel-item"></p-skeleton>
+              }
+            </div>
+          } @else {
+            <div class="pl-cat-list">
+              @for (cat of categories; track cat._id) {
+                <button
+                  type="button"
+                  class="pl-cat-item"
+                  [class.pl-cat-item--active]="selectedCategory?._id === cat._id"
+                  (click)="onCategoryFilter(cat)"
+                >
+                  {{ cat.name }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Clear -->
+        <button type="button" class="pl-clear-btn" (click)="clearFilters()">
+          <i class="pi pi-times"></i>
+          Effacer les filtres
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main content ──────────────────────── -->
+    <main class="pl-main">
+
+      <!-- Results bar -->
+      @if (!loading) {
+        <div class="pl-results-bar">
+          <span class="pl-results-count">
+            <strong>{{ totalProducts }}</strong>
+            article{{ totalProducts !== 1 ? 's' : '' }} trouvé{{ totalProducts !== 1 ? 's' : '' }}
+          </span>
+          @if (searchTerm || selectedCategory?._id) {
+            <div class="pl-active-filters">
+              @if (searchTerm) {
+                <span class="pl-filter-tag">
+                  <i class="pi pi-search"></i> {{ searchTerm }}
+                </span>
+              }
+              @if (selectedCategory?._id) {
+                <span class="pl-filter-tag">
+                  <i class="pi pi-tag"></i> {{ selectedCategory.name }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Loading skeleton -->
+      @if (loading) {
+        <div class="pl-grid">
+          @for (i of skeletonRange(16); track i) {
+            <div class="pl-skeleton-card">
+              <p-skeleton height="160px"></p-skeleton>
+              <div class="pl-skeleton-body">
+                <p-skeleton width="40%" height="0.7rem" class="mb-2"></p-skeleton>
+                <p-skeleton width="85%" height="0.95rem" class="mb-1"></p-skeleton>
+                <p-skeleton width="50%" height="0.9rem"></p-skeleton>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (!loading && products.length === 0) {
+        <div class="pl-empty">
+          <i class="pi pi-box"></i>
+          <h3>Aucun article trouvé</h3>
+          <p>Aucun produit ne correspond à vos critères de recherche.</p>
+          <button type="button" class="pl-empty-reset" (click)="clearFilters()">
+            <i class="pi pi-times"></i> Effacer les filtres
+          </button>
+        </div>
+      }
+
+      <!-- Product cards grid -->
+      @if (!loading && products.length > 0) {
+        <div class="pl-grid">
+          @for (product of products; track product._id) {
+            <div class="pl-card" (click)="viewProduct(product)">
+
+              <!-- Image -->
+              <div class="pl-card-img">
+                @if (getImageUrl(product)) {
+                  <img [src]="getImageUrl(product)" [alt]="product.name" loading="lazy" />
+                } @else {
+                  <div class="pl-card-no-img">
+                    <i class="pi pi-box"></i>
+                  </div>
+                }
+                @if (product.isPromotion && product.discount > 0) {
+                  <span class="pl-badge-promo">−{{ product.discount }}%</span>
+                }
+              </div>
+
+              <!-- Body -->
+              <div class="pl-card-body">
+                <span class="pl-card-category">
+                  <i class="pi pi-tag"></i>
+                  {{ product.category.name }}
+                </span>
+                <h3 class="pl-card-name">{{ product.name }}</h3>
+                <div class="pl-card-pricing">
+                  <span [class]="product.isPromotion && product.discount > 0 ? 'pl-price pl-price--promo' : 'pl-price pl-price--normal'">
+                    {{ formatPrice(getPrice(product)) }}
+                  </span>
+                  @if (product.isPromotion && product.discount > 0) {
+                    <span class="pl-price pl-price--original">{{ formatPrice(product.price) }}</span>
+                  }
+                </div>
+                <div class="pl-card-meta">
+                  <span class="pl-meta-item">
+                    <i class="pi pi-shop"></i>
+                    {{ product.shopId.name }}
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+
+        <!-- Pagination -->
+        @if (totalProducts > rows) {
+          <div class="pl-pagination">
+            <p-paginator
+              [rows]="rows"
+              [totalRecords]="totalProducts"
+              [first]="first"
+              (onPageChange)="onPageChange($event)"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Page {currentPage} sur {totalPages}"
+            ></p-paginator>
+          </div>
+        }
+      }
+
+    </main>
+  </div>
+</div>

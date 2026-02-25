@@ -2,13 +2,8 @@ import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
-import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { DividerModule } from 'primeng/divider';
-import { TimelineModule } from 'primeng/timeline';
 import { MessageService } from 'primeng/api';
 
 import { OrderShopService } from '../../../core/services/order-shop.service';
@@ -20,13 +15,8 @@ import { NotificationService } from '../../../core/services/notification.service
   imports: [
     CommonModule,
     RouterModule,
-    CardModule,
     TableModule,
-    ButtonModule,
-    TagModule,
     ToastModule,
-    DividerModule,
-    TimelineModule,
   ],
   providers: [MessageService],
   templateUrl: './order-detail.component.html',
@@ -36,6 +26,16 @@ export class OrderDetailComponent implements OnInit {
   order: any = null;
   loading = false;
   actionLoading = false;
+
+  readonly imageBaseUrl = 'http://localhost:3000';
+
+  getItemImageUrl(item: any): string {
+    const img = item?.image;
+    if (!img) return '';
+    if (img.startsWith('http://') || img.startsWith('https://')) return img;
+    const clean = img.startsWith('/') ? img : '/' + img;
+    return `${this.imageBaseUrl}${clean}`;
+  }
 
   readonly statusFlow = [
     { key: 'pending',   label: 'En attente' },

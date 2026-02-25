@@ -54,7 +54,7 @@ export class LoginBoutiqueComponent {
                     this.isLoading = false;
                     if (response.user.role === 'boutique') {
                         this.notificationService.success('Connexion réussie', 'Bienvenue');
-                            this.router.navigate(['/dasboard']);
+                            this.router.navigate(['/boutique-dashboard']);
                     } else {
                         this.notificationService.error('Email ou mot de passe incorrect.', 'Erreur de connexion');
                         this.authService.logout();

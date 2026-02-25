@@ -97,6 +97,11 @@ export class CartService {
         );
     }
 
+    // Rafraîchir le panier depuis le serveur (prix à jour, promotions incluses)
+    refresh(): Observable<any> {
+        return this.refreshFromServer();
+    }
+
     private refreshFromServer(): Observable<any> {
         return this.http.get(`${this.apiUrl}/`).pipe(
             tap((cart: any) => {
@@ -130,10 +135,23 @@ export class CartService {
         );
     }
 
+    // Retourne le prix de vente effectif en tenant compte de la promotion
+    private effectivePrice(product: any): number {
+        if (product?.isPromotion && product.discount > 0 && product.originalPrice > 0) {
+            return Number((product.originalPrice * (1 - product.discount / 100)).toFixed(2));
+        }
+        return product?.price || 0;
+    }
+
     private applyServerCart(cart: any) {
         const items: CartItem[] = (cart?.items || []).map((i: any) => {
-            const product = i.productId;
-            const shop = i.shopId || product?.shopId;
+            const raw = i.productId;
+            // Normaliser le prix : si en promotion, recalculer depuis originalPrice × (1 - discount%)
+            const product = {
+                ...raw,
+                price: this.effectivePrice(raw)
+            };
+            const shop = i.shopId || raw?.shopId;
             return {
                 itemId: i._id,
                 product,
@@ -161,7 +179,7 @@ export class CartService {
     }
 
     private getDiscountedPrice(product: Product): number {
-        return product.price;
+        return this.effectivePrice(product);
     }
 
     // Obtenir le panier groupé par boutique

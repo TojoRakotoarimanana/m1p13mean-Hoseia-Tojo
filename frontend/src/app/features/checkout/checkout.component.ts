@@ -5,11 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { OrderService } from '../../core/services/order.service';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { StepsModule } from 'primeng/steps';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { RadioButtonModule } from 'primeng/radiobutton';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../core/services/auth.service';
@@ -24,11 +20,7 @@ import { NavbarComponent } from '../../core/components/navbar/navbar.component';
         RouterModule,
         FormsModule,
         ButtonModule,
-        CardModule,
-        StepsModule,
         InputTextModule,
-        SelectModule,
-        RadioButtonModule,
         ToastModule
     ],
     providers: [MessageService],
@@ -36,7 +28,12 @@ import { NavbarComponent } from '../../core/components/navbar/navbar.component';
     styleUrl: './checkout.component.css'
 })
 export class CheckoutComponent implements OnInit {
-    items: any[] | undefined;
+    stepDefs = [
+        { label: 'Récapitulatif' },
+        { label: 'Livraison' },
+        { label: 'Paiement' },
+        { label: 'Confirmation' }
+    ];
     activeIndex: number = 0;
 
     cartGroups: { shop: any, items: CartItem[], total: number }[] = [];
@@ -63,13 +60,6 @@ export class CheckoutComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.items = [
-            { label: 'Récapitulatif' },
-            { label: 'Livraison' },
-            { label: 'Paiement' },
-            { label: 'Confirmation' }
-        ];
-
         const state = this.cartService.getCart();
         if (state.totalItems === 0) {
             this.router.navigate(['/cart']);
@@ -158,6 +148,13 @@ export class CheckoutComponent implements OnInit {
                 this.messageService.add({ severity: 'error', summary: 'Erreur', detail: err.error?.message || 'Erreur lors de la création de la commande' });
             }
         });
+    }
+
+    getProductImageUrl(product: any): string {
+        const img = product.images?.[0];
+        if (!img) return '';
+        if (img.startsWith('http://') || img.startsWith('https://')) return img;
+        return `http://localhost:3000/${img}`;
     }
 
     getDiscountedPrice(product: any): number {

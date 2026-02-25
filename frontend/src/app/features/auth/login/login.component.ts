@@ -53,7 +53,7 @@ export class LoginComponent {
                 this.isLoading = false;
                 if (response.user.role === 'client') {
                     this.notificationService.success('Connexion réussie', 'Bienvenue');
-                    this.router.navigate(['/shops']);
+                    this.router.navigate(['/home']);
                 } else {
                     this.notificationService.error('Email ou mot de passe incorrect.', 'Erreur de connexion');
                     this.authService.logout();

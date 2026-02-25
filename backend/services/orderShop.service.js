@@ -1,4 +1,5 @@
 const { Order, Shop } = require('../models');
+const NotificationService = require('./notification.service');
 
 class OrderShopService {
   async _getShop(userId) {
@@ -15,6 +16,7 @@ class OrderShopService {
     const shop = await this._getShop(userId);
     const {
       status,
+      search,
       page = 1,
       limit = 10,
       sortBy = 'createdAt',
@@ -22,7 +24,11 @@ class OrderShopService {
     } = query;
 
     const filters = { 'items.shopId': shop._id };
-    if (status) filters.status = status;
+    // Filtrer sur le statut spécifique à cette boutique (shopOrders[].status)
+    if (status) {
+      filters.shopOrders = { $elemMatch: { shopId: shop._id, status: status } };
+    }
+    if (search) filters.orderNumber = { $regex: search, $options: 'i' };
 
     const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
     const limitNumber = Math.max(parseInt(limit, 10) || 10, 1);
@@ -114,6 +120,28 @@ class OrderShopService {
     }
 
     await order.save();
+
+    // Notifier le client du changement de statut
+    const statusLabels = {
+      confirmed: 'confirmée',
+      preparing: 'en cours de préparation',
+      ready: 'prête pour retrait/livraison',
+      completed: 'complétée',
+      cancelled: 'annulée par la boutique'
+    };
+    try {
+      await NotificationService.createNotification({
+        userId: order.customerId,
+        type: 'order',
+        title: 'Statut de commande mis à jour',
+        message: `Votre commande ${order.orderNumber} est maintenant ${statusLabels[status] || status}.`,
+        relatedId: order._id,
+        relatedModel: 'Order'
+      });
+    } catch (notifError) {
+      console.error('Erreur notification client:', notifError.message);
+    }
+
     return order;
   }
 

@@ -1,4 +1,5 @@
 const { Notification } = require('../models');
+const notificationEmitter = require('../utils/notification-emitter');
 
 class NotificationService {
     async createNotification(data) {
@@ -21,6 +22,11 @@ class NotificationService {
         });
 
         await notification.save();
+
+        // Pousser l'événement aux connexions SSE actives pour ce userId
+        const unreadCount = await Notification.countDocuments({ userId, isRead: false });
+        notificationEmitter.emit(`notification:${userId}`, { unreadCount, notification });
+
         return notification;
     }
 

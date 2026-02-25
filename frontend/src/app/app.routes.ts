@@ -15,20 +15,21 @@ import { MyShopComponent } from './features/my-shop/my-shop.component';
 import { MyProductsComponent } from './features/products/my-products/my-products.component';
 import { ProductFormComponent } from './features/products/product-form/product-form.component';
 import { StockManagementComponent } from './features/products/stock-management/stock-management.component';
-import { ProductStatsComponent } from './features/products/product-stats/product-stats.component';
 import { MyOrdersComponent } from './features/orders/my-orders/my-orders.component';
+import { BoutiqueDashboardComponent } from './features/boutique-dashboard/boutique-dashboard.component';
 import { OrderDetailComponent } from './features/orders/order-detail/order-detail.component';
+import { ShopOrdersComponent } from './features/orders/shop-orders/shop-orders.component';
 import { HomeClientComponent } from './features/home/home-client.component';
 import { ShopsListComponent } from './features/shops/shops-list.component';
 import { ShopDetailComponent } from './features/shops/shop-detail.component';
 import { ShopDetailsComponent } from './features/catalog/shop-details/shop-details.component';
 import { ProductDetailsComponent } from './features/catalog/product-details/product-details.component';
+import { ProductsListComponent } from './features/catalog/products-list/products-list.component';
 
-// Cart & Orders
+// Cart & Orders (client)
 import { CartComponent } from './features/cart/cart.component';
 import { CheckoutComponent } from './features/checkout/checkout.component';
 import { OrderConfirmationComponent } from './features/orders/order-confirmation/order-confirmation.component';
-import { MyOrdersComponent } from './features/orders/my-orders/my-orders.component';
 import { OrderDetailsComponent } from './features/orders/order-details/order-details.component';
 import { OrderHistoryComponent } from './features/orders/order-history/order-history.component';
 
@@ -51,7 +52,7 @@ const redirectIfLoggedIn: any = () => {
                     router.navigate(['/home']);
                     break;
                 case 'boutique':
-                    router.navigate(['/my-shop']);
+                    router.navigate(['/boutique-dashboard']);
                     break;
                 case 'admin':
                     router.navigate(['/dashboard']);
@@ -83,6 +84,7 @@ export const routes: Routes = [
     // Routes client publiques  
     { path: 'shops', component: ShopsListComponent, canActivate: [clientGuard] },
     { path: 'shop/:id', component: ShopDetailsComponent, canActivate: [clientGuard] },
+    { path: 'products', component: ProductsListComponent, canActivate: [clientGuard] },
     { path: 'product/:id', component: ProductDetailsComponent, canActivate: [clientGuard] },
 
     // Cart & Orders routes
@@ -103,12 +105,12 @@ export const routes: Routes = [
     { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [adminGuard] },
 
     // Routes boutique
+    { path: 'boutique-dashboard', component: BoutiqueDashboardComponent, canActivate: [boutiqueGuard] },
     { path: 'my-shop', component: MyShopComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products', component: MyProductsComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products/new', component: ProductFormComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products/:id/edit', component: ProductFormComponent, canActivate: [boutiqueGuard] },
     { path: 'my-products/stock', component: StockManagementComponent, canActivate: [boutiqueGuard] },
-    { path: 'my-products/stats', component: ProductStatsComponent, canActivate: [boutiqueGuard] },
-    { path: 'my-orders', component: MyOrdersComponent, canActivate: [boutiqueGuard] },
+    { path: 'my-orders', component: ShopOrdersComponent, canActivate: [boutiqueGuard] },
     { path: 'my-orders/:id', component: OrderDetailComponent, canActivate: [boutiqueGuard] }
 ];

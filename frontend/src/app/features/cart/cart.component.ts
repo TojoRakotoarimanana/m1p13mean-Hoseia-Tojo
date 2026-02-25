@@ -5,11 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 import { ButtonModule } from 'primeng/button';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
@@ -21,11 +18,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
         RouterModule,
         FormsModule,
         ButtonModule,
-        InputNumberModule,
-        CardModule,
-        DividerModule,
         ConfirmDialogModule,
-        TagModule
+        ToastModule
     ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './cart.component.html',
@@ -45,9 +39,11 @@ export class CartComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.cartService.cart$.subscribe(state => {
+        this.cartService.cart$.subscribe(() => {
             this.refreshViewFromState();
         });
+        // Rafraîchir depuis le serveur pour avoir les prix de promotion à jour
+        this.cartService.refresh().subscribe();
     }
 
     private refreshViewFromState() {
