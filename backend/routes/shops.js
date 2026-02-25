@@ -15,6 +15,7 @@ router.get('/:id', adminOnly, ShopController.getById);
 router.post('/', boutiqueOnly, ShopController.create);
 router.put('/:id', boutiqueOnly, ShopController.update);
 router.post('/:id/suspend', adminOnly, ShopController.suspend);
+router.post('/:id/reactivate', adminOnly, ShopController.reactivate);
 router.post('/:id/approve', adminOnly, ShopController.approve);
 router.post('/:id/reject', adminOnly, ShopController.reject);
 router.delete('/:id', adminOnly, ShopController.remove);
