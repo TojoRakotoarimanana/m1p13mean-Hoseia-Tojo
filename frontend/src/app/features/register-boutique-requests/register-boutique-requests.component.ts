@@ -8,10 +8,14 @@ import { ToastModule } from 'primeng/toast';
 import { NotificationService } from '../../core/services/notification.service';
 import { UserService } from '../../core/services/user.service';
 
+import { TagModule } from 'primeng/tag';
+import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
+
 @Component({
   selector: 'app-register-boutique-requests',
   standalone: true,
-  imports: [CommonModule, CardModule, TableModule, ButtonModule, ToastModule],
+  imports: [CommonModule, CardModule, TableModule, ButtonModule, ToastModule, TagModule, AvatarModule, TooltipModule],
   templateUrl: './register-boutique-requests.component.html',
   styleUrl: './register-boutique-requests.component.css'
 })

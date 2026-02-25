@@ -1,175 +1,285 @@
-<div class="shops-wrapper">
-  <div class="header flex justify-content-between align-items-center mb-4">
-    <h1>Boutiques</h1>
-    @if (isAdmin) {
-      <div class="actions">
-        <p-button label="Nouvelle boutique" icon="pi pi-plus" (onClick)="openNew()"></p-button>
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 class="dashboard-title">Boutiques</h1>
+        <p class="dashboard-subtitle">Gérez l'ensemble des boutiques du centre commercial</p>
       </div>
-    }
+      @if (isAdmin) {
+        <div class="header-actions">
+          <p-button 
+            label="Nouvelle boutique" 
+            icon="pi pi-plus" 
+            (onClick)="openNew()"
+            size="small">
+          </p-button>
+        </div>
+      }
+    </div>
   </div>
 
-  <p-card [style]="{ width: '100%', marginBottom: '1.5rem' }">
-    <div class="filters grid">
-      <div class="col-12 md:col-4">
-        <label class="field-label">Catégorie</label>
-        <input pInputText [(ngModel)]="filters.category" placeholder="ID catégorie" class="w-full" />
+  <div class="content-section mb-4">
+    <p-card styleClass="filter-card">
+      <div class="flex flex-row align-items-end gap-3 p-fluid">
+        <div class="flex-1">
+          <label class="field-label">Catégorie</label>
+          <p-select
+            [options]="categories"
+            optionLabel="displayName"
+            optionValue="_id"
+            [(ngModel)]="filters.category"
+            placeholder="Toutes"
+            [showClear]="true"
+            styleClass="w-full">
+          </p-select>
+        </div>
+        <div class="flex-1">
+          <label class="field-label">Statut</label>
+          <p-select
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            [(ngModel)]="filters.status"
+            placeholder="Tous"
+            [showClear]="true"
+            styleClass="w-full">
+          </p-select>
+        </div>
+        <div class="flex-1">
+          <label class="field-label">Étage</label>
+          <input pInputText [(ngModel)]="filters.floor" placeholder="Ex: 1" />
+        </div>
+        <div class="flex-1">
+          <label class="field-label">Zone</label>
+          <input pInputText [(ngModel)]="filters.zone" placeholder="Ex: A" />
+        </div>
+        <div class="flex-1">
+          <label class="field-label">Numéro</label>
+          <input pInputText [(ngModel)]="filters.shopNumber" placeholder="Ex: 12" />
+        </div>
+        <div class="flex gap-2">
+          <p-button 
+            label="Filtrer" 
+            icon="pi pi-filter" 
+            (onClick)="onFilter()" 
+            [outlined]="true"
+            [style]="{ width: '100px' }">
+          </p-button>
+          <p-button 
+            label="Réinitialiser" 
+            icon="pi pi-refresh" 
+            (onClick)="resetFilters()" 
+            [text]="true"
+            severity="secondary"
+            [style]="{ width: '130px' }">
+          </p-button>
+        </div>
       </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Statut</label>
-        <input pInputText [(ngModel)]="filters.status" placeholder="pending / active / suspended" class="w-full" />
-      </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Étage</label>
-        <input pInputText [(ngModel)]="filters.floor" placeholder="Ex: 1" class="w-full" />
-      </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Zone</label>
-        <input pInputText [(ngModel)]="filters.zone" placeholder="Ex: A" class="w-full" />
-      </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Numéro</label>
-        <input pInputText [(ngModel)]="filters.shopNumber" placeholder="Ex: 12" class="w-full" />
-      </div>
-      <div class="col-12 md:col-4 filter-actions">
-        <p-button label="Filtrer" icon="pi pi-filter" (onClick)="onFilter()" severity="secondary"></p-button>
-      </div>
-    </div>
-  </p-card>
+    </p-card>
+  </div>
 
-  <p-card>
-    <p-table [value]="shops" [loading]="loading">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Nom</th>
-          <th>Utilisateur</th>
-          <th>Catégorie</th>
-          <th>Statut</th>
-          <th>Emplacement</th>
-          <th>Contact</th>
-          @if (isAdmin) {
-            <th>Actions</th>
-          }
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-shop>
-        <tr>
-          <td>{{ shop.name }}</td>
-          <td>
-            {{ shop.userId?.firstName }} {{ shop.userId?.lastName }}
-            <div class="text-secondary text-sm">{{ shop.userId?.email }}</div>
-          </td>
-          <td>{{ shop.category?.name || shop.category }}</td>
-          <td>
-            <p-tag [value]="shop.status" [severity]="getStatusSeverity(shop.status)"></p-tag>
-          </td>
-          <td>
-            {{ shop.location?.floor || '-' }} / {{ shop.location?.zone || '-' }} / {{ shop.location?.shopNumber || '-' }}
-          </td>
-          <td>
-            {{ shop.contact?.phone || '-' }}<br />
-            {{ shop.contact?.email || '' }}
-          </td>
-          @if (isAdmin) {
-            <td class="actions">
-              <p-button icon="pi pi-pencil" severity="secondary" (onClick)="editShop(shop)"></p-button>
-              <p-button icon="pi pi-ban" severity="warn" (onClick)="suspendShop(shop)" [disabled]="shop.status === 'suspended'"></p-button>
-              <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteShop(shop)"></p-button>
-            </td>
-          }
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">Aucune boutique trouvée.</td>
-        </tr>
-      </ng-template>
-    </p-table>
+  <div class="content-section">
+    <p-card>
+      <ng-template pTemplate="content">
+        <p-table 
+          [value]="shops" 
+          [loading]="loading"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Boutique</th>
+              <th>Propriétaire</th>
+              <th>Catégorie</th>
+              <th style="width: 120px; text-align: center;">Statut</th>
+              <th>Emplacement</th>
+              <th>Contact</th>
+              @if (isAdmin) {
+                <th style="width: 150px; text-align: right;">Actions</th>
+              }
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-shop>
+            <tr class="data-row">
+              <td>
+                <div class="flex align-items-center gap-2">
+                  <p-avatar 
+                    [label]="shop.name?.charAt(0)" 
+                    shape="circle"
+                    styleClass="bg-blue-100 text-blue-700">
+                  </p-avatar>
+                  <span class="font-medium text-900">{{ shop.name }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="flex flex-column">
+                  <span class="text-900">{{ shop.userId?.firstName }} {{ shop.userId?.lastName }}</span>
+                  <span class="text-600 text-xs">{{ shop.userId?.email }}</span>
+                </div>
+              </td>
+              <td>
+                <p-tag [value]="shop.category?.name || shop.category" severity="secondary"></p-tag>
+              </td>
+              <td style="text-align: center;">
+                <p-tag [value]="shop.status" [severity]="getStatusSeverity(shop.status)"></p-tag>
+              </td>
+              <td>
+                <div class="flex flex-column text-600 text-xs gap-1">
+                  <span><strong>Étage:</strong> {{ shop.location?.floor || '-' }}</span>
+                  <span><strong>Zone:</strong> {{ shop.location?.zone || '-' }}</span>
+                  <span><strong>N°:</strong> {{ shop.location?.shopNumber || '-' }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="flex flex-column text-600 text-sm">
+                  <span>{{ shop.contact?.phone || '-' }}</span>
+                  <span>{{ shop.contact?.email || '' }}</span>
+                </div>
+              </td>
+              @if (isAdmin) {
+                <td style="text-align: right;">
+                  <div class="flex justify-content-end gap-1">
+                    <p-button 
+                      icon="pi pi-pencil" 
+                      [rounded]="true" 
+                      [text]="true"
+                      severity="secondary" 
+                      (onClick)="editShop(shop)"
+                      pTooltip="Modifier">
+                    </p-button>
+                    <p-button 
+                      *ngIf="shop.status !== 'suspended'"
+                      icon="pi pi-ban" 
+                      [rounded]="true" 
+                      [text]="true"
+                      severity="warn" 
+                      (onClick)="suspendShop(shop)" 
+                      pTooltip="Suspendre">
+                    </p-button>
+                    <p-button 
+                      *ngIf="shop.status === 'suspended'"
+                      icon="pi pi-play" 
+                      [rounded]="true" 
+                      [text]="true"
+                      severity="success" 
+                      (onClick)="reactivateShop(shop)" 
+                      pTooltip="Réactiver">
+                    </p-button>
+                    <p-button 
+                      icon="pi pi-trash" 
+                      [rounded]="true" 
+                      [text]="true"
+                      severity="danger" 
+                      (onClick)="deleteShop(shop)"
+                      pTooltip="Supprimer">
+                    </p-button>
+                  </div>
+                </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td [attr.colspan]="isAdmin ? 7 : 6" class="empty-state">
+                <i class="pi pi-inbox block mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                <p>Aucune boutique trouvée.</p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
 
-    <p-paginator
-      [rows]="limit"
-      [totalRecords]="total"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      (onPageChange)="onPageChange($event)">
-    </p-paginator>
-  </p-card>
+        <p-paginator
+          [rows]="limit"
+          [totalRecords]="total"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          (onPageChange)="onPageChange($event)"
+          styleClass="p-paginator-sm border-top-1 border-gray-200">
+        </p-paginator>
+      </ng-template>
+    </p-card>
+  </div>
 </div>
 
 @if (isAdmin) {
-  <p-dialog [(visible)]="shopDialog" [modal]="true" [style]="{ width: '520px' }" [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">>
-  <div class="dialog-body">
-    <div class="field">
-      <label class="field-label">Utilisateur</label>
-      <p-select
-        [options]="users"
-        optionLabel="displayName"
-        optionValue="_id"
-        [(ngModel)]="shopForm.userId"
-        placeholder="Sélectionner un utilisateur"
-        styleClass="w-full">
-      </p-select>
-    </div>
-    <div class="field">
-      <label class="field-label">Nom</label>
-      <input pInputText [(ngModel)]="shopForm.name" class="w-full" />
-    </div>
-    <div class="field">
-      <label class="field-label">Catégorie</label>
-      <p-select
-        [options]="categories"
-        optionLabel="displayName"
-        optionValue="_id"
-        [(ngModel)]="shopForm.category"
-        placeholder="Sélectionner une catégorie"
-        styleClass="w-full">
-      </p-select>
-    </div>
-    <div class="field">
-      <label class="field-label">Description</label>
-      <input pInputText [(ngModel)]="shopForm.description" class="w-full" />
-    </div>
-    <div class="field">
-      <label class="field-label">Statut</label>
-      <p-select
-        [options]="statusOptions"
-        optionLabel="label"
-        optionValue="value"
-        [(ngModel)]="shopForm.status"
-        styleClass="w-full">
-      </p-select>
+  <p-dialog [(visible)]="shopDialog" [modal]="true" [style]="{ width: '600px' }" [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">
+    <div class="dialog-body">
+      <div class="field">
+        <label class="field-label">Propriétaire</label>
+        <p-select
+          [options]="users"
+          optionLabel="displayName"
+          optionValue="_id"
+          [(ngModel)]="shopForm.userId"
+          placeholder="Sélectionner un utilisateur"
+          styleClass="w-full">
+        </p-select>
+      </div>
+      <div class="field">
+        <label class="field-label">Nom de la boutique</label>
+        <input pInputText [(ngModel)]="shopForm.name" class="w-full" />
+      </div>
+      <div class="field">
+        <label class="field-label">Catégorie</label>
+        <p-select
+          [options]="categories"
+          optionLabel="displayName"
+          optionValue="_id"
+          [(ngModel)]="shopForm.category"
+          placeholder="Sélectionner une catégorie"
+          styleClass="w-full">
+        </p-select>
+      </div>
+      <div class="field">
+        <label class="field-label">Description</label>
+        <textarea pTextarea [(ngModel)]="shopForm.description" rows="3" class="w-full"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Statut</label>
+        <p-select
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="shopForm.status"
+          styleClass="w-full">
+        </p-select>
+      </div>
+
+      <div class="section-title mt-2 mb-2 font-medium">Emplacement</div>
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <label class="field-label">Étage</label>
+          <input pInputText [(ngModel)]="shopForm.location.floor" class="w-full" />
+        </div>
+        <div class="col-12 md:col-4">
+          <label class="field-label">Zone</label>
+          <input pInputText [(ngModel)]="shopForm.location.zone" class="w-full" />
+        </div>
+        <div class="col-12 md:col-4">
+          <label class="field-label">Numéro</label>
+          <input pInputText [(ngModel)]="shopForm.location.shopNumber" class="w-full" />
+        </div>
+      </div>
+
+      <div class="section-title mt-2 mb-2 font-medium">Contact</div>
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label class="field-label">Téléphone</label>
+          <input pInputText [(ngModel)]="shopForm.contact.phone" class="w-full" />
+        </div>
+        <div class="col-12 md:col-6">
+          <label class="field-label">Email</label>
+          <input pInputText [(ngModel)]="shopForm.contact.email" class="w-full" />
+        </div>
+      </div>
     </div>
 
-    <div class="grid">
-      <div class="col-12 md:col-4">
-        <label class="field-label">Étage</label>
-        <input pInputText [(ngModel)]="shopForm.location.floor" class="w-full" />
-      </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Zone</label>
-        <input pInputText [(ngModel)]="shopForm.location.zone" class="w-full" />
-      </div>
-      <div class="col-12 md:col-4">
-        <label class="field-label">Numéro</label>
-        <input pInputText [(ngModel)]="shopForm.location.shopNumber" class="w-full" />
-      </div>
-    </div>
-
-    <div class="grid">
-      <div class="col-12 md:col-6">
-        <label class="field-label">Téléphone</label>
-        <input pInputText [(ngModel)]="shopForm.contact.phone" class="w-full" />
-      </div>
-      <div class="col-12 md:col-6">
-        <label class="field-label">Email</label>
-        <input pInputText [(ngModel)]="shopForm.contact.email" class="w-full" />
-      </div>
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <p-button label="Annuler" severity="secondary" (onClick)="shopDialog = false"></p-button>
-    <p-button label="Enregistrer" (onClick)="saveShop()"></p-button>
-  </ng-template>
-</p-dialog>
+    <ng-template pTemplate="footer">
+      <p-button label="Annuler" [text]="true" severity="secondary" (onClick)="shopDialog = false"></p-button>
+      <p-button label="Enregistrer" icon="pi pi-check" (onClick)="saveShop()"></p-button>
+    </ng-template>
+  </p-dialog>
 }
+
+<p-toast></p-toast>
 
 <p-toast></p-toast>

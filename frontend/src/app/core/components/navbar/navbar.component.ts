@@ -102,7 +102,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
             {
               label: 'Boutiques',
               icon: 'pi pi-shop',
-              command: () => this.router.navigate(['/shops']),
+              command: () => this.router.navigate(['/admin/shops']),
             },
             {
               label: 'Catégories',
