@@ -9,6 +9,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { DividerModule } from 'primeng/divider';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -200,7 +201,7 @@ export class OrderDetailsComponent implements OnInit {
         const img = item?.image ?? item?.images?.[0];
         if (!img) return 'https://placehold.co/100x100/f1f5f9/94a3b8?text=Image';
         if (img.startsWith('http://') || img.startsWith('https://')) return img;
-        return `http://localhost:3000/uploads/products/${img}`;
+        return `${environment.apiUrl}/uploads/products/${img}`;
     }
 
     formatCurrency(amount: number): string {

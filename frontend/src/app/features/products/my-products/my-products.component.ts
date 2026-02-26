@@ -18,6 +18,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ShopService } from '../../../core/services/shop.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-my-products',
@@ -44,7 +45,7 @@ export class MyProductsComponent implements OnInit {
   products: any[] = [];
   categories: any[] = [];
 
-  readonly imageBaseUrl = 'http://localhost:3000';
+  readonly imageBaseUrl = environment.apiUrl;
 
   getProductImageUrl(product: any): string {
     const img = product?.images?.[0];

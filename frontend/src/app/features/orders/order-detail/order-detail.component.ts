@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
 
 import { OrderShopService } from '../../../core/services/order-shop.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-order-detail',
@@ -27,7 +28,7 @@ export class OrderDetailComponent implements OnInit {
   loading = false;
   actionLoading = false;
 
-  readonly imageBaseUrl = 'http://localhost:3000';
+  readonly imageBaseUrl = environment.apiUrl;
 
   getItemImageUrl(item: any): string {
     const img = item?.image;

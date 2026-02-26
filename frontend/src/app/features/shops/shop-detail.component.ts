@@ -10,6 +10,7 @@ import { DividerModule } from 'primeng/divider';
 import { DataViewModule } from 'primeng/dataview';
 import { CatalogService, Shop, Product } from '../../core/services/catalog.service';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-shop-detail',
@@ -107,14 +108,14 @@ export class ShopDetailComponent implements OnInit {
       if (this.shop.logo.startsWith('http')) {
         return this.shop.logo;
       }
-      return `http://localhost:3000/uploads/shops/${this.shop.logo}`;
+      return `${environment.apiUrl}/uploads/shops/${this.shop.logo}`;
     }
     return '';
   }
 
   getProductImageUrl(product: Product): string {
     if (product.images && product.images.length > 0) {
-      return `http://localhost:3000/uploads/products/${product.images[0]}`;
+      return `${environment.apiUrl}/uploads/products/${product.images[0]}`;
     }
     return 'assets/images/no-image.png';
   }
