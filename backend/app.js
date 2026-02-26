@@ -23,8 +23,31 @@ var orderShopRouter = require('./routes/orderShop');
 var notificationsRouter = require('./routes/notifications');
 
 var app = express();
-var corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200,https://m1p13mean.pages.dev').split(',');
-var mongoUri = process.env.MONGO_URI || 'mongodb+srv://user:root@mean.b0d13bz.mongodb.net/?appName=Mean'
+
+if (!process.env.CORS_ORIGIN) {
+  console.error('[CORS] ERROR: CORS_ORIGIN environment variable is not set. Set it in your .env or in your hosting dashboard (e.g. Render).');
+  process.exit(1);
+}
+
+var corsAllowedOrigins = process.env.CORS_ORIGIN
+  .split(',')
+  .map(function (o) { return o.trim(); })
+  .filter(Boolean);
+
+console.log('[CORS] Allowed origins:', corsAllowedOrigins);
+
+function corsOriginValidator(origin, callback) {
+  if (!origin) {
+    return callback(null, true);
+  }
+  if (corsAllowedOrigins.indexOf(origin) !== -1) {
+    return callback(null, true);
+  }
+  console.warn('[CORS] Blocked request from origin:', origin);
+  return callback(new Error('CORS policy: origin "' + origin + '" is not allowed.'));
+}
+
+var mongoUri = process.env.MONGO_URI;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -34,8 +57,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors({
-  origin: corsOrigins,
-  credentials: true
+  origin: corsOriginValidator,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 

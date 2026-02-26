@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
+    "start:prod": "node ./bin/www",
     "seed": "node scripts/seed-data.js"
   },
   "dependencies": {
