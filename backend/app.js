@@ -23,7 +23,7 @@ var orderShopRouter = require('./routes/orderShop');
 var notificationsRouter = require('./routes/notifications');
 
 var app = express();
-var corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200,https://m1p13mean.pages.dev').split(',');
+var corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200').split(',');
 var mongoUri = process.env.MONGO_URI || 'mongodb+srv://user:root@mean.b0d13bz.mongodb.net/?appName=Mean'
 
 app.set('views', path.join(__dirname, 'views'));
