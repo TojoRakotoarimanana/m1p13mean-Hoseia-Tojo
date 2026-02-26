@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 
 import { CatalogService, Product } from '../../../core/services/catalog.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-products-list',
@@ -142,7 +143,7 @@ export class ProductsListComponent implements OnInit, OnDestroy {
     if (product.images?.length) {
       const img = product.images[0];
       if (img.startsWith('http')) return img;
-      return `http://localhost:3000/uploads/products/${img}`;
+      return `${environment.apiUrl}/uploads/products/${img}`;
     }
     return '';
   }

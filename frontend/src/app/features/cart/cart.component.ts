@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-cart',
@@ -126,7 +127,7 @@ export class CartComponent implements OnInit {
         if (product.images?.length) {
             const img = product.images[0];
             if (img.startsWith('http://') || img.startsWith('https://')) return img;
-            return `http://localhost:3000/${img}`;
+            return `${environment.apiUrl}/${img}`;
         }
         return 'https://placehold.co/100x100/f1f5f9/94a3b8?text=Image';
     }
@@ -134,7 +135,7 @@ export class CartComponent implements OnInit {
     getShopLogo(shop: any): string {
         if (shop?.logo) {
             if (shop.logo.startsWith('http://') || shop.logo.startsWith('https://')) return shop.logo;
-            return `http://localhost:3000/${shop.logo}`;
+            return `${environment.apiUrl}/${shop.logo}`;
         }
         return '';
     }

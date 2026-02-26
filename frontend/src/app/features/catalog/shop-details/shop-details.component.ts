@@ -5,6 +5,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { CatalogService, Shop, Product, ShopDetailsResponse } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NavbarComponent } from '../../../core/components/navbar/navbar.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-shop-details',
@@ -87,7 +88,7 @@ export class ShopDetailsComponent implements OnInit {
     if (product.images?.length) {
       const img = product.images[0];
       if (img.startsWith('http://') || img.startsWith('https://')) return img;
-      return `http://localhost:3000/${img}`;
+      return `${environment.apiUrl}/${img}`;
     }
     return 'https://placehold.co/400x300/f1f5f9/94a3b8?text=Image';
   }
@@ -95,7 +96,7 @@ export class ShopDetailsComponent implements OnInit {
   getShopLogoUrl(): string {
     if (!this.shop?.logo) return '';
     if (this.shop.logo.startsWith('http://') || this.shop.logo.startsWith('https://')) return this.shop.logo;
-    return `http://localhost:3000/${this.shop.logo}`;
+    return `${environment.apiUrl}/${this.shop.logo}`;
   }
 
   getDiscountedPrice(product: Product): number {
