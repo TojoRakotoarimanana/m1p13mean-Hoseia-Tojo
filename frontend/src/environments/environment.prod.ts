@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '%%API_URL%%'
+  apiUrl: 'https://m1p13mean-hoseia-tojo.onrender.com'
 };
