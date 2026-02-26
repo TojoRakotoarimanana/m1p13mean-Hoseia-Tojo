@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { CatalogService, Product } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { CartService } from '../../../core/services/cart.service';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-product-details',
   standalone: true,
@@ -78,7 +79,7 @@ export class ProductDetailsComponent implements OnInit {
       this.images = this.product.images.map((img: string) =>
         img.startsWith('http://') || img.startsWith('https://')
           ? img
-          : `http://localhost:3000/${img}`
+          : `${environment.apiUrl}/${img}`
       );
     } else {
       this.images = ['https://placehold.co/600x600/f1f5f9/94a3b8?text=Pas+d\'image'];
@@ -152,6 +153,12 @@ export class ProductDetailsComponent implements OnInit {
   getStockWidth(): number {
     if (!this.product) return 0;
     return Math.min((this.product.stock.quantity / 100) * 100, 100);
+  }
+
+  getShopLogoUrl(logo: string): string {
+    if (!logo) return '';
+    if (logo.startsWith('http://') || logo.startsWith('https://')) return logo;
+    return `${environment.apiUrl}/${logo}`;
   }
 
   goBack(): void {

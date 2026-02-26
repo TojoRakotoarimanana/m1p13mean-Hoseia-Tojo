@@ -9,6 +9,7 @@ import { MessageService } from 'primeng/api';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ShopService } from '../../core/services/shop.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-my-shop',
@@ -69,7 +70,7 @@ export class MyShopComponent implements OnInit {
   }
 
   getShopLogoUrl(): string {
-    return 'http://localhost:3000/' + this.shop?.logo;
+    return `${environment.apiUrl}/${this.shop?.logo}`;
   }
 
   getLocationString(): string {

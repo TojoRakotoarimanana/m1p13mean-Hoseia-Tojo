@@ -167,7 +167,7 @@
       <div *ngIf="product.shopId" class="pd-shop-row" (click)="viewShop()">
         <div class="shop-logo-wrap">
           <img *ngIf="product.shopId.logo"
-            [src]="'http://localhost:3000/' + product.shopId.logo"
+            [src]="getShopLogoUrl(product.shopId.logo)"
             [alt]="product.shopId.name" />
           <span *ngIf="!product.shopId.logo" class="shop-initial">
             {{ product.shopId.name.charAt(0) }}

@@ -6,6 +6,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule } from 'primeng/paginator';
 import { CatalogService, Shop } from '../../core/services/catalog.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-shops-list',
@@ -120,7 +121,7 @@ export class ShopsListComponent implements OnInit {
   getShopLogoUrl(shop: Shop): string {
     if (!shop.logo) return '';
     if (shop.logo.startsWith('http')) return shop.logo;
-    return `http://localhost:3000/uploads/shops/${shop.logo}`;
+    return `${environment.apiUrl}/uploads/shops/${shop.logo}`;
   }
 
   clearFilters() {

@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ProductService } from '../../../core/services/product.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment';
 import { ShopService } from '../../../core/services/shop.service';
 
 @Component({
@@ -32,7 +33,7 @@ export class StockManagementComponent implements OnInit {
   search = '';
   shopId: string | null = null;
 
-  readonly imageBaseUrl = 'http://localhost:3000';
+  readonly imageBaseUrl = environment.apiUrl;
 
   constructor(
     private productService: ProductService,

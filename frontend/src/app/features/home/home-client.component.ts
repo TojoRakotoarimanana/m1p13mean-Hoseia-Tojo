@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, LOCALE_ID } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 
@@ -212,7 +213,7 @@ export class HomeClientComponent implements OnInit {
     if (product.images && product.images.length > 0) {
       const img = product.images[0];
       if (img.startsWith('http://') || img.startsWith('https://')) return img;
-      return `http://localhost:3000/uploads/products/${img}`;
+      return `${environment.apiUrl}/uploads/products/${img}`;
     }
     return 'https://placehold.co/400x300/f1f5f9/94a3b8?text=Image';
   }
@@ -220,7 +221,7 @@ export class HomeClientComponent implements OnInit {
   getShopLogoUrl(shop: Shop): string {
     if (shop.logo) {
       if (shop.logo.startsWith('http://') || shop.logo.startsWith('https://')) return shop.logo;
-      return `http://localhost:3000/uploads/shops/${shop.logo}`;
+      return `${environment.apiUrl}/uploads/shops/${shop.logo}`;
     }
     return '';
   }

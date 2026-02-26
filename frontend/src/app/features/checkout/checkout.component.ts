@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../core/services/auth.service';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-checkout',
@@ -154,7 +155,7 @@ export class CheckoutComponent implements OnInit {
         const img = product.images?.[0];
         if (!img) return '';
         if (img.startsWith('http://') || img.startsWith('https://')) return img;
-        return `http://localhost:3000/${img}`;
+        return `${environment.apiUrl}/${img}`;
     }
 
     getDiscountedPrice(product: any): number {
