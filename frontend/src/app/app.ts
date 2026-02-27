@@ -5,6 +5,7 @@ import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { HeaderComponent } from './core/components/header/header.component';
 import { AuthService } from './core/services/auth.service';
 import { ToastModule } from 'primeng/toast';
+import { inject } from '@vercel/analytics';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,9 @@ export class App implements OnInit, OnDestroy {
   constructor(public authService: AuthService, private router: Router) {}
 
   ngOnInit() {
+    // Initialize Vercel Analytics
+    inject();
+    
     this.routerSub = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
