@@ -20,6 +20,7 @@ import { BoutiqueDashboardComponent } from './features/boutique-dashboard/boutiq
 import { OrderDetailComponent } from './features/orders/order-detail/order-detail.component';
 import { ShopOrdersComponent } from './features/orders/shop-orders/shop-orders.component';
 import { HomeClientComponent } from './features/home/home-client.component';
+import { UsersComponent } from './features/users/users.component';
 import { ShopsListComponent } from './features/shops/shops-list.component';
 import { ShopDetailComponent } from './features/shops/shop-detail.component';
 import { ShopDetailsComponent } from './features/catalog/shop-details/shop-details.component';
@@ -99,6 +100,7 @@ export const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },
 
     // Routes admin
+    { path: 'admin/users', component: UsersComponent, canActivate: [adminGuard] },
     { path: 'admin/shops', component: ShopsComponent, canActivate: [adminGuard] },
     { path: 'categories', component: CategoriesComponent, canActivate: [adminGuard] },
     { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [adminGuard] },

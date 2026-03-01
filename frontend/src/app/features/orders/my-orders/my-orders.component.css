@@ -204,6 +204,12 @@
     }
 }
 
+@media (max-width: 640px) {
+    /* Masquer les colonnes Date et Boutiques à 640px */
+    .col-date,
+    .col-shops { display: none; }
+}
+
 @media (max-width: 480px) {
     .page-header-inner,
     .page-content {

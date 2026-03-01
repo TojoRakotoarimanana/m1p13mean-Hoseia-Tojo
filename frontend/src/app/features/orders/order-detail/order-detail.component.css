@@ -409,6 +409,11 @@
   }
 }
 
+@media (max-width: 640px) {
+  /* Masquer la colonne Prix unitaire à 640px */
+  .col-unit-price { display: none; }
+}
+
 @media (max-width: 480px) {
   .detail-wrapper { padding: 0 0.75rem 2.5rem; }
 

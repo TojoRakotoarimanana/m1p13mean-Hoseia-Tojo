@@ -30,6 +30,7 @@
             [(ngModel)]="filters.category"
             placeholder="Toutes"
             [showClear]="true"
+            appendTo="body"
             styleClass="w-full">
           </p-select>
         </div>
@@ -42,6 +43,7 @@
             [(ngModel)]="filters.status"
             placeholder="Tous"
             [showClear]="true"
+            appendTo="body"
             styleClass="w-full">
           </p-select>
         </div>
@@ -214,6 +216,7 @@
           optionValue="_id"
           [(ngModel)]="shopForm.userId"
           placeholder="Sélectionner un utilisateur"
+          appendTo="body"
           styleClass="w-full">
         </p-select>
       </div>
@@ -229,6 +232,7 @@
           optionValue="_id"
           [(ngModel)]="shopForm.category"
           placeholder="Sélectionner une catégorie"
+          appendTo="body"
           styleClass="w-full">
         </p-select>
       </div>
@@ -243,6 +247,7 @@
           optionLabel="label"
           optionValue="value"
           [(ngModel)]="shopForm.status"
+          appendTo="body"
           styleClass="w-full">
         </p-select>
       </div>

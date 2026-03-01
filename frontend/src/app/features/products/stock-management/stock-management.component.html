@@ -45,13 +45,13 @@
 
   <!-- Table -->
   <div class="mp-table-card">
-    <p-table [value]="products" [loading]="loading">
+    <p-table [value]="products" [loading]="loading" responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr>
           <th style="min-width:200px">Produit</th>
-          <th style="min-width:130px">Catégorie</th>
+          <th class="col-category" style="min-width:130px">Catégorie</th>
           <th class="th-center" style="min-width:160px">Stock actuel</th>
-          <th class="th-center" style="min-width:120px">Seuil alerte</th>
+          <th class="col-threshold th-center" style="min-width:120px">Seuil alerte</th>
           <th class="th-center" style="min-width:110px">Statut</th>
           <th style="min-width:140px"></th>
         </tr>
@@ -73,7 +73,7 @@
           </td>
 
           <!-- Catégorie -->
-          <td class="cell-muted">{{ product.category?.name || '—' }}</td>
+          <td class="col-category cell-muted">{{ product.category?.name || '—' }}</td>
 
           <!-- Stock actuel -->
           <td class="td-center">
@@ -89,7 +89,7 @@
           </td>
 
           <!-- Seuil alerte -->
-          <td class="td-center">
+          <td class="col-threshold td-center">
             <p-inputNumber
               [(ngModel)]="product.stock.lowStockAlert"
               [min]="0"

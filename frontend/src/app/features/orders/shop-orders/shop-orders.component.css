@@ -247,6 +247,14 @@
   .mp-filter-field   { min-width: 0; width: 100%; }
   .summary-chips     { margin-left: 0; }
   .page-title        { font-size: 1.25rem; }
+
+  /* Masquer la colonne Date à 768px */
+  .col-date { display: none; }
+}
+
+@media (max-width: 640px) {
+  /* Masquer aussi la colonne Client à 640px */
+  .col-client { display: none; }
 }
 
 @media (max-width: 480px) {

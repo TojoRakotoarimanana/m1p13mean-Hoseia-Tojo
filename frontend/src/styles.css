@@ -137,3 +137,10 @@ html {
 .p-icon-field-left p-password .p-inputtext {
     padding-left: 2.5rem !important;
 }
+
+/* Fix: p-avatar devient ovale dans les flex containers compressés (tableaux mobile) */
+.p-avatar {
+    flex-shrink: 0;
+    min-width: 2rem;
+    min-height: 2rem;
+}

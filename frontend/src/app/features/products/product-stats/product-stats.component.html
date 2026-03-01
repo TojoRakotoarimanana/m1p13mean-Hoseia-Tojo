@@ -25,7 +25,7 @@
   <div class="tables">
     <p-card>
       <h3>Produits les plus vendus</h3>
-      <p-table [value]="topSold">
+      <p-table [value]="topSold" responsiveLayout="scroll">
         <ng-template pTemplate="header">
           <tr>
             <th>Produit</th>
@@ -48,7 +48,7 @@
 
     <p-card>
       <h3>Produits les plus consultés</h3>
-      <p-table [value]="topViewed">
+      <p-table [value]="topViewed" responsiveLayout="scroll">
         <ng-template pTemplate="header">
           <tr>
             <th>Produit</th>
@@ -71,7 +71,7 @@
 
     <p-card>
       <h3>Performance promotions</h3>
-      <p-table [value]="promoProducts">
+      <p-table [value]="promoProducts" responsiveLayout="scroll">
         <ng-template pTemplate="header">
           <tr>
             <th>Produit</th>
