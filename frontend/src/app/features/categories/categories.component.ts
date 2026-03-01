@@ -8,6 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
+import { AvatarModule } from 'primeng/avatar';
 
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
@@ -28,6 +29,7 @@ import { CategoryService } from '../../core/services/category.service';
     InputTextModule,
     ToastModule,
     TagModule,
+    AvatarModule,
     PaginatorModule,
     SelectModule
   ],
@@ -37,6 +39,19 @@ import { CategoryService } from '../../core/services/category.service';
 export class CategoriesComponent implements OnInit {
   categories: any[] = [];
   loading = false;
+
+  first = 0;
+  pageSize = 10;
+
+  get pagedCategories(): any[] {
+    return this.categories.slice(this.first, this.first + this.pageSize);
+  }
+
+  onPageChange(event: any) {
+    this.first = event.first;
+    this.pageSize = event.rows;
+    this.cdr.detectChanges();
+  }
 
   categoryDialog = false;
   isEdit = false;

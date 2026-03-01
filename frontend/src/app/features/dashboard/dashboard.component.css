@@ -425,6 +425,31 @@
   }
 }
 
+@media (max-width: 640px) {
+  .activity-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+
+  .activity-description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+
+  .activities-section ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .act-status-col {
+    width: auto !important;
+    text-align: left !important;
+  }
+}
+
 @media (max-width: 600px) {
   .act-time-col {
     display: none;

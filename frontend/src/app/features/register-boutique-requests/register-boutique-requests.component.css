@@ -98,8 +98,28 @@
     font-size: 1.25rem;
   }
 
-  /* Table horizontal scroll */
   .content-section ::ng-deep .p-card .p-card-content {
     overflow-x: auto;
+  }
+
+  .content-section ::ng-deep .p-card .p-card-body {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .col-email,
+  .col-phone {
+    display: none;
+  }
+
+  .content-section ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-wrapper {
+    padding: 0.75rem;
   }
 }
