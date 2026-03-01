@@ -22,7 +22,10 @@ router.get('/stream', async (req, res) => {
         if (!user || !user.isActive) {
             return res.status(401).json({ message: 'Utilisateur non autorisé.' });
         }
-    } catch {
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Session expirée. Veuillez vous reconnecter.' });
+        }
         return res.status(403).json({ message: 'Token invalide.' });
     }
 

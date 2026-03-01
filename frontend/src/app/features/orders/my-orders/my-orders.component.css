@@ -194,4 +194,19 @@
         flex-direction: column;
         align-items: stretch;
     }
+
+    .table-card {
+        overflow-x: auto;
+    }
+
+    .page-title {
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header-inner,
+    .page-content {
+        padding: 0 0.75rem;
+    }
 }

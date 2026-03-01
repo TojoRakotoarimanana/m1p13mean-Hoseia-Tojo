@@ -1,16 +1,34 @@
 <div class="register-wrapper">
   <div class="register-card">
-    <div class="register-header">
-      <h1 class="register-title">Inscription Boutique</h1>
-      <p class="register-subtitle">Votre demande sera validée par un administrateur</p>
-    </div>
-
     <p-toast></p-toast>
 
-    <p-steps [model]="steps" [activeIndex]="stepIndex" styleClass="steps"></p-steps>
+    <!-- Bannière de confirmation après inscription -->
+    <div *ngIf="registrationSuccess" class="pending-banner">
+      <div class="pending-icon">
+        <i class="pi pi-clock"></i>
+      </div>
+      <h2 class="pending-title">Demande envoyée avec succès !</h2>
+      <p class="pending-message">
+        Votre compte et votre boutique sont <strong>en attente de validation</strong> par un administrateur.
+        Vous recevrez une confirmation dès que votre dossier sera traité.
+      </p>
+      <div class="pending-info">
+        <i class="pi pi-info-circle"></i>
+        <span>Vous ne pourrez pas vous connecter tant que votre compte n'aura pas été activé par un administrateur.</span>
+      </div>
+      <a routerLink="/login-boutique" class="pending-link">Retour à la connexion</a>
+    </div>
+
+    <ng-container *ngIf="!registrationSuccess">
+      <div class="register-header">
+        <h1 class="register-title">Inscription Boutique</h1>
+        <p class="register-subtitle">Votre demande sera validée par un administrateur</p>
+      </div>
+
+      <p-steps [model]="steps" [activeIndex]="stepIndex" styleClass="steps"></p-steps>
 
     <div class="step-body" *ngIf="stepIndex === 0">
-      <div class="flex gap-3">
+      <div class="name-row">
         <div class="field flex-1">
           <label for="firstName" class="field-label">Prénom</label>
           <input pInputText id="firstName" [(ngModel)]="userData.firstName" name="firstName" class="w-full" />
@@ -129,5 +147,6 @@
     <div class="register-footer">
       <p class="footer-text">Déjà inscrit ? <a routerLink="/login-boutique" class="footer-link">Se connecter</a></p>
     </div>
+    </ng-container>
   </div>
 </div>

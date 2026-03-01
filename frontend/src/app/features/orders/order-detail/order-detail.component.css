@@ -402,4 +402,37 @@
   .header-left    { flex-direction: column; gap: 0.5rem; }
   .stepper-card   { padding: 1rem; }
   .step-label     { font-size: 0.65rem; }
+
+  /* Table scroll on tablet */
+  .right-col .detail-card {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-wrapper { padding: 0 0.75rem 2.5rem; }
+
+  .page-title { font-size: 1.2rem; }
+
+  /* Stepper: smaller circles on very small screens */
+  .step-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .step-line {
+    top: 14px;
+    left: calc(50% + 14px);
+    width: calc(100% - 28px);
+  }
+
+  .step-label { font-size: 0.6rem; }
+
+  .stepper-card { padding: 0.875rem 0.75rem; }
+
+  .detail-card {
+    padding: 1rem;
+    overflow-x: auto;
+  }
 }

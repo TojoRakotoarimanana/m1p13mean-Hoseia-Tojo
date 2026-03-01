@@ -88,9 +88,18 @@
   .dashboard-wrapper {
     padding: 1rem;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .dashboard-title {
+    font-size: 1.25rem;
+  }
+
+  /* Table horizontal scroll */
+  .content-section ::ng-deep .p-card .p-card-content {
+    overflow-x: auto;
   }
 }

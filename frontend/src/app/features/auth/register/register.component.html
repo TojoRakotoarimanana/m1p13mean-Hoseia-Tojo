@@ -7,7 +7,7 @@
 
         <p-toast></p-toast>
         <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
-            <div class="flex gap-3">
+            <div class="name-row">
                 <div class="field flex-1">
                     <label for="firstName" class="field-label">Prénom</label>
                     <input pInputText id="firstName" [(ngModel)]="registerData.firstName" name="firstName" required class="w-full" />

@@ -22,6 +22,9 @@ const authenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Session expirée. Veuillez vous reconnecter.' });
+    }
     return res.status(403).json({ message: 'Token invalide.' });
   }
 };

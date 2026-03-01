@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 
 import { CardModule } from 'primeng/card';
 import { AvatarModule } from 'primeng/avatar';
@@ -15,7 +15,6 @@ import { MenuItem } from 'primeng/api';
 
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
-import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-navbar',
@@ -29,7 +28,6 @@ import { NotificationBellComponent } from '../notification-bell/notification-bel
     ButtonModule,
     AvatarModule,
     ChipModule,
-    NotificationBellComponent,
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
@@ -38,8 +36,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   user: any = null;
   items: MenuItem[] = [];
   cartItemsCount = 0;
+  sidebarOpen = signal(false);
   private userSubscription?: Subscription;
   private cartSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   constructor(
     public authService: AuthService,
@@ -59,6 +59,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.loadMenuItems(); // Recharger le menu pour mettre à jour le badge
       }
     });
+
+    // Close sidebar on route change (mobile UX)
+    this.routerSubscription = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => this.sidebarOpen.set(false));
   }
 
   ngOnDestroy(): void {
@@ -68,6 +73,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (this.cartSubscription) {
       this.cartSubscription.unsubscribe();
     }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update(v => !v);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
   }
   navigateTo(path: string): void {
     this.router.navigate([path]);

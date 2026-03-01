@@ -134,9 +134,36 @@
   .dashboard-wrapper {
     padding: 1rem;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* Filter bar: stack fields vertically */
+  .filter-card ::ng-deep .p-card-content .flex.flex-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .filter-card ::ng-deep .p-card-content .flex-1 {
+    width: 100% !important;
+  }
+
+  .filter-card ::ng-deep .p-card-content .flex.gap-2 {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  /* Table horizontal scroll */
+  .content-section ::ng-deep .p-card .p-card-content {
+    overflow-x: auto;
+  }
+
+  /* Dialog: full width on mobile */
+  :host ::ng-deep .p-dialog {
+    width: calc(100vw - 2rem) !important;
+    max-width: 100% !important;
+    margin: 0 1rem;
   }
 }

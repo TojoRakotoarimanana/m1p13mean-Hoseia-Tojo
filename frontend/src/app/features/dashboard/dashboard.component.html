@@ -162,13 +162,13 @@
                   <p class="activity-description">{{ activity.description }}</p>
                 </div>
               </td>
-              <td style="width: 120px; text-align: center;">
-                <p-tag 
-                  [value]="activity.status" 
+              <td class="act-status-col" style="width: 120px; text-align: center;">
+                <p-tag
+                  [value]="activity.status"
                   [severity]="getStatusSeverity(activity.status)">
                 </p-tag>
               </td>
-              <td style="width: 130px; text-align: right;">
+              <td class="act-time-col" style="width: 130px; text-align: right;">
                 <span class="activity-time">{{ getRelativeTime(activity.timestamp) }}</span>
               </td>
             </tr>

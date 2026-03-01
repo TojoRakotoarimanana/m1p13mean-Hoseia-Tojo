@@ -53,8 +53,19 @@ export class AuthService {
     this.userSubject.next(null);
   }
 
+  isTokenExpired(): boolean {
+    const token = localStorage.getItem(this.tokenKey);
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
+  }
+
   isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.tokenKey);
+    return !!localStorage.getItem(this.tokenKey) && !this.isTokenExpired();
   }
 
   getToken(): string | null {

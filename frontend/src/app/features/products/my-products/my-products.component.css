@@ -299,4 +299,34 @@
   .btn-filter { width: 100%; justify-content: center; }
   .page-header-inner { flex-direction: column; gap: 0.75rem; }
   .product-desc { max-width: 120px; }
+
+  /* Table horizontal scroll */
+  .mp-table-card {
+    overflow-x: auto;
+  }
+
+  /* Header actions wrap */
+  .header-actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .mp-wrapper { padding: 0 0.75rem 2.5rem; }
+  .page-title { font-size: 1.25rem; }
+}
+
+/* Dialogs: full-width on mobile */
+@media (max-width: 480px) {
+  :host ::ng-deep .p-dialog {
+    width: calc(100vw - 1.5rem) !important;
+    max-width: 100% !important;
+  }
 }
