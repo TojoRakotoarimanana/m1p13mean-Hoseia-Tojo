@@ -40,11 +40,11 @@ const users = [
   { email: 'homeopharma@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0340000003' },
   { email: 'massin@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0340000004' },
   { email: 'habibo@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0340000005' },
-  { email: 'maki@gmail.com', password: 'Pending123!', role: 'boutique', phone: '0320000001', isActive: false },
-  { email: 'kalidas@gmail.com', password: 'Pending123!', role: 'boutique', phone: '0320000002', isActive: false },
-  { email: 'librairie@gmail.com', password: 'Pending123!', role: 'boutique', phone: '0320000003', isActive: false },
-  { email: 'courts@gmail.com', password: 'Pending123!', role: 'boutique', phone: '0320000004', isActive: false },
-  { email: 'ocean5@gmail.com', password: 'Pending123!', role: 'boutique', phone: '0320000005', isActive: false }
+  { email: 'maki@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0320000001', isActive: false },
+  { email: 'kalidas@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0320000002', isActive: false },
+  { email: 'librairie@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0320000003', isActive: false },
+  { email: 'courts@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0320000004', isActive: false },
+  { email: 'ocean5@gmail.com', password: 'Boutique123!', role: 'boutique', phone: '0320000005', isActive: false }
 ];
 
 const shops = [
@@ -52,7 +52,7 @@ const shops = [
     name: 'Lisy Art Gallery',
     description: 'La référence de l\'artisanat haut de gamme à Antananarivo.',
     categoryName: 'Artisanat & Souvenirs',
-    location: { floor: '1', zone: 'A', shopNumber: 'A101' },
+    location: { floor: '0', zone: 'A', shopNumber: 'A001' },
     contact: { phone: '0341122334', email: 'lisy@gmail.com' },
     hours: {
       monday: { open: '09:00', close: '18:00' },
@@ -70,7 +70,7 @@ const shops = [
     name: 'Codal Madagascar',
     description: 'Conserves et produits du terroir malagasy depuis 1950.',
     categoryName: 'Épices & Saveurs',
-    location: { floor: '1', zone: 'A', shopNumber: 'A102' },
+    location: { floor: '1', zone: 'B', shopNumber: 'B102' },
     contact: { phone: '0341122335', email: 'contact.codal@gmail.com' },
     hours: {
       monday: { open: '08:30', close: '17:30' },
@@ -88,7 +88,7 @@ const shops = [
     name: 'Homeopharma',
     description: 'Laboratoire leader en produits naturels et huiles essentielles.',
     categoryName: 'Bien-être & Huiles',
-    location: { floor: '1', zone: 'A', shopNumber: 'A103' },
+    location: { floor: '2', zone: 'C', shopNumber: 'C203' },
     contact: { phone: '0341122336', email: 'info.homeopharma@gmail.com' },
     hours: {
       monday: { open: '08:00', close: '18:00' },
@@ -124,7 +124,7 @@ const shops = [
     name: 'Habibo Group Shop',
     description: 'Distribution de produits de grande consommation et textile.',
     categoryName: 'Mode & Textile',
-    location: { floor: '1', zone: 'A', shopNumber: 'A105' },
+    location: { floor: '0', zone: 'B', shopNumber: 'B005' },
     contact: { phone: '0341122338', email: 'shop.habibo@gmail.com' },
     hours: {
       monday: { open: '08:30', close: '18:00' },
@@ -140,9 +140,9 @@ const shops = [
   },
   {
     name: 'Maki Company Tana',
-    description: 'Demande d\'ouverture pour Maki Company Tana.',
+    description: 'Prêt-à-porter malagasy célèbre pour ses collections colorées et ses motifs inspirés de la faune et la flore de Madagascar.',
     categoryName: 'Mode & Textile',
-    location: { floor: '0', zone: 'C', shopNumber: 'P001' },
+    location: { floor: '', zone: '', shopNumber: '' },
     contact: { phone: '0320000001', email: 'maki.company@gmail.com' },
     hours: {
       monday: { open: '09:00', close: '18:30' },
@@ -158,9 +158,9 @@ const shops = [
   },
   {
     name: 'Bijouterie Kalidas',
-    description: 'Demande d\'ouverture pour Bijouterie Kalidas.',
+    description: 'Joaillier de référence spécialisé dans le travail de l\'or, de l\'argent et des pierres précieuses de Madagascar depuis des générations.',
     categoryName: 'Bijouterie de Luxe',
-    location: { floor: '0', zone: 'C', shopNumber: 'P002' },
+    location: { floor: '', zone: '', shopNumber: '' },
     contact: { phone: '0320000002', email: 'kalidas.bijoux@gmail.com' },
     hours: {
       monday: { open: '09:00', close: '18:00' },
@@ -176,9 +176,9 @@ const shops = [
   },
   {
     name: 'Librairie Mixte',
-    description: 'Demande d\'ouverture pour Librairie Mixte.',
+    description: 'Institution culturelle historique proposant un large choix de littérature malagasy, d\'ouvrages scolaires et de presse internationale.',
     categoryName: 'Librairie & Culture',
-    location: { floor: '0', zone: 'C', shopNumber: 'P003' },
+    location: { floor: '', zone: '', shopNumber: '' },
     contact: { phone: '0320000003', email: 'librairie.mixte@gmail.com' },
     hours: {
       monday: { open: '08:00', close: '17:30' },
@@ -194,9 +194,9 @@ const shops = [
   },
   {
     name: 'Courts Madagascar',
-    description: 'Demande d\'ouverture pour Courts Madagascar.',
+    description: 'Expert en ameublement, électroménager et décoration d\'intérieur, offrant des solutions modernes pour toute la maison.',
     categoryName: 'Décoration d\'Intérieur',
-    location: { floor: '0', zone: 'C', shopNumber: 'P004' },
+    location: { floor: '', zone: '', shopNumber: '' },
     contact: { phone: '0320000004', email: 'courts.mada@gmail.com' },
     hours: {
       monday: { open: '09:00', close: '19:00' },
@@ -212,9 +212,9 @@ const shops = [
   },
   {
     name: 'Ocean 5 Sport',
-    description: 'Demande d\'ouverture pour Ocean 5 Sport.',
+    description: 'Boutique spécialisée dans les équipements de sports nautiques, plongée et plein air pour les passionnés d\'aventure à Madagascar.',
     categoryName: 'Sport & Aventure',
-    location: { floor: '0', zone: 'C', shopNumber: 'P005' },
+    location: { floor: '', zone: '', shopNumber: '' },
     contact: { phone: '0320000005', email: 'ocean5.sport@gmail.com' },
     hours: {
       monday: { open: '09:00', close: '19:00' },
