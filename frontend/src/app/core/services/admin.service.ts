@@ -92,6 +92,10 @@ export class AdminService {
     return this.http.get(`${this.baseUrl}/stats/orders-by-month?months=${months}`);
   }
 
+  getPendingShops(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/shops/pending`);
+  }
+
   getAdminOrders(params: Record<string, any> = {}): Observable<any> {
     let httpParams = new HttpParams();
     Object.keys(params).forEach(key => {

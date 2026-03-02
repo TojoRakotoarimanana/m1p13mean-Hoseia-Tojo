@@ -12,3 +12,6 @@ backend/public/uploads/products/
 backend/public/uploads/shops/
 frontend/src/environments/environment.ts
 frontend/src/environments/environment.prod.ts
+
+CLAUDE.md
+.github/*

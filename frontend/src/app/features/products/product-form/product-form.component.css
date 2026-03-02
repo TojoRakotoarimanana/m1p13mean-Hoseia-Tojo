@@ -1,16 +1,25 @@
-.product-form-wrapper {
+﻿.product-form-wrapper {
   --form-bg: linear-gradient(155deg, #f6f9fc 0%, #eef4ff 45%, #f9fbff 100%);
-  --card-border: #dbe5f2;
-  --section-border: #d7e1ef;
+  --card-border: #e2e8f0;
+  --section-border: #e9eef5;
   --title-color: #10233d;
   --muted-color: #4d6482;
   --accent: #0f6cbd;
+  --input-border: #d1dae6;
+  --input-border-focus: #0f6cbd;
+  --input-bg: #f8fafd;
+  --input-text: #1e3a5f;
+  --promo-green: #059669;
+  --promo-green-bg: #ecfdf5;
+  --promo-green-border: #a7f3d0;
+  --radius-input: 9px;
 
   padding: 2rem 1rem 3rem;
-  max-width: 980px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
+/* â”€â”€ Hero â”€â”€ */
 .hero {
   background: var(--form-bg);
   border: 1px solid var(--card-border);
@@ -21,7 +30,7 @@
 
 .hero-kicker {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
@@ -31,120 +40,377 @@
 .hero h1 {
   margin: 0.3rem 0 0;
   color: var(--title-color);
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-size: clamp(1.4rem, 3vw, 2rem);
   line-height: 1.2;
 }
 
 .hero-subtitle {
-  margin: 0.6rem 0 0;
+  margin: 0.5rem 0 0;
   color: var(--muted-color);
-  max-width: 70ch;
+  font-size: 0.9375rem;
 }
 
+/* â”€â”€ Card â”€â”€ */
 :host ::ng-deep .product-form-card {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--card-border);
+  box-shadow: 0 1px 3px rgba(16,35,61,0.06), 0 4px 16px rgba(16,35,61,0.04);
 }
 
 :host ::ng-deep .product-form-card .p-card-body {
   padding: 1.25rem;
 }
 
-.dialog-body {
-  display: grid;
-  gap: 1rem;
-}
+.dialog-body { display: grid; gap: 0.875rem; }
 
+/* â”€â”€ Sections â”€â”€ */
 .form-section {
   border: 1px solid var(--section-border);
   background: #fff;
   border-radius: 14px;
-  padding: 1rem;
+  padding: 1.125rem 1.25rem;
 }
 
-.form-section h2 {
-  margin: 0 0 0.75rem;
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
   color: var(--title-color);
-  font-size: 1rem;
-  letter-spacing: 0.01em;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.section-header-row .section-title { margin-bottom: 0; }
+
+.section-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #e8f0fb 0%, #d4e5f8 100%);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* â”€â”€ Field / Row layout â”€â”€ */
+.field { display: flex; flex-direction: column; gap: 0.375rem; }
+.field--grow { flex: 1; min-width: 0; }
+.field--half { width: 50%; }
+.field--fixed-200 { width: 200px; flex-shrink: 0; }
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
 }
 
 .field-label {
-  display: block;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: #1e3a5f;
-  margin-bottom: 0.35rem;
+  color: #374151;
+  letter-spacing: 0.01em;
 }
 
+/* â”€â”€ Inputs â”€â”€ */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.2s;
+}
+
+.input-suffix {
+  position: absolute;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  pointer-events: none;
+  background: transparent;
+  letter-spacing: 0.02em;
+}
+
+.styled-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 2.5rem 0 2.25rem !important;
+  background: var(--input-bg) !important;
+  border: 1.5px solid var(--input-border) !important;
+  border-radius: var(--radius-input) !important;
+  color: var(--input-text) !important;
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.styled-input::placeholder {
+  color: #b0bec9 !important;
+  font-weight: 400 !important;
+}
+
+.styled-input:hover {
+  border-color: #a8bfd4 !important;
+  background: #ffffff !important;
+}
+
+.styled-input:focus {
+  border-color: var(--input-border-focus) !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.1) !important;
+}
+
+.input-wrap:focus-within .input-icon {
+  color: var(--accent);
+}
+
+/* PrimeNG p-select match â”€â”€ */
+:host ::ng-deep .styled-select .p-select {
+  height: 40px;
+  background: var(--input-bg) !important;
+  border: 1.5px solid var(--input-border) !important;
+  border-radius: var(--radius-input) !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+:host ::ng-deep .styled-select:hover .p-select,
+:host ::ng-deep .styled-select .p-select:hover {
+  border-color: #a8bfd4 !important;
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .styled-select .p-select:focus,
+:host ::ng-deep .styled-select .p-select.p-focus {
+  border-color: var(--input-border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(15, 108, 189, 0.1) !important;
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .styled-select .p-select .p-select-label {
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  color: var(--input-text) !important;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 38px;
+}
+
+:host ::ng-deep .styled-select .p-select .p-select-label.p-placeholder {
+  color: #b0bec9 !important;
+  font-weight: 400 !important;
+}
+
+/* â”€â”€ Promotion Toggle â”€â”€ */
+.promo-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--section-border);
+  background: #f8fafd;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.promo-toggle-label.is-active {
+  border-color: var(--promo-green-border);
+  background: var(--promo-green-bg);
+}
+
+.promo-toggle-text {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted-color);
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.promo-toggle-label.is-active .promo-toggle-text {
+  color: var(--promo-green);
+}
+
+.promo-toggle-btn {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: #d1d5db;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.promo-toggle-btn.on { background: var(--promo-green); }
+
+.promo-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.promo-toggle-btn.on .promo-toggle-knob { transform: translateX(18px); }
+
+/* â”€â”€ Promotion pricing grid â”€â”€ */
+.promo-pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  align-items: end;
+}
+
+.promo-field { display: flex; flex-direction: column; gap: 0.375rem; }
+
+.result-label {
+  color: var(--promo-green) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.computed-price-display {
+  height: 40px;
+  background: var(--promo-green-bg);
+  border: 1.5px solid var(--promo-green-border);
+  border-radius: var(--radius-input);
+  padding: 0 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.computed-price-value {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--promo-green);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.computed-unit {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.computed-price-saving {
+  font-size: 0.6875rem;
+  color: #065f46;
+  font-weight: 600;
+  background: #d1fae5;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* â”€â”€ Upload zone â”€â”€ */
 .upload-zone {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  border: 1px dashed #9eb5d1;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1.5px dashed var(--input-border);
   border-radius: 12px;
-  background: #f6faff;
-  padding: 1rem;
+  background: var(--input-bg);
+  padding: 1.5rem 1rem;
   cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
 }
 
-.upload-title {
-  font-weight: 700;
-  color: var(--title-color);
+.upload-zone:hover {
+  border-color: var(--accent);
+  background: #eff6ff;
 }
 
-.upload-subtitle {
-  color: var(--muted-color);
-  font-size: 0.9rem;
+.upload-icon {
+  font-size: 1.75rem;
+  color: var(--accent);
+  opacity: 0.6;
+  margin-bottom: 0.25rem;
 }
 
-.upload-input {
-  margin-top: 0.5rem;
-}
+.upload-title { font-weight: 700; color: var(--title-color); font-size: 0.9375rem; }
+.upload-subtitle { color: var(--muted-color); font-size: 0.875rem; }
+.upload-input { margin-top: 0.5rem; }
 
 .preview-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 0.75rem;
   margin-top: 0.75rem;
 }
 
 .preview-list img {
   width: 100%;
-  height: 120px;
+  height: 110px;
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid var(--card-border);
 }
 
+/* â”€â”€ Footer â”€â”€ */
 .form-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* â”€â”€ Responsive â”€â”€ */
+@media (max-width: 640px) {
+  .form-row { flex-direction: column; }
+  .field--half, .field--fixed-200 { width: 100%; }
+  .promo-pricing-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .product-form-wrapper {
-    padding: 1rem 0.7rem 5rem;
-  }
+  .product-form-wrapper { padding: 1rem 0.7rem 5rem; }
 
   :host ::ng-deep .product-form-card .p-card-footer {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 0; right: 0; bottom: 0;
     background: #fff;
     border-top: 1px solid var(--card-border);
     padding: 0.75rem;
     z-index: 30;
   }
 
-  .form-footer {
-    justify-content: stretch;
-  }
-
-  .form-footer > * {
-    flex: 1;
-  }
+  .form-footer { justify-content: stretch; }
+  .form-footer > * { flex: 1; }
 }

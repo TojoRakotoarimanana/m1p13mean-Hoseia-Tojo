@@ -97,8 +97,8 @@ export class ProductFormComponent implements OnInit {
     if (!user?.id) return;
 
     this.shopService.getByUser(user.id).subscribe({
-      next: (shop) => {
-        this.shopId = shop._id;
+      next: (shops: any[]) => {
+        this.shopId = Array.isArray(shops) ? shops[0]?._id : (shops as any)._id;
       },
       error: () => {
         this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
@@ -196,6 +196,30 @@ export class ProductFormComponent implements OnInit {
 
   cancel() {
     this.router.navigate(['/my-products']);
+  }
+
+  togglePromotion(): void {
+    this.productForm.isPromotion = !this.productForm.isPromotion;
+    if (!this.productForm.isPromotion) {
+      // Quand on désactive la promotion, remettre le prix à l'original
+      this.productForm.price = this.productForm.originalPrice || '';
+      this.productForm.discount = 0;
+    } else {
+      // Quand on active, calculer si les données sont déjà là
+      this.computePromotionPrice();
+    }
+  }
+
+  computePromotionPrice(): void {
+    const original = parseFloat(this.productForm.originalPrice);
+    const discount = parseFloat(this.productForm.discount);
+
+    if (!isNaN(original) && original > 0 && !isNaN(discount) && discount >= 0 && discount <= 100) {
+      this.productForm.price = Math.round(original * (1 - discount / 100));
+    } else if (!isNaN(original) && original > 0) {
+      this.productForm.price = original;
+    }
+    this.cdr.detectChanges();
   }
 
   private getEmptyProduct() {

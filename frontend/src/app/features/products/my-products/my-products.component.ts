@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -39,7 +39,8 @@ import { environment } from '../../../../environments/environment';
     InputNumberModule
   ],
   templateUrl: './my-products.component.html',
-  styleUrl: './my-products.component.css'
+  styleUrl: './my-products.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MyProductsComponent implements OnInit {
   products: any[] = [];
@@ -111,11 +112,11 @@ export class MyProductsComponent implements OnInit {
       next: (data) => {
         this.historyTarget = data;
         this.historyLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.historyLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
         this.notificationService.error(error.error?.message || 'Erreur chargement historique', 'Erreur');
       }
     });
@@ -200,7 +201,10 @@ export class MyProductsComponent implements OnInit {
         const shops: any[] = Array.isArray(response) ? response : [response];
         this.shopId = shops[0]?._id ?? null;
         if (this.shopId) this.loadProducts();
-        else this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
+        else {
+          this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
+          this.cdr.markForCheck();
+        }
       },
       error: () => {
         this.notificationService.warn('Aucune boutique active trouvée.', 'Info');
@@ -215,7 +219,7 @@ export class MyProductsComponent implements OnInit {
           ...category,
           displayName: category.name
         }));
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
         this.notificationService.error('Impossible de charger les catégories.', 'Erreur');
@@ -247,11 +251,11 @@ export class MyProductsComponent implements OnInit {
         this.products = response.items || [];
         this.total = response.total || 0;
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
         this.notificationService.error(error.error?.message || 'Erreur de chargement', 'Erreur');
       }
     });
@@ -274,7 +278,8 @@ export class MyProductsComponent implements OnInit {
 
   getEffectivePrice(product: any): number {
     if (product?.isPromotion && product.discount > 0) {
-      return Number((product.price * (1 - product.discount / 100)).toFixed(2));
+      const base = product.originalPrice || product.price;
+      return Number((base * (1 - product.discount / 100)).toFixed(2));
     }
     return product?.price || 0;
   }

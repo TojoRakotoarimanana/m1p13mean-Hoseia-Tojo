@@ -34,10 +34,11 @@ ng test            # Run tests with Vitest
 
 ### Frontend: Angular 21 Standalone Components
 
-- **`app/core/services/`**: All HTTP services. API URLs are hardcoded to `http://localhost:3000/api/*` — no `environment.ts` files.
-- **`app/core/guards/`**: `adminGuard`, `boutiqueGuard`, `clientGuard` exported from `role.guard.ts`. `redirectIfLoggedIn` in `auth.guard.ts`.
-- **`app/core/interceptors/auth.interceptor.ts`**: Automatically attaches `Bearer` token to all HTTP requests.
-- **`app/features/`**: Feature components organized by domain (auth, catalog, dashboard, products, shops).
+- **`app/core/services/`**: All HTTP services use `${environment.apiUrl}/api/*` from `src/environments/environment.ts`
+- **`app/core/guards/`**: Functional guards - factory function `roleGuard(allowedRoles)` returns `CanActivateFn`. Pre-built: `adminGuard`, `boutiqueGuard`, `clientGuard`
+- **`app/core/interceptors/auth.interceptor.ts`**: Automatically attaches `Bearer` token to all HTTP requests, redirects to `/login` on 401
+- **`app/features/`**: Feature components organized by domain (auth, catalog, dashboard, products, shops)
+- **Standalone components**: Use `standalone: true`, import modules directly, use `styleUrl` (singular) not `styleUrls`
 
 ### Authentication Flow
 - JWT stored in `localStorage` under keys `auth_token` and `auth_user`.
@@ -57,10 +58,14 @@ PrimeNG v21 with Aura theme. CSS layer order: `tailwind-base → primeng → tai
 
 Backend reads from `backend/.env`:
 ```
-MONGO_URI=mongodb://localhost:27017/mean
+MONGO_URI=mongodb://localhost:27017/m1p13mean
 CORS_ORIGIN=http://localhost:4200
 JWT_SECRET=<set this>
 ```
+
+Frontend environment files (`src/environments/`):
+- `environment.ts`: `apiUrl: 'http://localhost:3000'` (dev)
+- `environment.prod.ts`: `apiUrl: 'https://m1p13mean-hoseia-tojo.onrender.com'` (production)
 
 ## Test Credentials (after seeding)
 
