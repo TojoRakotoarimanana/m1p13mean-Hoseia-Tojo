@@ -75,10 +75,12 @@ export const routes: Routes = [
 
     { path: 'login', canActivate: [redirectIfLoggedIn], component: LoginComponent },
     { path: 'login-boutique', canActivate: [redirectIfLoggedIn], component: LoginBoutiqueComponent },
-    { path: 'login-admin', canActivate: [redirectIfLoggedIn], component: LoginAdminComponent },
     { path: 'register', canActivate: [redirectIfLoggedIn], component: RegisterComponent },
-    { path: 'register-admin', canActivate: [redirectIfLoggedIn], component: RegisterAdminComponent },
     { path: 'register-boutique', canActivate: [redirectIfLoggedIn], component: RegisterBoutiqueComponent },
+
+    // Espace admin — séparé du front client/boutique
+    { path: 'admin/login', canActivate: [redirectIfLoggedIn], component: LoginAdminComponent },
+    { path: 'admin/register', canActivate: [redirectIfLoggedIn], component: RegisterAdminComponent },
 
     // Page d'accueil client
     { path: 'home', component: HomeClientComponent, canActivate: [clientGuard] },

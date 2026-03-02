@@ -37,8 +37,19 @@ export class LoginComponent {
         email: '',
         password: ''
     };
-    
+
     isLoading = false;
+
+    readonly testAccounts = [
+        { label: 'Jean Rakoto',    email: 'rakoto.jean@gmail.com',  password: 'Client123!' },
+        { label: 'Mialy Ravaka',   email: 'mialy.ravaka@gmail.com', password: 'Client123!' },
+        { label: 'Fara Nirina',    email: 'fara.nirina@gmail.com',  password: 'Client123!' },
+    ];
+
+    fillCredentials(email: string, password: string) {
+        this.loginData.email    = email;
+        this.loginData.password = password;
+    }
 
     constructor(
         private authService: AuthService, 

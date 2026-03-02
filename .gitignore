@@ -15,3 +15,5 @@ frontend/src/environments/environment.prod.ts
 
 CLAUDE.md
 .github/*
+.claude/*
+.claude/worktrees/agent-adcfa2c3
