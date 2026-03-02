@@ -419,7 +419,7 @@ async function seedData() {
           });
           totalProducts++;
         }
-        
+
         shop.statistics.totalProducts = shopProducts.length;
         await shop.save();
       }
