@@ -130,13 +130,88 @@
   border-top: 1px solid #f3f4f6;
 }
 
+/* ===== FILTER BAR ===== */
+.filter-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
 @media (max-width: 768px) {
   .dashboard-wrapper {
     padding: 1rem;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .dashboard-title {
+    font-size: 1.25rem;
+  }
+
+  /* Masquer Emplacement et Contact sur tablette et mobile */
+  .col-location,
+  .col-contact {
+    display: none;
+  }
+
+  /* Filtre : grille 2 colonnes sur tablette */
+  .filter-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Bouton actions (dernier enfant) prend toute la largeur */
+  .filter-bar > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Scroll horizontal sur le tableau */
+  .content-section ::ng-deep .p-card .p-card-content {
+    overflow-x: auto;
+  }
+
+  .content-section ::ng-deep .p-card .p-card-body {
+    overflow-x: auto;
+  }
+
+  /* Dialog : plein ecran */
+  :host ::ng-deep .p-dialog {
+    width: calc(100vw - 2rem) !important;
+    max-width: 100% !important;
+    margin: 0 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Masquer Propriétaire et Catégorie */
+  .col-owner,
+  .col-category {
+    display: none;
+  }
+
+  /* Filtre : 1 colonne sur mobile */
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar > div:last-child {
+    grid-column: 1;
+  }
+
+  .dashboard-title {
+    font-size: 1.125rem;
+  }
+
+  .content-section ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-wrapper {
+    padding: 0.75rem;
   }
 }

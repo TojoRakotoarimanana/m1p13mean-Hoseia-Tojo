@@ -59,8 +59,42 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
   };
 };
 
-// Guards spécifiques pour chaque rôle
-export const adminGuard: CanActivateFn = roleGuard(['admin']);
+// Guards spécifiques pour boutique et client
 export const boutiqueGuard: CanActivateFn = roleGuard(['boutique']);
 export const clientGuard: CanActivateFn = roleGuard(['client']);
 export const boutiqueOrAdminGuard: CanActivateFn = roleGuard(['admin', 'boutique']);
+
+// Guard admin séparé — redirige vers /admin/login (espace admin isolé)
+export const adminGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const messageService = inject(MessageService);
+
+  if (!authService.isLoggedIn()) {
+    router.navigate(['/admin/login']);
+    return false;
+  }
+
+  const user = authService.getUserFromStorage();
+  if (!user || !user.role) {
+    authService.logout();
+    router.navigate(['/admin/login']);
+    return false;
+  }
+
+  if (user.role !== 'admin') {
+    messageService.add({
+      severity: 'warn',
+      summary: 'Accès refusé',
+      detail: `Cette section est réservée aux administrateurs.`,
+    });
+    switch (user.role) {
+      case 'client':   router.navigate(['/home']); break;
+      case 'boutique': router.navigate(['/boutique-dashboard']); break;
+      default:         router.navigate(['/login']); break;
+    }
+    return false;
+  }
+
+  return true;
+};

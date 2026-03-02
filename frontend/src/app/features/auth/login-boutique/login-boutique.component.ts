@@ -40,6 +40,19 @@ export class LoginBoutiqueComponent {
 
     isLoading = false;
 
+    readonly testAccounts = [
+        { label: 'Lisy Art Gallery',    email: 'lisy@gmail.com',        password: 'Boutique123!' },
+        { label: 'Codal Madagascar',    email: 'codal@gmail.com',       password: 'Boutique123!' },
+        { label: 'Homeopharma',         email: 'homeopharma@gmail.com', password: 'Boutique123!' },
+        { label: "Mass'In",             email: 'massin@gmail.com',      password: 'Boutique123!' },
+        { label: 'Habibo Group Shop',   email: 'habibo@gmail.com',      password: 'Boutique123!' },
+    ];
+
+    fillCredentials(email: string, password: string) {
+        this.loginData.email    = email;
+        this.loginData.password = password;
+    }
+
     constructor(
         private authService: AuthService,
         private router: Router,

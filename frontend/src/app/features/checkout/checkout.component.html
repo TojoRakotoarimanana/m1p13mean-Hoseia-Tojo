@@ -96,35 +96,65 @@
             <!-- ÉTAPE 1 : Livraison -->
             @if (activeIndex === 1) {
                 <div class="step-card">
-                    <h2 class="step-card-title">Livraison</h2>
+                    <h2 class="step-card-title">Mode de réception</h2>
+
+                    <!-- Choix livraison / retrait -->
+                    <div class="delivery-method-grid">
+                        <div class="delivery-option"
+                            [class.selected]="deliveryMethod === 'delivery'"
+                            (click)="deliveryMethod = 'delivery'">
+                            <div class="pay-radio" [class.pay-radio-on]="deliveryMethod === 'delivery'"></div>
+                            <i class="pi pi-truck pay-icon"></i>
+                            <div class="pay-text">
+                                <p class="pay-title">Livraison à domicile</p>
+                                <p class="pay-desc">Livré à votre adresse. Gratuit.</p>
+                            </div>
+                        </div>
+                        <div class="delivery-option"
+                            [class.selected]="deliveryMethod === 'pickup'"
+                            (click)="deliveryMethod = 'pickup'">
+                            <div class="pay-radio" [class.pay-radio-on]="deliveryMethod === 'pickup'"></div>
+                            <i class="pi pi-building pay-icon"></i>
+                            <div class="pay-text">
+                                <p class="pay-title">Récupération en boutique</p>
+                                <p class="pay-desc">Récupérez directement chez le vendeur.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="form-section-title">Vos coordonnées</h3>
 
                     <div class="form-grid">
                         <div class="form-field">
                             <label class="field-label">Nom complet <span class="req">*</span></label>
                             <input pInputText [(ngModel)]="shippingInfo.fullName"
-                                placeholder="Jean Dupont" class="field-input" />
+                            class="field-input" />
                         </div>
                         <div class="form-field">
                             <label class="field-label">Téléphone <span class="req">*</span></label>
                             <input pInputText [(ngModel)]="shippingInfo.phone"
                                 placeholder="034 XX XXX XX" class="field-input" />
                         </div>
-                        <div class="form-field">
-                            <label class="field-label">Ville <span class="req">*</span></label>
-                            <input pInputText [(ngModel)]="shippingInfo.city"
-                                placeholder="Antananarivo" class="field-input" />
-                        </div>
-                        <div class="form-field form-field-full">
-                            <label class="field-label">Adresse <span class="req">*</span></label>
-                            <input pInputText [(ngModel)]="shippingInfo.address"
-                                placeholder="Lot, Quartier, Rue..." class="field-input" />
-                        </div>
+
+                        @if (deliveryMethod === 'delivery') {
+                            <div class="form-field">
+                                <label class="field-label">Ville <span class="req">*</span></label>
+                                <input pInputText [(ngModel)]="shippingInfo.city"
+                                    placeholder="Antananarivo" class="field-input" />
+                            </div>
+                            <div class="form-field form-field-full">
+                                <label class="field-label">Adresse <span class="req">*</span></label>
+                                <input pInputText [(ngModel)]="shippingInfo.address"
+                                    placeholder="Lot, Quartier, Rue..." class="field-input" />
+                            </div>
+                        }
+
                         <div class="form-field form-field-full">
                             <label class="field-label">
                                 Instructions <span class="opt">(optionnel)</span>
                             </label>
                             <textarea [(ngModel)]="shippingInfo.notes" rows="3"
-                                placeholder="Porte bleue, appeler au portail..."
+                                [placeholder]="deliveryMethod === 'delivery' ? 'Porte bleue, appeler au portail...' : 'Heure de passage, remarques...'"
                                 class="field-textarea"></textarea>
                         </div>
                     </div>

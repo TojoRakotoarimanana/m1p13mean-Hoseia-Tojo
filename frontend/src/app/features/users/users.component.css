@@ -1,0 +1,181 @@
+.dashboard-wrapper {
+  padding: 1.5rem;
+  max-width: 1800px;
+  margin: 0 auto;
+  background: #fafbfc;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: transparent;
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 0.25rem 0;
+  color: #2c2c2c;
+}
+
+.dashboard-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
+}
+
+.filter-card ::ng-deep .p-card-content {
+  padding: 1.25rem !important;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.content-section {
+  margin-bottom: 1.5rem;
+}
+
+.content-section ::ng-deep .p-card {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+  border: none;
+}
+
+.content-section ::ng-deep .p-card .p-card-body {
+  padding: 0;
+}
+
+.content-section ::ng-deep .p-card .p-card-content {
+  padding: 0;
+}
+
+.data-row {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.1s ease;
+}
+
+.data-row:hover {
+  background-color: #fafbfc;
+}
+
+.content-section ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.875rem 1.25rem;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.content-section ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  font-size: 0.813rem;
+  color: #6b7280;
+  text-transform: none;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem !important;
+  color: #9ca3af;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+:host ::ng-deep .p-dialog {
+  border-radius: 4px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  padding: 1.5rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    padding: 1rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-title {
+    font-size: 1.25rem;
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-bar > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  :host ::ng-deep .p-dialog {
+    width: calc(100vw - 2rem) !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Masquer la colonne Email sur mobile */
+  .col-email {
+    display: none;
+  }
+
+  .dashboard-title {
+    font-size: 1.125rem;
+  }
+
+  .content-section ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-wrapper {
+    padding: 0.75rem;
+  }
+}

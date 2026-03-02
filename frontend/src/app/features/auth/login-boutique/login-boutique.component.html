@@ -24,6 +24,17 @@
                 <p-button label="Se connecter" type="submit" [disabled]="!loginForm.form.valid || isLoading" [loading]="isLoading" styleClass="w-full"></p-button>
             </div>
 
+            <div class="test-accounts">
+                <p class="test-accounts-label"><i class="pi pi-flask"></i> Comptes de test</p>
+                <div class="test-accounts-list">
+                    <button *ngFor="let acc of testAccounts" type="button"
+                        class="test-account-btn" (click)="fillCredentials(acc.email, acc.password)">
+                        <span class="test-account-name">{{ acc.label }}</span>
+                        <span class="test-account-email">{{ acc.email }}</span>
+                    </button>
+                </div>
+            </div>
+
             <div class="login-footer">
                 <p class="footer-text">Rejoindre le centre ? <a routerLink="/register-boutique" class="footer-link">Devenir partenaire</a></p>
             </div>

@@ -181,4 +181,21 @@
 @media (max-width: 768px) {
     .page-header-inner,
     .page-content { padding: 0 0.875rem; }
+
+    .table-card {
+        overflow-x: auto;
+    }
+
+    .page-title { font-size: 1.125rem; }
+}
+
+@media (max-width: 640px) {
+    /* Masquer les colonnes Date et Boutiques à 640px */
+    .col-date,
+    .col-shops { display: none; }
+}
+
+@media (max-width: 480px) {
+    .page-header-inner,
+    .page-content { padding: 0 0.75rem; }
 }

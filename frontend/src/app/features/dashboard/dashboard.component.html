@@ -1,180 +1,386 @@
-<div class="dashboard-wrapper">
-  <div class="dashboard-header">
-    <div class="header-content">
-      <div>
-        <h1 class="dashboard-title">Dashboard</h1>
-        <p class="dashboard-subtitle" *ngIf="user">
-          {{ user.firstName }} {{ user.lastName }}
-        </p>
+<div class="dash-wrap">
+
+  <!-- ══════════════════════ HEADER ══════════════════════ -->
+  <header class="dash-header">
+    <div class="dash-header-left">
+      <span class="dash-eyebrow">Console Admin</span>
+      <h1 class="dash-title">Vue d'ensemble</h1>
+    </div>
+    <div class="dash-header-right">
+      <div class="dash-user" *ngIf="user">
+        <div class="dash-avatar">{{ user.firstName?.[0] }}{{ user.lastName?.[0] }}</div>
+        <span class="dash-username">{{ user.firstName }} {{ user.lastName }}</span>
       </div>
-      <div class="header-date">
+      <div class="dash-date">
         <i class="pi pi-calendar"></i>
-        <span>{{ currentDate | date:'dd MMM yyyy':'':'fr' }}</span>
+        <span>{{ currentDate | date:'EEE dd MMM yyyy':'':'fr' }}</span>
       </div>
+      <button class="icon-btn" (click)="loadDashboardData()" title="Actualiser">
+        <i class="pi pi-refresh"></i>
+      </button>
     </div>
-  </div>
+  </header>
 
-  <div class="stats-grid">
-    <div class="stat-card revenue-card">
-      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loading && stats" class="stat-card-content">
-        <div class="stat-details">
-          <p class="stat-label">Revenu Total</p>
-          <h2 class="stat-value">{{ formatCurrency(stats.revenue.total) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge" [ngClass]="stats.revenue.weeklyGrowth >= 0 ? 'positive' : 'negative'">
-              <i [class]="stats.revenue.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
-              {{ stats.revenue.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.revenue.weeklyGrowth }}%
-            </span>
-            <span class="stat-subtext">depuis la semaine dernière</span>
+  <!-- ══════════════════════ KPI GRID ══════════════════════ -->
+  <section class="kpi-grid">
+
+    <!-- Revenu Total -->
+    <div class="kpi-card" style="--anim-delay:0.06s">
+      <div *ngIf="loading" class="kpi-skel">
+        <p-skeleton height="14px" width="55%" styleClass="skel mb-3"></p-skeleton>
+        <p-skeleton height="30px" width="80%" styleClass="skel mb-2"></p-skeleton>
+        <p-skeleton height="11px" width="50%" styleClass="skel"></p-skeleton>
+      </div>
+      <ng-container *ngIf="!loading && stats">
+        <div class="kpi-top">
+          <div class="kpi-icon revenue-icon"><i class="pi pi-chart-line"></i></div>
+          <div class="kpi-badge"
+               [class.badge-up]="stats.revenue.weeklyGrowth >= 0"
+               [class.badge-dn]="stats.revenue.weeklyGrowth < 0">
+            <i [class]="stats.revenue.weeklyGrowth >= 0 ? 'pi pi-arrow-up-right' : 'pi pi-arrow-down-right'"></i>
+            {{ stats.revenue.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.revenue.weeklyGrowth }}%
           </div>
         </div>
+        <p class="kpi-label">Revenu Total</p>
+        <p class="kpi-value">{{ formatCurrency(stats.revenue.total) }}</p>
+        <p class="kpi-sub">Aujourd'hui · {{ formatCurrency(stats.revenue.today) }}</p>
+        <div class="kpi-spark">
+          <svg viewBox="0 0 120 40" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2563eb" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 32 L20 26 L40 30 L60 16 L80 22 L100 10 L120 5"
+                  stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 32 L20 26 L40 30 L60 16 L80 22 L100 10 L120 5 L120 40 L0 40 Z"
+                  fill="url(#gRev)"/>
+          </svg>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Commandes -->
+    <div class="kpi-card" style="--anim-delay:0.11s">
+      <div *ngIf="loading" class="kpi-skel">
+        <p-skeleton height="14px" width="55%" styleClass="skel mb-3"></p-skeleton>
+        <p-skeleton height="30px" width="80%" styleClass="skel mb-2"></p-skeleton>
+        <p-skeleton height="11px" width="50%" styleClass="skel"></p-skeleton>
+      </div>
+      <ng-container *ngIf="!loading && stats">
+        <div class="kpi-top">
+          <div class="kpi-icon orders-icon"><i class="pi pi-shopping-cart"></i></div>
+          <div class="kpi-badge"
+               [class.badge-up]="stats.orders.weeklyGrowth >= 0"
+               [class.badge-dn]="stats.orders.weeklyGrowth < 0">
+            <i [class]="stats.orders.weeklyGrowth >= 0 ? 'pi pi-arrow-up-right' : 'pi pi-arrow-down-right'"></i>
+            {{ stats.orders.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.orders.weeklyGrowth }}%
+          </div>
+        </div>
+        <p class="kpi-label">Commandes</p>
+        <p class="kpi-value">{{ formatNumber(stats.orders.total) }}</p>
+        <p class="kpi-sub">Aujourd'hui · {{ formatNumber(stats.orders.today) }}</p>
+        <div class="kpi-spark">
+          <svg viewBox="0 0 120 40" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="gOrd" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d97706" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#d97706" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 30 L20 22 L40 26 L60 14 L80 20 L100 9 L120 13"
+                  stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 30 L20 22 L40 26 L60 14 L80 20 L100 9 L120 13 L120 40 L0 40 Z"
+                  fill="url(#gOrd)"/>
+          </svg>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Boutiques -->
+    <div class="kpi-card" style="--anim-delay:0.16s">
+      <div *ngIf="loading" class="kpi-skel">
+        <p-skeleton height="14px" width="55%" styleClass="skel mb-3"></p-skeleton>
+        <p-skeleton height="30px" width="80%" styleClass="skel mb-2"></p-skeleton>
+        <p-skeleton height="11px" width="50%" styleClass="skel"></p-skeleton>
+      </div>
+      <ng-container *ngIf="!loading && stats">
+        <div class="kpi-top">
+          <div class="kpi-icon shops-icon"><i class="pi pi-shop"></i></div>
+          <div class="kpi-badge badge-neutral">
+            <i class="pi pi-check-circle"></i>
+            {{ stats.shops.activePercentage }}% actives
+          </div>
+        </div>
+        <p class="kpi-label">Boutiques</p>
+        <p class="kpi-value">{{ formatNumber(stats.shops.total) }}</p>
+        <p class="kpi-sub">{{ stats.shops.active }} actives · {{ stats.shops.pending }} en attente</p>
+        <div class="kpi-progress">
+          <div class="kpi-prog-fill shops-fill" [style.width.%]="+(stats.shops.activePercentage)"></div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Utilisateurs -->
+    <div class="kpi-card" style="--anim-delay:0.21s">
+      <div *ngIf="loading" class="kpi-skel">
+        <p-skeleton height="14px" width="55%" styleClass="skel mb-3"></p-skeleton>
+        <p-skeleton height="30px" width="80%" styleClass="skel mb-2"></p-skeleton>
+        <p-skeleton height="11px" width="50%" styleClass="skel"></p-skeleton>
+      </div>
+      <ng-container *ngIf="!loading && stats">
+        <div class="kpi-top">
+          <div class="kpi-icon users-icon"><i class="pi pi-users"></i></div>
+          <div class="kpi-badge"
+               [class.badge-up]="stats.users.weeklyGrowth >= 0"
+               [class.badge-dn]="stats.users.weeklyGrowth < 0">
+            <i [class]="stats.users.weeklyGrowth >= 0 ? 'pi pi-arrow-up-right' : 'pi pi-arrow-down-right'"></i>
+            {{ stats.users.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.users.weeklyGrowth }}%
+          </div>
+        </div>
+        <p class="kpi-label">Utilisateurs</p>
+        <p class="kpi-value">{{ formatNumber(stats.users.total) }}</p>
+        <p class="kpi-sub">Cette semaine</p>
+        <div class="kpi-spark">
+          <svg viewBox="0 0 120 40" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="gUsr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#059669" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 30 L20 24 L40 28 L60 18 L80 24 L100 15 L120 10"
+                  stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 30 L20 24 L40 28 L60 18 L80 24 L100 15 L120 10 L120 40 L0 40 Z"
+                  fill="url(#gUsr)"/>
+          </svg>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Produits Actifs -->
+    <div class="kpi-card" style="--anim-delay:0.26s">
+      <div *ngIf="loading" class="kpi-skel">
+        <p-skeleton height="14px" width="55%" styleClass="skel mb-3"></p-skeleton>
+        <p-skeleton height="30px" width="80%" styleClass="skel mb-2"></p-skeleton>
+        <p-skeleton height="11px" width="50%" styleClass="skel"></p-skeleton>
+      </div>
+      <ng-container *ngIf="!loading && stats">
+        <div class="kpi-top">
+          <div class="kpi-icon products-icon"><i class="pi pi-box"></i></div>
+          <div class="kpi-badge"
+               [class.badge-up]="stats.products.weeklyGrowth >= 0"
+               [class.badge-dn]="stats.products.weeklyGrowth < 0">
+            <i [class]="stats.products.weeklyGrowth >= 0 ? 'pi pi-arrow-up-right' : 'pi pi-arrow-down-right'"></i>
+            {{ stats.products.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.products.weeklyGrowth }}%
+          </div>
+        </div>
+        <p class="kpi-label">Produits Actifs</p>
+        <p class="kpi-value">{{ formatNumber(stats.products.total) }}</p>
+        <p class="kpi-sub">Cette semaine</p>
+        <div class="kpi-spark">
+          <svg viewBox="0 0 120 40" preserveAspectRatio="none" fill="none">
+            <defs>
+              <linearGradient id="gProd" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e11d48" stop-opacity="0.10"/>
+                <stop offset="100%" stop-color="#e11d48" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 32 L20 28 L40 24 L60 20 L80 16 L100 12 L120 7"
+                  stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 32 L20 28 L40 24 L60 20 L80 16 L100 12 L120 7 L120 40 L0 40 Z"
+                  fill="url(#gProd)"/>
+          </svg>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Catégories -->
+    <div class="kpi-card" style="--anim-delay:0.31s">
+      <div *ngIf="loading" class="kpi-skel">
+        <p-skeleton height="14px" width="55%" styleClass="skel mb-3"></p-skeleton>
+        <p-skeleton height="30px" width="80%" styleClass="skel mb-2"></p-skeleton>
+        <p-skeleton height="11px" width="50%" styleClass="skel"></p-skeleton>
+      </div>
+      <ng-container *ngIf="!loading && stats">
+        <div class="kpi-top">
+          <div class="kpi-icon categories-icon"><i class="pi pi-tag"></i></div>
+          <div class="kpi-badge badge-neutral">
+            <i class="pi pi-folder"></i>
+            Types actifs
+          </div>
+        </div>
+        <p class="kpi-label">Catégories</p>
+        <p class="kpi-value">{{ formatNumber(stats.categories.total) }}</p>
+        <p class="kpi-sub">Types de boutiques</p>
+        <div class="kpi-dots">
+          <div class="kpi-dot" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"
+               [style.opacity]="i <= (stats.categories.total >= 10 ? 10 : stats.categories.total) ? 1 : 0.1">
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════ CHARTS ROW ══════════════════════ -->
+  <section class="charts-row" style="--anim-delay:0.34s">
+
+    <!-- Tendance Revenus (Line) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Tendance des Revenus</h3>
+          <p class="chart-sub">6 derniers mois — revenus & commandes</p>
+        </div>
+        <div class="chart-legend">
+          <span class="leg-line" style="background:#2563eb"></span>
+          <span class="leg-label">Revenus</span>
+          <span class="leg-line dashed" style="--lc:#059669"></span>
+          <span class="leg-label">Commandes</span>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div *ngIf="!revenueChartData" class="chart-skel">
+          <p-skeleton height="220px" styleClass="skel"></p-skeleton>
+        </div>
+        <div *ngIf="revenueChartData" class="canvas-wrap">
+          <p-chart type="line" [data]="revenueChartData" [options]="revenueChartOptions"></p-chart>
+        </div>
       </div>
     </div>
 
-    <div class="stat-card orders-card">
-      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loading && stats" class="stat-card-content">
-        <div class="stat-details">
-          <p class="stat-label">Commandes Totales</p>
-          <h2 class="stat-value">{{ formatNumber(stats.orders.total) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge" [ngClass]="stats.orders.weeklyGrowth >= 0 ? 'positive' : 'negative'">
-              <i [class]="stats.orders.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
-              {{ stats.orders.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.orders.weeklyGrowth }}%
-            </span>
-            <span class="stat-subtext">depuis la semaine dernière</span>
+    <!-- État Boutiques (Donut) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">État des Boutiques</h3>
+          <p class="chart-sub">Distribution par statut</p>
+        </div>
+      </div>
+      <div class="donut-body">
+        <div *ngIf="loading" class="donut-loader">
+          <p-skeleton shape="circle" size="150px" styleClass="skel"></p-skeleton>
+        </div>
+        <ng-container *ngIf="!loading && shopStatusChartData">
+          <div class="donut-overlay">
+            <span class="donut-num">{{ stats?.shops?.total || 0 }}</span>
+            <span class="donut-label">Total</span>
           </div>
+          <div class="canvas-wrap donut-canvas">
+            <p-chart type="doughnut" [data]="shopStatusChartData" [options]="shopStatusChartOptions"></p-chart>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════ BOTTOM ROW ══════════════════════ -->
+  <section class="bottom-row" style="--anim-delay:0.40s">
+
+    <!-- Commandes par Jour (Bar) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Commandes par Jour</h3>
+          <p class="chart-sub">7 derniers jours</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div *ngIf="!ordersChartData" class="chart-skel">
+          <p-skeleton height="180px" styleClass="skel"></p-skeleton>
+        </div>
+        <div *ngIf="ordersChartData" class="canvas-wrap canvas-sm">
+          <p-chart type="bar" [data]="ordersChartData" [options]="ordersChartOptions"></p-chart>
         </div>
       </div>
     </div>
 
-    <div class="stat-card shops-card">
-      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loading && stats" class="stat-card-content">
-        <div class="stat-details">
-          <p class="stat-label">Boutiques</p>
-          <h2 class="stat-value">{{ formatNumber(stats.shops.total) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge neutral">
-              {{ stats.shops.active }} actives
-            </span>
-            <span class="stat-subtext" *ngIf="stats.shops.pending > 0">
-              {{ stats.shops.pending }} en attente
-            </span>
-          </div>
+    <!-- Activités Récentes -->
+    <div class="chart-card activity-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Activités Récentes</h3>
+          <p class="chart-sub">Dernières actions système</p>
         </div>
+        <button class="icon-btn" (click)="loadDashboardData()" title="Actualiser">
+          <i class="pi pi-refresh"></i>
+        </button>
       </div>
-    </div>
 
-    <div class="stat-card users-card">
-      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loading && stats" class="stat-card-content">
-        <div class="stat-details">
-          <p class="stat-label">Utilisateurs</p>
-          <h2 class="stat-value">{{ formatNumber(stats.users.total) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge" [ngClass]="stats.users.weeklyGrowth >= 0 ? 'positive' : 'negative'">
-              <i [class]="stats.users.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
-              {{ stats.users.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.users.weeklyGrowth }}%
-            </span>
-            <span class="stat-subtext">depuis la semaine dernière</span>
+      <div class="activity-list">
+        <!-- Loading -->
+        <div *ngIf="activitiesLoading" class="act-loading">
+          <div *ngFor="let i of [1,2,3,4,5]" class="act-skel-row">
+            <p-skeleton shape="circle" size="36px" styleClass="skel"></p-skeleton>
+            <div style="flex:1">
+              <p-skeleton height="13px" width="68%" styleClass="skel mb-2"></p-skeleton>
+              <p-skeleton height="10px" width="45%" styleClass="skel"></p-skeleton>
+            </div>
+            <p-skeleton height="10px" width="36px" styleClass="skel"></p-skeleton>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="stat-card products-card">
-      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loading && stats" class="stat-card-content">
-        <div class="stat-details">
-          <p class="stat-label">Produits Actifs</p>
-          <h2 class="stat-value">{{ formatNumber(stats.products.total) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge" [ngClass]="stats.products.weeklyGrowth >= 0 ? 'positive' : 'negative'">
-              <i [class]="stats.products.weeklyGrowth >= 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i>
-              {{ stats.products.weeklyGrowth >= 0 ? '+' : '' }}{{ stats.products.weeklyGrowth }}%
-            </span>
-            <span class="stat-subtext">depuis la semaine dernière</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="stat-card categories-card">
-      <p-skeleton *ngIf="loading" width="100%" height="90px"></p-skeleton>
-      <div *ngIf="!loading && stats" class="stat-card-content">
-        <div class="stat-details">
-          <p class="stat-label">Catégories Actives</p>
-          <h2 class="stat-value">{{ formatNumber(stats.categories.total) }}</h2>
-          <div class="stat-footer">
-            <span class="stat-badge neutral">
-              de boutiques
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="activities-section">
-    <p-card>
-      <ng-template pTemplate="header">
-        <div class="card-header">
-          <div class="header-title">
-            <h3>Activités Récentes</h3>
-          </div>
-          <p-button 
-            label="Actualiser" 
-            icon="pi pi-refresh" 
-            [outlined]="true"
-            size="small"
-            (onClick)="loadDashboardData()">
-          </p-button>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="content">
-        <div *ngIf="activitiesLoading" class="loading-state">
-          <p-skeleton *ngFor="let item of [1,2,3,4,5]" width="100%" height="50px" styleClass="mb-2"></p-skeleton>
-        </div>
-
-        <div *ngIf="!activitiesLoading && activities.length === 0" class="empty-state">
+        <!-- Empty -->
+        <div *ngIf="!activitiesLoading && allActivities.length === 0" class="act-empty">
           <i class="pi pi-inbox"></i>
           <p>Aucune activité récente</p>
         </div>
 
-        <p-table 
-          *ngIf="!activitiesLoading && activities.length > 0"
-          [value]="activities" 
-          [paginator]="false"
-          responsiveLayout="scroll">
-          <ng-template pTemplate="body" let-activity>
-            <tr class="activity-row">
-              <td style="width: 40px;">
-                <div class="activity-icon-wrapper">
-                  <i [class]="getActivityIcon(activity.type)"></i>
-                </div>
-              </td>
-              <td>
-                <div class="activity-content">
-                  <p class="activity-title">{{ activity.title }}</p>
-                  <p class="activity-description">{{ activity.description }}</p>
-                </div>
-              </td>
-              <td style="width: 120px; text-align: center;">
-                <p-tag 
-                  [value]="activity.status" 
-                  [severity]="getStatusSeverity(activity.status)">
-                </p-tag>
-              </td>
-              <td style="width: 130px; text-align: right;">
-                <span class="activity-time">{{ getRelativeTime(activity.timestamp) }}</span>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </ng-template>
-    </p-card>
-  </div>
+        <!-- Items (page courante) -->
+        <div *ngIf="!activitiesLoading && allActivities.length > 0">
+          <div *ngFor="let act of activities; let last = last"
+               class="act-item"
+               [class.act-last]="last">
+            <div class="act-icon" [ngClass]="'type-' + act.type">
+              <i [class]="getActivityIcon(act.type)"></i>
+            </div>
+            <div class="act-content">
+              <p class="act-title">{{ act.title }}</p>
+              <p class="act-desc">{{ act.description }}</p>
+            </div>
+            <div class="act-right">
+              <span class="act-status" [attr.data-s]="act.status">{{ act.status }}</span>
+              <span class="act-time">{{ getRelativeTime(act.timestamp) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!activitiesLoading && totalPages > 1" class="act-pagination">
+        <span class="act-page-info">
+          {{ (currentPage - 1) * pageSize + 1 }}–{{ pageEndIndex }} sur {{ allActivities.length }}
+        </span>
+        <div class="act-page-controls">
+          <button class="page-btn"
+                  [disabled]="currentPage === 1"
+                  (click)="goToPage(currentPage - 1)"
+                  title="Page précédente">
+            <i class="pi pi-chevron-left"></i>
+          </button>
+
+          <ng-container *ngFor="let p of pageNumbers">
+            <button *ngIf="totalPages <= 7 || p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)"
+                    class="page-btn page-num"
+                    [class.active]="p === currentPage"
+                    (click)="goToPage(p)">{{ p }}</button>
+            <span *ngIf="totalPages > 7 && ((p === currentPage - 2 && p > 2) || (p === currentPage + 2 && p < totalPages - 1))"
+                  class="page-ellipsis">…</span>
+          </ng-container>
+
+          <button class="page-btn"
+                  [disabled]="currentPage === totalPages"
+                  (click)="goToPage(currentPage + 1)"
+                  title="Page suivante">
+            <i class="pi pi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
 </div>

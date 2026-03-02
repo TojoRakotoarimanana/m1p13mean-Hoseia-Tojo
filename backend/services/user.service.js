@@ -44,6 +44,20 @@ class UserService {
 
     return { message: 'Demande boutique refusée.', user };
   }
+
+  async update(userId, data) {
+    const allowed = ['firstName', 'lastName', 'phone', 'isActive', 'role'];
+    const update = {};
+    allowed.forEach(key => { if (data[key] !== undefined) update[key] = data[key]; });
+
+    const user = await User.findByIdAndUpdate(userId, update, { new: true, select: 'email firstName lastName role isActive phone' });
+    if (!user) {
+      const error = new Error('Utilisateur introuvable.');
+      error.status = 404;
+      throw error;
+    }
+    return { message: 'Utilisateur mis à jour.', user };
+  }
 }
 
 module.exports = new UserService();

@@ -20,7 +20,7 @@
 
   <div class="content-section mb-4">
     <p-card styleClass="filter-card">
-      <div class="flex flex-row align-items-end gap-3 p-fluid">
+      <div class="filter-bar">
         <div class="flex-1">
           <label class="field-label">Catégorie</label>
           <p-select
@@ -30,6 +30,7 @@
             [(ngModel)]="filters.category"
             placeholder="Toutes"
             [showClear]="true"
+            appendTo="body"
             styleClass="w-full">
           </p-select>
         </div>
@@ -42,6 +43,7 @@
             [(ngModel)]="filters.status"
             placeholder="Tous"
             [showClear]="true"
+            appendTo="body"
             styleClass="w-full">
           </p-select>
         </div>
@@ -89,11 +91,11 @@
           <ng-template pTemplate="header">
             <tr>
               <th>Boutique</th>
-              <th>Propriétaire</th>
-              <th>Catégorie</th>
+              <th class="col-owner">Propriétaire</th>
+              <th class="col-category">Catégorie</th>
               <th style="width: 120px; text-align: center;">Statut</th>
-              <th>Emplacement</th>
-              <th>Contact</th>
+              <th class="col-location">Emplacement</th>
+              <th class="col-contact">Contact</th>
               @if (isAdmin) {
                 <th style="width: 150px; text-align: right;">Actions</th>
               }
@@ -103,34 +105,34 @@
             <tr class="data-row">
               <td>
                 <div class="flex align-items-center gap-2">
-                  <p-avatar 
-                    [label]="shop.name?.charAt(0)" 
+                  <p-avatar
+                    [label]="shop.name?.charAt(0)"
                     shape="circle"
                     styleClass="bg-blue-100 text-blue-700">
                   </p-avatar>
                   <span class="font-medium text-900">{{ shop.name }}</span>
                 </div>
               </td>
-              <td>
+              <td class="col-owner">
                 <div class="flex flex-column">
                   <span class="text-900">{{ shop.userId?.firstName }} {{ shop.userId?.lastName }}</span>
                   <span class="text-600 text-xs">{{ shop.userId?.email }}</span>
                 </div>
               </td>
-              <td>
+              <td class="col-category">
                 <p-tag [value]="shop.category?.name || shop.category" severity="secondary"></p-tag>
               </td>
               <td style="text-align: center;">
                 <p-tag [value]="shop.status" [severity]="getStatusSeverity(shop.status)"></p-tag>
               </td>
-              <td>
+              <td class="col-location">
                 <div class="flex flex-column text-600 text-xs gap-1">
-                  <span><strong>Étage:</strong> {{ shop.location?.floor || '-' }}</span>
+                  <span><strong>Etage:</strong> {{ shop.location?.floor || '-' }}</span>
                   <span><strong>Zone:</strong> {{ shop.location?.zone || '-' }}</span>
                   <span><strong>N°:</strong> {{ shop.location?.shopNumber || '-' }}</span>
                 </div>
               </td>
-              <td>
+              <td class="col-contact">
                 <div class="flex flex-column text-600 text-sm">
                   <span>{{ shop.contact?.phone || '-' }}</span>
                   <span>{{ shop.contact?.email || '' }}</span>
@@ -201,7 +203,10 @@
 </div>
 
 @if (isAdmin) {
-  <p-dialog [(visible)]="shopDialog" [modal]="true" [style]="{ width: '600px' }" [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">
+  <p-dialog [(visible)]="shopDialog" [modal]="true"
+    [style]="{ width: '600px' }"
+    [contentStyle]="{ 'overflow-y': 'auto', 'max-height': '70vh' }"
+    [header]="isEdit ? 'Modifier boutique' : 'Nouvelle boutique'">
     <div class="dialog-body">
       <div class="field">
         <label class="field-label">Propriétaire</label>
@@ -211,6 +216,7 @@
           optionValue="_id"
           [(ngModel)]="shopForm.userId"
           placeholder="Sélectionner un utilisateur"
+          appendTo="body"
           styleClass="w-full">
         </p-select>
       </div>
@@ -226,6 +232,7 @@
           optionValue="_id"
           [(ngModel)]="shopForm.category"
           placeholder="Sélectionner une catégorie"
+          appendTo="body"
           styleClass="w-full">
         </p-select>
       </div>
@@ -240,6 +247,7 @@
           optionLabel="label"
           optionValue="value"
           [(ngModel)]="shopForm.status"
+          appendTo="body"
           styleClass="w-full">
         </p-select>
       </div>
@@ -279,7 +287,5 @@
     </ng-template>
   </p-dialog>
 }
-
-<p-toast></p-toast>
 
 <p-toast></p-toast>

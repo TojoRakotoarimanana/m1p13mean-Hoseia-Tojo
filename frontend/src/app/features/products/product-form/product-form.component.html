@@ -1,7 +1,7 @@
 <div class="product-form-wrapper">
   <div class="hero">
     <p class="hero-kicker">Catalogue</p>
-    <h1>{{ isEdit ? 'Modifier un produit' : 'Creer un nouveau produit' }}</h1>
+    <h1>{{ isEdit ? 'Modifier un produit' : 'Créer un nouveau produit' }}</h1>
     <p class="hero-subtitle">
       Renseigne les informations essentielles, les prix et le stock avant publication.
     </p>
@@ -9,106 +9,174 @@
 
   <p-card styleClass="product-form-card">
     <div class="dialog-body">
-      <section class="form-section">
-        <h2>Informations principales</h2>
-        <div class="field">
-          <label class="field-label">Nom du produit</label>
-          <input pInputText [(ngModel)]="productForm.name" class="w-full" placeholder="Ex: Sneakers City Run" />
-        </div>
 
-        <div class="field">
-          <label class="field-label">Description</label>
-          <input pInputText [(ngModel)]="productForm.description" class="w-full" placeholder="Decris ton produit en une phrase" />
-        </div>
-      </section>
-
+      <!-- ── Section 1 : Informations principales ── -->
       <section class="form-section">
-        <h2>Prix et remise</h2>
-        <div class="grid">
-          <div class="col-12 md:col-4">
-            <label class="field-label">Prix</label>
-            <input pInputText [(ngModel)]="productForm.price" type="number" class="w-full" />
+        <h2 class="section-title">
+          <span class="section-icon"><i class="pi pi-tag"></i></span>
+          Informations principales
+        </h2>
+        <div class="form-row">
+          <div class="field field--grow">
+            <label class="field-label">Nom du produit</label>
+            <div class="input-wrap">
+              <i class="pi pi-shopping-bag input-icon"></i>
+              <input pInputText [(ngModel)]="productForm.name" class="styled-input" placeholder="Ex : Sneakers City Run" />
+            </div>
           </div>
-          <div class="col-12 md:col-4">
-            <label class="field-label">Prix original</label>
-            <input pInputText [(ngModel)]="productForm.originalPrice" type="number" class="w-full" />
-          </div>
-          <div class="col-12 md:col-4">
-            <label class="field-label">Remise (%)</label>
-            <input pInputText [(ngModel)]="productForm.discount" type="number" class="w-full" />
+          <div class="field field--grow">
+            <label class="field-label">Description</label>
+            <div class="input-wrap">
+              <i class="pi pi-align-left input-icon"></i>
+              <input pInputText [(ngModel)]="productForm.description" class="styled-input" placeholder="Décris ton produit en une phrase" />
+            </div>
           </div>
         </div>
       </section>
 
+      <!-- ── Section 2 : Prix ── -->
       <section class="form-section">
-        <h2>Publication</h2>
-        <div class="grid">
-          <div class="col-12 md:col-6">
-            <label class="field-label">Categorie</label>
+        <div class="section-header-row">
+          <h2 class="section-title">
+            <span class="section-icon"><i class="pi pi-wallet"></i></span>
+            Prix
+          </h2>
+          <label class="promo-toggle-label" [class.is-active]="productForm.isPromotion">
+            <span class="promo-toggle-text">{{ productForm.isPromotion ? 'En promotion' : 'Ajouter une promotion' }}</span>
+            <button type="button" class="promo-toggle-btn" [class.on]="productForm.isPromotion" (click)="togglePromotion()">
+              <span class="promo-toggle-knob"></span>
+            </button>
+          </label>
+        </div>
+
+        <!-- Mode SANS promotion -->
+        @if (!productForm.isPromotion) {
+          <div class="field field--half">
+            <label class="field-label">Prix de vente</label>
+            <div class="input-wrap">
+              <i class="pi pi-money-bill input-icon"></i>
+              <input pInputText [(ngModel)]="productForm.price" type="number" min="0" class="styled-input" placeholder="0" />
+              <span class="input-suffix">Ar</span>
+            </div>
+          </div>
+        }
+
+        <!-- Mode AVEC promotion -->
+        @if (productForm.isPromotion) {
+          <div class="promo-pricing-grid">
+            <div class="promo-field">
+              <label class="field-label">Prix original</label>
+              <div class="input-wrap">
+                <i class="pi pi-tag input-icon"></i>
+                <input pInputText [(ngModel)]="productForm.originalPrice" (ngModelChange)="computePromotionPrice()" type="number" min="0" class="styled-input" placeholder="0" />
+                <span class="input-suffix">Ar</span>
+              </div>
+            </div>
+
+            <div class="promo-field">
+              <label class="field-label">Remise</label>
+              <div class="input-wrap">
+                <i class="pi pi-percentage input-icon"></i>
+                <input pInputText [(ngModel)]="productForm.discount" (ngModelChange)="computePromotionPrice()" type="number" min="0" max="100" class="styled-input" placeholder="0" />
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+
+            <div class="promo-field">
+              <label class="field-label result-label"><i class="pi pi-calculator"></i> Prix final calculé</label>
+              <div class="computed-price-display">
+                <span class="computed-price-value">{{ productForm.price | number:'1.0-0' }} <span class="computed-unit">Ar</span></span>
+                @if (productForm.originalPrice > 0 && productForm.discount > 0) {
+                  <span class="computed-price-saving">−{{ productForm.discount }}% · économie {{ (productForm.originalPrice - productForm.price) | number:'1.0-0' }} Ar</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </section>
+
+      <!-- ── Section 3 : Publication ── -->
+      <section class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon"><i class="pi pi-globe"></i></span>
+          Publication
+        </h2>
+        <div class="form-row">
+          <div class="field field--grow">
+            <label class="field-label">Catégorie</label>
             <p-select
               [options]="categories"
               optionLabel="displayName"
               optionValue="_id"
               [(ngModel)]="productForm.category"
-              placeholder="Selectionner"
-              styleClass="w-full">
+              placeholder="Sélectionner une catégorie"
+              appendTo="body"
+              styleClass="styled-select w-full">
             </p-select>
           </div>
-          <div class="col-12 md:col-3">
-            <label class="field-label">Promotion</label>
-            <p-select
-              [options]="promotionOptions"
-              optionLabel="label"
-              optionValue="value"
-              [(ngModel)]="productForm.isPromotion"
-              styleClass="w-full">
-            </p-select>
-          </div>
-          <div class="col-12 md:col-3">
+          <div class="field field--fixed-200">
             <label class="field-label">Statut</label>
             <p-select
               [options]="activeOptions"
               optionLabel="label"
               optionValue="value"
               [(ngModel)]="productForm.isActive"
-              styleClass="w-full">
+              appendTo="body"
+              styleClass="styled-select w-full">
             </p-select>
           </div>
         </div>
       </section>
 
+      <!-- ── Section 4 : Stock ── -->
       <section class="form-section">
-        <h2>Stock</h2>
-        <div class="grid">
-          <div class="col-12 md:col-6">
-            <label class="field-label">Quantite en stock</label>
-            <input pInputText [(ngModel)]="productForm.stockQuantity" type="number" class="w-full" />
+        <h2 class="section-title">
+          <span class="section-icon"><i class="pi pi-box"></i></span>
+          Stock
+        </h2>
+        <div class="form-row">
+          <div class="field field--grow">
+            <label class="field-label">Quantité en stock</label>
+            <div class="input-wrap">
+              <i class="pi pi-hashtag input-icon"></i>
+              <input pInputText [(ngModel)]="productForm.stockQuantity" type="number" min="0" class="styled-input" placeholder="0" />
+              <span class="input-suffix">unités</span>
+            </div>
           </div>
-          <div class="col-12 md:col-6">
-            <label class="field-label">Seuil stock bas</label>
-            <input pInputText [(ngModel)]="productForm.lowStockAlert" type="number" class="w-full" />
+          <div class="field field--grow">
+            <label class="field-label">Seuil d'alerte stock bas</label>
+            <div class="input-wrap">
+              <i class="pi pi-bell input-icon"></i>
+              <input pInputText [(ngModel)]="productForm.lowStockAlert" type="number" min="0" class="styled-input" placeholder="5" />
+              <span class="input-suffix">unités</span>
+            </div>
           </div>
         </div>
       </section>
 
+      <!-- ── Section 5 : Images ── -->
       <section class="form-section">
-        <h2>Images produit</h2>
+        <h2 class="section-title">
+          <span class="section-icon"><i class="pi pi-images"></i></span>
+          Images produit
+        </h2>
         <label class="upload-zone">
-          <span class="upload-title">Importer jusqu'a 5 images</span>
-          <span class="upload-subtitle">Formats recommandes: JPG, PNG</span>
+          <i class="pi pi-cloud-upload upload-icon"></i>
+          <span class="upload-title">Importer jusqu'à 5 images</span>
+          <span class="upload-subtitle">JPG, PNG — max 5 Mo chacune</span>
           <input class="upload-input" type="file" multiple accept="image/*" (change)="onFilesSelected($event)" />
         </label>
-
         <div class="preview-list" *ngIf="previewUrls.length">
           <img *ngFor="let url of previewUrls" [src]="url" alt="preview" />
         </div>
       </section>
+
     </div>
 
     <ng-template pTemplate="footer">
       <div class="form-footer">
         <p-button label="Annuler" severity="secondary" (onClick)="cancel()"></p-button>
-        <p-button label="Enregistrer le produit" (onClick)="saveProduct()" [loading]="loading"></p-button>
+        <p-button label="Enregistrer le produit" icon="pi pi-check" (onClick)="saveProduct()" [loading]="loading"></p-button>
       </div>
     </ng-template>
   </p-card>

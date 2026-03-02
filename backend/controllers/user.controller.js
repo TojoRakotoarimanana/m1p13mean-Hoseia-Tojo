@@ -35,3 +35,12 @@ exports.rejectBoutique = async function(req, res) {
     res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors du refus.' });
   }
 };
+
+exports.update = async function(req, res) {
+  try {
+    const result = await UserService.update(req.params.id, req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || 'Erreur serveur.' });
+  }
+};

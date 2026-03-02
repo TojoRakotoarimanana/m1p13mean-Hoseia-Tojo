@@ -1,0 +1,186 @@
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 class="dashboard-title">Utilisateurs</h1>
+        <p class="dashboard-subtitle">Gérez l'ensemble des utilisateurs du centre commercial</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section mb-4">
+    <p-card styleClass="filter-card">
+      <div class="filter-bar">
+        <div class="flex-1">
+          <label class="field-label">Rôle</label>
+          <p-select
+            [options]="roleFilterOptions"
+            optionLabel="label"
+            optionValue="value"
+            [(ngModel)]="selectedRole"
+            placeholder="Tous les rôles"
+            [showClear]="true"
+            appendTo="body"
+            styleClass="w-full">
+          </p-select>
+        </div>
+        <div class="flex-1">
+          <label class="field-label">Statut</label>
+          <p-select
+            [options]="statusFilterOptions"
+            optionLabel="label"
+            optionValue="value"
+            [(ngModel)]="selectedStatus"
+            placeholder="Tous"
+            [showClear]="true"
+            appendTo="body"
+            styleClass="w-full">
+          </p-select>
+        </div>
+        <div class="flex gap-2">
+          <p-button
+            label="Filtrer"
+            icon="pi pi-filter"
+            (onClick)="applyFilter()"
+            [outlined]="true"
+            [style]="{ width: '110px' }">
+          </p-button>
+          <p-button
+            label="Réinitialiser"
+            icon="pi pi-refresh"
+            (onClick)="resetFilters()"
+            [text]="true"
+            severity="secondary"
+            [style]="{ width: '140px' }">
+          </p-button>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <div class="content-section">
+    <p-card>
+      <ng-template pTemplate="content">
+        <p-table
+          [value]="pagedUsers"
+          [loading]="loading"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Utilisateur</th>
+              <th class="col-email">Email</th>
+              <th style="width: 130px;">Rôle</th>
+              <th style="width: 110px; text-align: center;">Statut</th>
+              <th style="width: 80px; text-align: right;">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr class="data-row">
+              <td>
+                <div class="flex align-items-center gap-2">
+                  <p-avatar
+                    [label]="user.firstName?.charAt(0) || user.email?.charAt(0)"
+                    shape="circle"
+                    styleClass="bg-green-100 text-green-700">
+                  </p-avatar>
+                  <span class="font-medium text-900">{{ user.firstName }} {{ user.lastName }}</span>
+                </div>
+              </td>
+              <td class="col-email">
+                <span class="text-600">{{ user.email }}</span>
+              </td>
+              <td>
+                <p-tag
+                  [value]="getRoleLabel(user.role)"
+                  [severity]="getRoleSeverity(user.role)">
+                </p-tag>
+              </td>
+              <td style="text-align: center;">
+                <p-tag
+                  [value]="user.isActive ? 'Actif' : 'Inactif'"
+                  [severity]="user.isActive ? 'success' : 'secondary'">
+                </p-tag>
+              </td>
+              <td style="text-align: right;">
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  (onClick)="editUser(user)"
+                  pTooltip="Modifier">
+                </p-button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="empty-state">
+                <i class="pi pi-users block mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                <p>Aucun utilisateur trouvé.</p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <p-paginator
+          [rows]="pageSize"
+          [totalRecords]="filteredUsers.length"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          (onPageChange)="onPageChange($event)"
+          styleClass="p-paginator-sm border-top-1 border-gray-200">
+        </p-paginator>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
+
+<p-dialog [(visible)]="userDialog" [modal]="true" [style]="{ width: '480px' }" [contentStyle]="{'overflow-y':'auto','max-height':'70vh'}" header="Modifier l'utilisateur">
+  <div class="dialog-body">
+    <div class="field">
+      <label class="field-label">Prénom</label>
+      <input pInputText [(ngModel)]="userForm.firstName" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Nom</label>
+      <input pInputText [(ngModel)]="userForm.lastName" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Email</label>
+      <input pInputText [ngModel]="userForm.email" class="w-full" [disabled]="true" />
+    </div>
+    <div class="field">
+      <label class="field-label">Téléphone</label>
+      <input pInputText [(ngModel)]="userForm.phone" class="w-full" />
+    </div>
+    <div class="field">
+      <label class="field-label">Rôle</label>
+      <p-select
+        [options]="[{label:'Admin',value:'admin'},{label:'Boutique',value:'boutique'},{label:'Client',value:'client'}]"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="userForm.role"
+        appendTo="body"
+        styleClass="w-full">
+      </p-select>
+    </div>
+    <div class="field">
+      <label class="field-label">Statut</label>
+      <p-select
+        [options]="[{label:'Actif',value:true},{label:'Inactif',value:false}]"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="userForm.isActive"
+        appendTo="body"
+        styleClass="w-full">
+      </p-select>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Annuler" [text]="true" severity="secondary" (onClick)="userDialog = false"></p-button>
+    <p-button label="Enregistrer" icon="pi pi-check" (onClick)="saveUser()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

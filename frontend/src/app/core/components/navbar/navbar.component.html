@@ -1,5 +1,13 @@
 @if (authService.isLoggedIn()) {
-  <div class="sidebar">
+  <!-- Hamburger toggle (mobile only) -->
+  <button class="sidebar-toggle" (click)="toggleSidebar()" aria-label="Ouvrir le menu" [class.sidebar-toggle--hidden]="sidebarOpen()">
+    <i class="pi pi-bars"></i>
+  </button>
+
+  <!-- Backdrop overlay (mobile only) -->
+  <div class="sidebar-backdrop" [class.sidebar-backdrop--visible]="sidebarOpen()" (click)="closeSidebar()"></div>
+
+  <div class="sidebar" [class.sidebar--open]="sidebarOpen()">
     <div class="sidebar-header">
       <div class="logo-container" (click)="navigateToHome()">
         <i class="pi pi-shopping-bag logo-icon"></i>
@@ -8,10 +16,9 @@
           <span class="app-subtitle">Management</span>
         </div>
       </div>
-
-      @if (user?.role === 'client' || user?.role === 'boutique') {
-        <app-notification-bell></app-notification-bell>
-      }
+      <button class="sidebar-close-btn" (click)="closeSidebar()" aria-label="Fermer le menu">
+        <i class="pi pi-times"></i>
+      </button>
     </div>
 
     <nav class="sidebar-nav">

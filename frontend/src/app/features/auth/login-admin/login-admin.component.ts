@@ -40,6 +40,15 @@ export class LoginAdminComponent {
 
     isLoading = false;
 
+    readonly testAccounts = [
+        { label: 'Administrateur Principal', email: 'admin@mall.com', password: 'Admin123!' },
+    ];
+
+    fillCredentials(email: string, password: string) {
+        this.loginData.email    = email;
+        this.loginData.password = password;
+    }
+
     constructor(
         private authService: AuthService,
         private router: Router,

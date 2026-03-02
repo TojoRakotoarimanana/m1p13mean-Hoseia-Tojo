@@ -30,8 +30,8 @@
           <ng-template pTemplate="header">
             <tr>
               <th>Boutique</th>
-              <th>Propriétaire</th>
-              <th>Catégorie</th>
+              <th class="col-owner">Propriétaire</th>
+              <th class="col-category">Catégorie</th>
               <th style="width: 150px; text-align: center;">Statut</th>
               <th style="width: 120px; text-align: right;">Actions</th>
             </tr>
@@ -48,8 +48,8 @@
                   <span class="font-medium text-900">{{ shop.name }}</span>
                 </div>
               </td>
-              <td class="text-600">{{ shop.userId?.email || '-' }}</td>
-              <td>
+              <td class="col-owner text-600">{{ shop.userId?.email || '-' }}</td>
+              <td class="col-category">
                 <p-tag [value]="shop.category?.name || shop.category" severity="info"></p-tag>
               </td>
               <td style="text-align: center;">

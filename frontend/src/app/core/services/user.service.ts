@@ -26,4 +26,8 @@ export class UserService {
   rejectBoutique(userId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/boutiques/${userId}/reject`, {});
   }
+
+  update(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
 }

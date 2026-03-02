@@ -116,6 +116,7 @@ class ProductService {
     const [items, total] = await Promise.all([
       Product.find(filters)
         .populate('category', 'name')
+        .select('-priceHistory -promotionHistory')
         .sort({ [sortBy]: sortDirection })
         .skip(skip)
         .limit(limitNumber),
