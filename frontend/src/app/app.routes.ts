@@ -9,6 +9,7 @@ import { RegisterBoutiqueComponent } from './features/auth/register-boutique/reg
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { ShopsComponent } from './features/shops/shops.component';
 import { CategoriesComponent } from './features/categories/categories.component';
+import { AdminOrdersComponent } from './features/admin-orders/admin-orders.component';
 import { RegisterBoutiqueRequestsComponent } from './features/register-boutique-requests/register-boutique-requests.component';
 import { ShopRequestsComponent } from './features/shop-requests/shop-requests.component';
 import { MyShopComponent } from './features/my-shop/my-shop.component';
@@ -103,6 +104,7 @@ export const routes: Routes = [
     { path: 'admin/users', component: UsersComponent, canActivate: [adminGuard] },
     { path: 'admin/shops', component: ShopsComponent, canActivate: [adminGuard] },
     { path: 'categories', component: CategoriesComponent, canActivate: [adminGuard] },
+    { path: 'admin/orders', component: AdminOrdersComponent, canActivate: [adminGuard] },
     { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [adminGuard] },
     { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [adminGuard] },
 

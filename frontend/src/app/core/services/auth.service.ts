@@ -80,4 +80,8 @@ export class AuthService {
     const user = localStorage.getItem(this.userKey);
     return user ? JSON.parse(user) : null;
   }
+
+  getMe(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/me`);
+  }
 }

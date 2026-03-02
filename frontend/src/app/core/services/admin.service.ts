@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -90,5 +90,19 @@ export class AdminService {
 
   getOrdersByMonth(months: number = 6): Observable<any> {
     return this.http.get(`${this.baseUrl}/stats/orders-by-month?months=${months}`);
+  }
+
+  getAdminOrders(params: Record<string, any> = {}): Observable<any> {
+    let httpParams = new HttpParams();
+    Object.keys(params).forEach(key => {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key]);
+      }
+    });
+    return this.http.get(`${this.baseUrl}/orders`, { params: httpParams });
+  }
+
+  updateOrderStatus(orderId: string, status: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/orders/${orderId}/status`, { status });
   }
 }

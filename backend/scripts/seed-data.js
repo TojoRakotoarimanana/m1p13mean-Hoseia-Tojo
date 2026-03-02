@@ -2,7 +2,7 @@ const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 const mongoose = require('mongoose');
 require('dotenv').config();
-const { User, Category, Shop, Product } = require('../models');
+const { User, Category, Shop, Product, Order } = require('../models');
 
 const DB_URI = process.env.MONGO_URI;
 
@@ -344,12 +344,13 @@ async function seedData() {
       User.deleteMany({}),
       Category.deleteMany({}),
       Shop.deleteMany({}),
-      Product.deleteMany({})
+      Product.deleteMany({}),
+      Order.deleteMany({})
     ]);
     console.log('✅ Données supprimées\n');
 
     console.log('👥 Création des utilisateurs...');
-    const createdUsers = await User.insertMany(users);
+    const createdUsers = await Promise.all(users.map(userData => User.create(userData)));
     console.log(`✅ ${createdUsers.length} utilisateurs créés\n`);
 
     const adminUser = createdUsers.find(u => u.role === 'admin');
@@ -426,6 +427,139 @@ async function seedData() {
     }
     console.log(`✅ ${totalProducts} produits créés\n`);
 
+    // ────────────────────────────────────────────────────────────
+    // COMMANDES
+    // ────────────────────────────────────────────────────────────
+    console.log('🛒 Création des commandes...');
+
+    const clientUsers = createdUsers.filter(u => u.role === 'client');
+
+    // Récupérer les produits de chaque boutique
+    const shopProductMap = [];
+    for (const shop of createdShops) {
+      const prods = await Product.find({ shopId: shop._id, isActive: true });
+      if (prods.length > 0) shopProductMap.push({ shop, products: prods });
+    }
+
+    // Adresses de livraison pour les clients
+    const clientAddresses = [
+      { street: '12 Rue Andrianampoinimerina', city: 'Antananarivo', zipCode: '101', country: 'Madagascar' },
+      { street: '45 Avenue de l\'Indépendance',  city: 'Antananarivo', zipCode: '101', country: 'Madagascar' },
+      { street: '8 Rue du Commerce',             city: 'Fianarantsoa', zipCode: '301', country: 'Madagascar' },
+      { street: '23 Bd Philibert Tsiranana',     city: 'Toamasina',    zipCode: '501', country: 'Madagascar' },
+      { street: '5 Rue Pasteur',                 city: 'Mahajanga',    zipCode: '401', country: 'Madagascar' },
+    ];
+
+    const paymentMethods  = ['cash', 'card', 'mobile'];
+    const deliveryMethods = ['pickup', 'delivery'];
+
+    // [moisAgo, totalCommandes, dontCompleted]
+    // Plus de commandes récentes, croissance progressive
+    const monthDistribution = [
+      [0, 22, 16],   // mois courant   — 22 cmds, 16 completed
+      [1, 20, 14],   // il y a 1 mois  — 20 cmds, 14 completed
+      [2, 17, 12],   // il y a 2 mois
+      [3, 14,  9],   // il y a 3 mois
+      [4, 11,  7],   // il y a 4 mois
+      [5,  8,  5],   // il y a 5 mois
+    ];
+
+    const ordersToCreate = [];
+    let orderSeq = 1;
+
+    for (const [monthsAgo, nbTotal, nbCompleted] of monthDistribution) {
+      for (let i = 0; i < nbTotal; i++) {
+        const client     = clientUsers[i % clientUsers.length];
+        const shopEntry  = shopProductMap[Math.floor(Math.random() * shopProductMap.length)];
+
+        // Date aléatoire dans le mois ciblé (entre le 1er et le 28)
+        const orderDate = new Date();
+        orderDate.setMonth(orderDate.getMonth() - monthsAgo);
+        orderDate.setDate(Math.floor(Math.random() * 26) + 1);
+        orderDate.setHours(Math.floor(Math.random() * 13) + 8,
+                           Math.floor(Math.random() * 60), 0, 0);
+
+        // 1 à 3 produits de la même boutique
+        const shuffled     = [...shopEntry.products].sort(() => Math.random() - 0.5);
+        const selectedProds = shuffled.slice(0, Math.min(Math.floor(Math.random() * 3) + 1, shuffled.length));
+
+        const items = selectedProds.map(p => {
+          const qty = Math.floor(Math.random() * 2) + 1;
+          return {
+            productId: p._id,
+            shopId:    shopEntry.shop._id,
+            name:      p.name,
+            price:     p.price,
+            quantity:  qty,
+            subtotal:  p.price * qty,
+            image:     p.images?.[0],
+          };
+        });
+        const totalAmount = items.reduce((s, it) => s + it.subtotal, 0);
+
+        // Statut : les i < nbCompleted sont 'completed', le reste réparti
+        let status;
+        if (i < nbCompleted) {
+          status = 'completed';
+        } else {
+          const ratio = (i - nbCompleted) / Math.max(nbTotal - nbCompleted, 1);
+          if      (ratio < 0.35) status = 'pending';
+          else if (ratio < 0.55) status = 'confirmed';
+          else if (ratio < 0.75) status = 'preparing';
+          else if (ratio < 0.90) status = 'ready';
+          else                   status = 'cancelled';
+        }
+
+        const isCompleted    = status === 'completed';
+        const paymentMethod  = paymentMethods[Math.floor(Math.random() * paymentMethods.length)];
+        const deliveryMethod = deliveryMethods[Math.floor(Math.random() * deliveryMethods.length)];
+        const clientAddr     = clientAddresses[clientUsers.indexOf(client)] ?? clientAddresses[0];
+        const paidAt         = isCompleted ? new Date(orderDate.getTime() + 3_600_000) : undefined;
+
+        ordersToCreate.push({
+          orderNumber: `ORD-${Date.now() + orderSeq}-${String(orderSeq++).padStart(3, '0')}`,
+          customerId: client._id,
+          items,
+          totalAmount,
+          status,
+          deliveryInfo: {
+            method:  deliveryMethod,
+            address: deliveryMethod === 'delivery' ? clientAddr : {},
+            phone:   client.phone || '034 00 000 00',
+          },
+          paymentInfo: {
+            method: paymentMethod,
+            status: isCompleted ? 'paid' : (status === 'cancelled' ? 'failed' : 'pending'),
+            paidAt,
+          },
+          shopOrders: [{
+            shopId:  shopEntry.shop._id,
+            status,
+            items:   selectedProds.map(p => p._id),
+            subtotal: totalAmount,
+            statusHistory: [
+              { status: 'pending', changedAt: orderDate },
+              ...(status !== 'pending' ? [{ status, changedAt: new Date(orderDate.getTime() + 1_800_000) }] : []),
+            ],
+          }],
+          createdAt: orderDate,
+          updatedAt: orderDate,
+        });
+      }
+    }
+
+    // Utiliser le driver natif pour conserver les dates passées (contourne les timestamps Mongoose)
+    await Order.collection.insertMany(ordersToCreate);
+    const totalOrdersCreated    = ordersToCreate.length;
+    const completedOrdersCreated = ordersToCreate.filter(o => o.status === 'completed').length;
+    const totalRevenueSeeded    = ordersToCreate
+      .filter(o => o.status === 'completed')
+      .reduce((s, o) => s + o.totalAmount, 0);
+
+    console.log(`✅ ${totalOrdersCreated} commandes créées`);
+    console.log(`   - Complétées (revenus) : ${completedOrdersCreated}`);
+    console.log(`   - Revenu total seedé   : ${Math.round(totalRevenueSeeded).toLocaleString()} Ar\n`);
+
     console.log('📊 RÉSUMÉ DE LA GÉNÉRATION:');
     console.log('═══════════════════════════════════════');
     console.log(`👤 Utilisateurs: ${createdUsers.length}`);
@@ -437,6 +571,7 @@ async function seedData() {
     console.log(`   - Produits: ${productCategories.length}`);
     console.log(`\n🏪 Boutiques: ${createdShops.length} (toutes actives)`);
     console.log(`📦 Produits: ${totalProducts} (répartis dans les boutiques)`);
+    console.log(`🛒 Commandes: ${totalOrdersCreated} (${completedOrdersCreated} complétées / revenus visibles)`);
     console.log('═══════════════════════════════════════\n');
 
     console.log('🔐 COMPTES DE TEST:');

@@ -1,0 +1,345 @@
+<div class="dashboard-wrapper">
+
+  <!-- En-tête -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 class="dashboard-title">Commandes</h1>
+        <p class="dashboard-subtitle">Consultez et gérez toutes les commandes de la plateforme</p>
+      </div>
+      <div class="header-stats" *ngIf="!loading">
+        <span class="stat-chip">
+          <i class="pi pi-receipt"></i>
+          {{ totalRecords }} commande{{ totalRecords > 1 ? 's' : '' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="filters-left">
+      <div class="search-wrap">
+        <i class="pi pi-search search-icon"></i>
+        <input
+          pInputText
+          class="search-input"
+          placeholder="Rechercher par numéro…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()"
+        />
+      </div>
+
+      <p-select
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="selectedStatus"
+        (onChange)="onFilterChange()"
+        placeholder="Tous les statuts"
+        styleClass="status-filter">
+      </p-select>
+    </div>
+
+    <button
+      *ngIf="hasActiveFilter"
+      class="clear-btn"
+      (click)="clearFilters()"
+      pTooltip="Réinitialiser les filtres">
+      <i class="pi pi-filter-slash"></i>
+      <span>Réinitialiser</span>
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="content-section">
+    <p-card>
+      <ng-template pTemplate="content">
+
+        <!-- Skeleton de chargement -->
+        <div *ngIf="loading" class="skeleton-table">
+          <div class="skeleton-header">
+            <p-skeleton width="8rem" height="0.75rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="6rem" height="0.75rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="7rem" height="0.75rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="5rem" height="0.75rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="6rem" height="0.75rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="4rem" height="0.75rem" borderRadius="4px"></p-skeleton>
+          </div>
+          <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="skeleton-row">
+            <p-skeleton width="7rem" height="1rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="9rem" height="1rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="6rem" height="1rem" borderRadius="4px"></p-skeleton>
+            <p-skeleton width="5rem" height="1.5rem" borderRadius="12px"></p-skeleton>
+            <p-skeleton width="4rem" height="1.5rem" borderRadius="12px"></p-skeleton>
+            <p-skeleton width="3rem" height="1rem" borderRadius="4px"></p-skeleton>
+          </div>
+        </div>
+
+        <!-- Table réelle -->
+        <p-table
+          *ngIf="!loading"
+          [value]="orders"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Numéro</th>
+              <th class="col-client">Client</th>
+              <th class="col-items">Articles</th>
+              <th style="text-align: right;">Montant</th>
+              <th style="text-align: center;">Statut</th>
+              <th class="col-payment" style="text-align: center;">Paiement</th>
+              <th class="col-delivery" style="text-align: center;">Livraison</th>
+              <th class="col-date">Date</th>
+              <th style="width: 100px; text-align: right;">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-order>
+            <tr class="data-row">
+
+              <!-- Numéro de commande -->
+              <td>
+                <span class="order-number">{{ order.orderNumber }}</span>
+              </td>
+
+              <!-- Client -->
+              <td class="col-client">
+                <div class="customer-cell">
+                  <div class="customer-avatar">{{ (getCustomerName(order) || '?').charAt(0).toUpperCase() }}</div>
+                  <div class="customer-info">
+                    <span class="customer-name">{{ getCustomerName(order) }}</span>
+                    <span class="customer-email" *ngIf="order.customerId?.email">{{ order.customerId.email }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Nombre d'articles -->
+              <td class="col-items">
+                <span class="items-count">{{ order.items?.length ?? 0 }} article{{ (order.items?.length ?? 0) > 1 ? 's' : '' }}</span>
+              </td>
+
+              <!-- Montant -->
+              <td style="text-align: right;">
+                <span class="amount">{{ formatCurrency(order.totalAmount) }}</span>
+              </td>
+
+              <!-- Statut commande -->
+              <td style="text-align: center;">
+                <p-tag
+                  [value]="getStatusLabel(order.status)"
+                  [severity]="getStatusSeverity(order.status)">
+                </p-tag>
+              </td>
+
+              <!-- Paiement -->
+              <td class="col-payment" style="text-align: center;">
+                <p-tag
+                  [value]="getPaymentLabel(order.paymentInfo?.status)"
+                  [severity]="getPaymentSeverity(order.paymentInfo?.status)">
+                </p-tag>
+              </td>
+
+              <!-- Mode livraison -->
+              <td class="col-delivery" style="text-align: center;">
+                <span class="delivery-badge" [class.delivery--pickup]="order.deliveryInfo?.method === 'pickup'">
+                  <i class="pi" [class.pi-home]="order.deliveryInfo?.method === 'pickup'" [class.pi-truck]="order.deliveryInfo?.method === 'delivery'"></i>
+                  {{ order.deliveryInfo?.method === 'pickup' ? 'Retrait' : 'Livraison' }}
+                </span>
+              </td>
+
+              <!-- Date -->
+              <td class="col-date">
+                <span class="date-text">{{ order.createdAt | date:'dd/MM/yy' }}</span>
+              </td>
+
+              <!-- Actions -->
+              <td style="text-align: right;">
+                <div class="flex justify-content-end gap-1">
+                  <p-button
+                    icon="pi pi-eye"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="viewDetail(order)"
+                    pTooltip="Voir le détail">
+                  </p-button>
+                  <p-button
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="openStatusDialog(order)"
+                    pTooltip="Changer le statut">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="9" class="empty-state">
+                <i class="pi pi-inbox block mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                <p>Aucune commande trouvée.</p>
+                <button *ngIf="hasActiveFilter" class="reset-link" (click)="clearFilters()">
+                  Réinitialiser les filtres
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <!-- Pagination custom -->
+        <div *ngIf="!loading && totalPages > 1" class="pag-bar">
+          <span class="pag-info">{{ pageStartIndex }}–{{ pageEndIndex }} sur {{ totalRecords }}</span>
+          <div class="pag-controls">
+            <button class="pag-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+              <i class="pi pi-chevron-left"></i>
+            </button>
+            <ng-container *ngFor="let p of pageNumbers">
+              <button
+                *ngIf="totalPages <= 7 || p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)"
+                class="pag-btn pag-num"
+                [class.active]="p === currentPage"
+                (click)="goToPage(p)">{{ p }}</button>
+              <span
+                *ngIf="totalPages > 7 && ((p === currentPage - 2 && p > 2) || (p === currentPage + 2 && p < totalPages - 1))"
+                class="pag-ellipsis">…</span>
+            </ng-container>
+            <button class="pag-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+              <i class="pi pi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </ng-template>
+    </p-card>
+  </div>
+</div>
+
+<!-- Dialog détail commande -->
+<p-dialog
+  [(visible)]="detailDialog"
+  [modal]="true"
+  header="Détail de la commande"
+  [style]="{ width: '600px' }"
+  [contentStyle]="{ 'overflow-y': 'auto', 'max-height': '70vh' }">
+
+  <div *ngIf="selectedOrder" class="dialog-body">
+
+    <!-- Info générale -->
+    <div class="detail-section">
+      <div class="detail-grid">
+        <div class="detail-field">
+          <span class="field-label">Numéro</span>
+          <span class="field-value order-number">{{ selectedOrder.orderNumber }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Date</span>
+          <span class="field-value">{{ selectedOrder.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Client</span>
+          <span class="field-value">{{ getCustomerName(selectedOrder) }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Email</span>
+          <span class="field-value">{{ selectedOrder.customerId?.email || '—' }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Statut</span>
+          <p-tag [value]="getStatusLabel(selectedOrder.status)" [severity]="getStatusSeverity(selectedOrder.status)"></p-tag>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Paiement</span>
+          <p-tag [value]="getPaymentLabel(selectedOrder.paymentInfo?.status)" [severity]="getPaymentSeverity(selectedOrder.paymentInfo?.status)"></p-tag>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Livraison</span>
+          <span class="field-value">{{ selectedOrder.deliveryInfo?.method === 'pickup' ? 'Retrait en boutique' : 'Livraison à domicile' }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Téléphone</span>
+          <span class="field-value">{{ selectedOrder.deliveryInfo?.phone || '—' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Articles -->
+    <div class="detail-section">
+      <h4 class="section-title">Articles commandés</h4>
+      <div class="items-list">
+        <div *ngFor="let item of selectedOrder.items" class="item-row">
+          <div class="item-info">
+            <span class="item-name">{{ item.name }}</span>
+            <span class="item-shop" *ngIf="item.shopId?.name">{{ item.shopId.name }}</span>
+          </div>
+          <div class="item-right">
+            <span class="item-qty">×{{ item.quantity }}</span>
+            <span class="item-price">{{ formatCurrency(item.subtotal) }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="items-total">
+        <span>Total</span>
+        <span class="total-amount">{{ formatCurrency(selectedOrder.totalAmount) }}</span>
+      </div>
+    </div>
+
+    <!-- Adresse si livraison -->
+    <div class="detail-section" *ngIf="selectedOrder.deliveryInfo?.method === 'delivery' && selectedOrder.deliveryInfo?.address?.street">
+      <h4 class="section-title">Adresse de livraison</h4>
+      <p class="address-text">
+        {{ selectedOrder.deliveryInfo.address.street }},
+        {{ selectedOrder.deliveryInfo.address.city }}
+        <span *ngIf="selectedOrder.deliveryInfo.address.zipCode">({{ selectedOrder.deliveryInfo.address.zipCode }})</span>
+      </p>
+    </div>
+
+    <!-- Notes -->
+    <div class="detail-section" *ngIf="selectedOrder.notes">
+      <h4 class="section-title">Notes</h4>
+      <p class="notes-text">{{ selectedOrder.notes }}</p>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Fermer" severity="secondary" (onClick)="detailDialog = false"></p-button>
+    <p-button label="Changer le statut" icon="pi pi-pencil" (onClick)="openStatusDialog(selectedOrder); detailDialog = false;"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Dialog changement de statut -->
+<p-dialog
+  [(visible)]="statusDialog"
+  [modal]="true"
+  header="Modifier le statut"
+  [style]="{ width: '380px' }">
+
+  <div *ngIf="orderToUpdate" class="dialog-body">
+    <p class="status-dialog-info">
+      Commande <strong>{{ orderToUpdate.orderNumber }}</strong>
+    </p>
+    <div class="field">
+      <label class="field-label">Nouveau statut</label>
+      <p-select
+        [options]="changeableStatuses"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="newStatus"
+        appendTo="body"
+        styleClass="w-full">
+      </p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Annuler" severity="secondary" (onClick)="statusDialog = false"></p-button>
+    <p-button label="Enregistrer" (onClick)="saveStatus()"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

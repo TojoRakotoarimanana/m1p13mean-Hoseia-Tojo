@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { adminOnly, boutiqueOnly, allRoles } = require('../middleware');
+const { adminOnly, boutiqueOnly, boutiqueOrAdmin, allRoles } = require('../middleware');
 const ShopController = require('../controllers/shop.controller');
 
 // Routes publiques (admin peut voir toutes les boutiques)
@@ -13,7 +13,7 @@ router.get('/my-shop/:userId', boutiqueOnly, ShopController.getByUser);
 // Routes admin uniquement
 router.get('/:id', adminOnly, ShopController.getById);
 router.post('/', boutiqueOnly, ShopController.create);
-router.put('/:id', boutiqueOnly, ShopController.update);
+router.put('/:id', boutiqueOrAdmin, ShopController.update);
 router.post('/:id/suspend', adminOnly, ShopController.suspend);
 router.post('/:id/reactivate', adminOnly, ShopController.reactivate);
 router.post('/:id/approve', adminOnly, ShopController.approve);

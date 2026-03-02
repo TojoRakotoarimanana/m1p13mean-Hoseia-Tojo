@@ -3,12 +3,13 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { HeaderComponent } from './core/components/header/header.component';
+import { FloatingCartButtonComponent } from './core/components/floating-cart-button/floating-cart-button.component';
 import { AuthService } from './core/services/auth.service';
 import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent, HeaderComponent, ToastModule],
+  imports: [RouterOutlet, NavbarComponent, HeaderComponent, FloatingCartButtonComponent, ToastModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

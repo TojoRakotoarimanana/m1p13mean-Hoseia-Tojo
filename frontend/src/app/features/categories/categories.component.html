@@ -16,6 +16,49 @@
     </div>
   </div>
 
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="filters-left">
+      <div class="search-wrap">
+        <i class="pi pi-search search-icon"></i>
+        <input
+          pInputText
+          class="search-input"
+          placeholder="Rechercher par nom…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onFilterChange()"
+        />
+      </div>
+
+      <p-select
+        [options]="filterTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="selectedType"
+        (onChange)="onFilterChange()"
+        styleClass="cat-filter">
+      </p-select>
+
+      <p-select
+        [options]="filterActiveOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="selectedActive"
+        (onChange)="onFilterChange()"
+        styleClass="cat-filter">
+      </p-select>
+    </div>
+
+    <button
+      *ngIf="hasActiveFilter"
+      class="clear-btn"
+      (click)="clearFilters()"
+      pTooltip="Réinitialiser les filtres">
+      <i class="pi pi-filter-slash"></i>
+      <span>Réinitialiser</span>
+    </button>
+  </div>
+
   <div class="content-section">
     <p-card>
       <ng-template pTemplate="content">
@@ -82,6 +125,9 @@
               <td colspan="5" class="empty-state">
                 <i class="pi pi-inbox block mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
                 <p>Aucune catégorie trouvée.</p>
+                <button *ngIf="hasActiveFilter" class="reset-link" (click)="clearFilters()">
+                  Réinitialiser les filtres
+                </button>
               </td>
             </tr>
           </ng-template>
@@ -89,7 +135,7 @@
 
         <p-paginator
           [rows]="pageSize"
-          [totalRecords]="categories.length"
+          [totalRecords]="filteredCategories.length"
           [rowsPerPageOptions]="[10, 20, 50]"
           (onPageChange)="onPageChange($event)"
           styleClass="p-paginator-sm border-top-1 border-gray-200">
