@@ -1,35 +1,76 @@
 .register-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   background-color: #fafafa;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .register-card {
   background: #ffffff;
   border-radius: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 3rem 2.5rem;
+  padding: 1.5rem 1.25rem;
   width: 100%;
   max-width: 720px;
   border-top: 2px solid #0d9488;
 }
 
 .register-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   text-align: center;
   border-bottom: 1px solid #e5e5e5;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .register-title {
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   font-weight: 400;
   color: #1a1a1a;
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.02em;
+}
+
+.name-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 480px) {
+  .register-wrapper {
+    padding: 1.5rem;
+    align-items: center;
+  }
+
+  .register-card {
+    padding: 2rem 1.75rem;
+  }
+
+  .register-title {
+    font-size: 1.75rem;
+  }
+
+  .name-row {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .register-wrapper {
+    padding: 2rem;
+  }
+
+  .register-card {
+    padding: 3rem 2.5rem;
+  }
+
+  .register-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+  }
 }
 
 .register-subtitle {
@@ -40,10 +81,16 @@
 }
 
 .step-body {
-  margin-top: 2rem;
+  margin-top: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .step-body {
+    margin-top: 2rem;
+  }
 }
 
 .field {
@@ -59,12 +106,22 @@
 }
 
 .footer-actions {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
   border-top: 1px solid #e5e5e5;
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+  .footer-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    gap: 1rem;
+    flex-wrap: nowrap;
+  }
 }
 
 .register-footer {
@@ -91,10 +148,16 @@
 
 .hours-section {
   margin-top: 1.5rem;
-  padding: 1.5rem;
+  padding: 1rem;
   background: #fafafa;
   border-radius: 8px;
   border: 1px solid #e5e5e5;
+}
+
+@media (min-width: 640px) {
+  .hours-section {
+    padding: 1.5rem;
+  }
 }
 
 .hours-header {
@@ -208,6 +271,27 @@
   .time-separator {
     display: none;
   }
+
+  .hours-row {
+    padding: 0.75rem;
+  }
+
+  .pending-banner {
+    padding: 1.5rem 1rem;
+    gap: 1rem;
+  }
+
+  .pending-title {
+    font-size: 1.125rem;
+  }
+
+  .pending-message {
+    font-size: 0.875rem;
+  }
+
+  .pending-info {
+    padding: 0.75rem;
+  }
 }
 
 :host ::ng-deep .steps {
@@ -228,6 +312,89 @@
 :host ::ng-deep .p-button:not(.p-button-secondary):enabled:active {
   background-color: #115e59;
   border-color: #115e59;
+}
+
+.pending-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  gap: 1.25rem;
+}
+
+.pending-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #f0fdf4;
+  border: 2px solid #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pending-icon .pi {
+  font-size: 2rem;
+  color: #16a34a;
+}
+
+.pending-title {
+  font-size: 1.375rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.pending-message {
+  font-size: 0.9375rem;
+  color: #444444;
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.pending-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  background-color: #fffbeb;
+  border: 1px solid #fbbf24;
+  border-radius: 6px;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  max-width: 480px;
+}
+
+.pending-info .pi {
+  color: #d97706;
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pending-info span {
+  font-size: 0.875rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.pending-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #0d9488;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid #0d9488;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.pending-link:hover {
+  background-color: #0d9488;
+  color: #ffffff;
 }
 
 :host ::ng-deep .p-checkbox {

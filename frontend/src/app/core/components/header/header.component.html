@@ -4,6 +4,11 @@
         <div class="header-title">
             <h1>{{ pageTitle }}</h1>
         </div>
+        @if (user?.role === 'client' || user?.role === 'boutique') {
+          <div class="header-actions">
+            <app-notification-bell></app-notification-bell>
+          </div>
+        }
     </div>
 </header>
 }

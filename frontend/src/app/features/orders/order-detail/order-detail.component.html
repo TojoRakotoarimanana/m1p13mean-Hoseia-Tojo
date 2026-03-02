@@ -116,13 +116,13 @@
         <div class="detail-card">
           <h2 class="card-title"><i class="pi pi-shopping-bag"></i> Articles commandés</h2>
 
-          <p-table [value]="order.items || []">
+          <p-table [value]="order.items || []" responsiveLayout="scroll">
             <ng-template pTemplate="header">
               <tr>
-                <th style="min-width:200px">Produit</th>
-                <th style="min-width:60px; text-align:center">Qté</th>
-                <th style="min-width:110px; text-align:right">Prix unit.</th>
-                <th style="min-width:110px; text-align:right">Sous-total</th>
+                <th style="min-width:160px">Produit</th>
+                <th style="min-width:50px; text-align:center">Qté</th>
+                <th class="col-unit-price" style="min-width:100px; text-align:right">Prix unit.</th>
+                <th style="min-width:100px; text-align:right">Sous-total</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item>
@@ -139,7 +139,7 @@
                   </div>
                 </td>
                 <td class="td-center">{{ item.quantity }}</td>
-                <td class="td-right cell-muted">{{ item.price | number:'1.0-0' }} Ar</td>
+                <td class="col-unit-price td-right cell-muted">{{ item.price | number:'1.0-0' }} Ar</td>
                 <td class="td-right cell-bold">{{ item.subtotal | number:'1.0-0' }} Ar</td>
               </tr>
             </ng-template>

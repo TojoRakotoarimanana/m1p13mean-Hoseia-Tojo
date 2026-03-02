@@ -26,6 +26,13 @@
     margin: 0;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
 .header-user {
     display: flex;
     align-items: center;
@@ -142,4 +149,29 @@
 /* When not logged in */
 :host-context(.app-layout:not(.with-sidebar)) .app-header {
     left: 0;
+}
+
+/* Mobile: header spans full width, leave room for hamburger */
+@media (max-width: 768px) {
+    .app-header {
+        left: 0;
+        padding-left: 0;
+    }
+
+    .header-content {
+        padding: 0 1rem 0 70px; /* 70px left = space for 64px hamburger + 6px breathing room */
+    }
+
+    .header-title h1 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .header-title h1 {
+        font-size: 0.875rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }

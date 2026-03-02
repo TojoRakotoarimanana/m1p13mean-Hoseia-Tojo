@@ -34,6 +34,7 @@
         optionLabel="label"
         optionValue="value"
         placeholder="Tous les statuts"
+        appendTo="body"
         [style]="{'width': '100%'}">
       </p-select>
     </div>
@@ -63,15 +64,17 @@
       (onLazyLoad)="onPageChange($event)"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first}–{last} sur {totalRecords}"
-      [rowsPerPageOptions]="[5, 10, 20]">
+      [rowsPerPageOptions]="[5, 10, 20]"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm">
 
       <ng-template pTemplate="header">
         <tr>
           <th style="min-width:140px">N° Commande</th>
-          <th style="min-width:190px">Client</th>
-          <th style="min-width:110px">Date</th>
+          <th class="col-client" style="min-width:190px">Client</th>
+          <th class="col-date" style="min-width:110px">Date</th>
           <th style="min-width:150px">Statut</th>
-          <th style="min-width:150px">Montant</th>
+          <th style="min-width:120px">Montant</th>
           <th style="min-width:80px"></th>
         </tr>
       </ng-template>
@@ -88,7 +91,7 @@
           </td>
 
           <!-- Client -->
-          <td>
+          <td class="col-client">
             <div class="customer-info">
               <span class="customer-name">
                 {{ order.customerId?.firstName }} {{ order.customerId?.lastName }}
@@ -98,7 +101,7 @@
           </td>
 
           <!-- Date -->
-          <td class="cell-muted">{{ formatDate(order.createdAt) }}</td>
+          <td class="col-date cell-muted">{{ formatDate(order.createdAt) }}</td>
 
           <!-- Statut -->
           <td>

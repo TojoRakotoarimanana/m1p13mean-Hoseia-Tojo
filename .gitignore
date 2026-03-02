@@ -10,3 +10,8 @@ backend/.env
 # User-uploaded files should not be committed — provision storage separately in production
 backend/public/uploads/products/
 backend/public/uploads/shops/
+frontend/src/environments/environment.ts
+frontend/src/environments/environment.prod.ts
+
+CLAUDE.md
+.github/*

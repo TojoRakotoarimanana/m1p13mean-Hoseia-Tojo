@@ -11,6 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 
 import { AuthService } from '../../services/auth.service';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-header',
@@ -19,7 +20,8 @@ import { AuthService } from '../../services/auth.service';
     CommonModule,
     AvatarModule,
     ButtonModule,
-    MenuModule
+    MenuModule,
+    NotificationBellComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'

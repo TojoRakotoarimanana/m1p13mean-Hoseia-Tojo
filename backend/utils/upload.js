@@ -27,8 +27,9 @@ async function processImages(files = []) {
     const filepath = path.join(uploadDir, filename);
 
     await sharp(file.buffer)
-      .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
-      .jpeg({ quality: 82 })
+      .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
+      .withMetadata(false)
+      .jpeg({ quality: 72, mozjpeg: true })
       .toFile(filepath);
 
     return `/uploads/products/${filename}`;

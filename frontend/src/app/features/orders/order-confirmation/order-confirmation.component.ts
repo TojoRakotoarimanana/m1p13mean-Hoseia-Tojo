@@ -2,9 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { OrderService, Order } from '../../../core/services/order.service';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -12,10 +9,7 @@ import { MessageService } from 'primeng/api';
     standalone: true,
     imports: [
         CommonModule,
-        RouterModule,
-        ButtonModule,
-        CardModule,
-        SkeletonModule
+        RouterModule
     ],
     providers: [MessageService],
     templateUrl: './order-confirmation.component.html',

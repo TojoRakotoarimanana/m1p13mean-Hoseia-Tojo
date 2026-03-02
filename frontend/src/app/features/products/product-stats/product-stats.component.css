@@ -29,3 +29,33 @@
   display: grid;
   gap: 1.5rem;
 }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .stats-wrapper {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.25rem;
+  }
+
+  .value {
+    font-size: 1.5rem;
+  }
+
+  /* Tables: horizontal scroll on mobile */
+  .tables ::ng-deep .p-card .p-card-content {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-wrapper {
+    padding: 0.75rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

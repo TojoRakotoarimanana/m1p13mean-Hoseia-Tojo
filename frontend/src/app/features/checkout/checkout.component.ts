@@ -48,6 +48,7 @@ export class CheckoutComponent implements OnInit {
         notes: ''
     };
 
+    deliveryMethod: 'delivery' | 'pickup' = 'delivery';
     paymentMethod: string = 'cash';
 
     isProcessing = false;
@@ -72,9 +73,33 @@ export class CheckoutComponent implements OnInit {
 
         const user = this.authService.getUser();
         if (user) {
-            this.shippingInfo.fullName = user.username || '';
-            this.shippingInfo.phone = user.phone || '';
+            const firstName = user.firstName ?? '';
+            const lastName = user.lastName ?? '';
+            this.shippingInfo.fullName = `${firstName} ${lastName}`.trim();
         }
+
+        this.authService.getMe().subscribe({
+            next: (res) => {
+                if (res?.user) {
+                    const u = res.user;
+                    const firstName = u.firstName ?? '';
+                    const lastName = u.lastName ?? '';
+                    if (!this.shippingInfo.fullName) {
+                        this.shippingInfo.fullName = `${firstName} ${lastName}`.trim();
+                    }
+                    if (u.phone && !this.shippingInfo.phone) {
+                        this.shippingInfo.phone = u.phone;
+                    }
+                    if (u.address?.city && !this.shippingInfo.city) {
+                        this.shippingInfo.city = u.address.city;
+                    }
+                    if (u.address?.street && !this.shippingInfo.address) {
+                        this.shippingInfo.address = u.address.street;
+                    }
+                }
+            },
+            error: () => { /* pré-remplissage optionnel, on ignore l'erreur */ }
+        });
     }
 
     nextStep() {
@@ -93,7 +118,10 @@ export class CheckoutComponent implements OnInit {
     }
 
     validateShipping(): boolean {
-        if (!this.shippingInfo.fullName || !this.shippingInfo.address || !this.shippingInfo.city || !this.shippingInfo.phone) {
+        const base = this.shippingInfo.fullName && this.shippingInfo.phone;
+        const addressOk = this.deliveryMethod === 'pickup'
+            || (this.shippingInfo.address && this.shippingInfo.city);
+        if (!base || !addressOk) {
             this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Veuillez remplir tous les champs obligatoires' });
             return false;
         }
@@ -122,12 +150,12 @@ export class CheckoutComponent implements OnInit {
             shopOrders: shopOrders,
             totalAmount: this.totalAmount,
             deliveryInfo: {
-                method: 'delivery',
+                method: this.deliveryMethod,
                 phone: this.shippingInfo.phone,
-                address: {
+                address: this.deliveryMethod === 'delivery' ? {
                     street: this.shippingInfo.address,
                     city: this.shippingInfo.city
-                }
+                } : {}
             },
             paymentMethod: this.paymentMethod
         };

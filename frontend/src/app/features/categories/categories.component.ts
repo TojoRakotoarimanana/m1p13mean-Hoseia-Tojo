@@ -8,9 +8,11 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
+import { AvatarModule } from 'primeng/avatar';
 
 import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { NotificationService } from '../../core/services/notification.service';
 import { CategoryService } from '../../core/services/category.service';
@@ -28,8 +30,10 @@ import { CategoryService } from '../../core/services/category.service';
     InputTextModule,
     ToastModule,
     TagModule,
+    AvatarModule,
     PaginatorModule,
-    SelectModule
+    SelectModule,
+    TooltipModule
   ],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.css'
@@ -37,6 +41,65 @@ import { CategoryService } from '../../core/services/category.service';
 export class CategoriesComponent implements OnInit {
   categories: any[] = [];
   loading = false;
+
+  // Filtres
+  searchQuery = '';
+  selectedType = '';
+  selectedActive = '';
+
+  filterTypeOptions = [
+    { label: 'Tous les types', value: '' },
+    { label: 'Boutique', value: 'boutique' },
+    { label: 'Produit', value: 'produit' }
+  ];
+
+  filterActiveOptions = [
+    { label: 'Tous les statuts', value: '' },
+    { label: 'Active', value: 'true' },
+    { label: 'Inactive', value: 'false' }
+  ];
+
+  get filteredCategories(): any[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.categories.filter(c => {
+      const matchName = !q || (c.name ?? '').toLowerCase().includes(q);
+      const matchType = !this.selectedType || c.type === this.selectedType;
+      const matchActive = this.selectedActive === ''
+        || String(c.isActive) === this.selectedActive;
+      return matchName && matchType && matchActive;
+    });
+  }
+
+  get hasActiveFilter(): boolean {
+    return !!this.searchQuery.trim() || !!this.selectedType || this.selectedActive !== '';
+  }
+
+  // Pagination
+  first = 0;
+  pageSize = 10;
+
+  get pagedCategories(): any[] {
+    return this.filteredCategories.slice(this.first, this.first + this.pageSize);
+  }
+
+  onFilterChange() {
+    this.first = 0;
+    this.cdr.detectChanges();
+  }
+
+  clearFilters() {
+    this.searchQuery = '';
+    this.selectedType = '';
+    this.selectedActive = '';
+    this.first = 0;
+    this.cdr.detectChanges();
+  }
+
+  onPageChange(event: any) {
+    this.first = event.first;
+    this.pageSize = event.rows;
+    this.cdr.detectChanges();
+  }
 
   categoryDialog = false;
   isEdit = false;

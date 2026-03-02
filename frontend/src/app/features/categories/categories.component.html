@@ -16,32 +16,82 @@
     </div>
   </div>
 
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="filters-left">
+      <div class="search-wrap">
+        <i class="pi pi-search search-icon"></i>
+        <input
+          pInputText
+          class="search-input"
+          placeholder="Rechercher par nom…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onFilterChange()"
+        />
+      </div>
+
+      <p-select
+        [options]="filterTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="selectedType"
+        (onChange)="onFilterChange()"
+        styleClass="cat-filter">
+      </p-select>
+
+      <p-select
+        [options]="filterActiveOptions"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="selectedActive"
+        (onChange)="onFilterChange()"
+        styleClass="cat-filter">
+      </p-select>
+    </div>
+
+    <button
+      *ngIf="hasActiveFilter"
+      class="clear-btn"
+      (click)="clearFilters()"
+      pTooltip="Réinitialiser les filtres">
+      <i class="pi pi-filter-slash"></i>
+      <span>Réinitialiser</span>
+    </button>
+  </div>
+
   <div class="content-section">
     <p-card>
       <ng-template pTemplate="content">
-        <p-table 
-          [value]="categories" 
+        <p-table
+          [value]="pagedCategories"
           [loading]="loading"
-          [paginator]="true" 
-          [rows]="10"
           responsiveLayout="scroll"
           styleClass="p-datatable-sm">
           <ng-template pTemplate="header">
             <tr>
               <th>Nom</th>
-              <th>Type</th>
-              <th>Description</th>
+              <th class="col-type">Type</th>
+              <th class="col-description">Description</th>
               <th style="width: 100px; text-align: center;">Statut</th>
               <th style="width: 120px; text-align: right;">Actions</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-category>
             <tr class="data-row">
-              <td class="font-medium text-900">{{ category.name }}</td>
               <td>
+                <div class="flex align-items-center gap-2">
+                  <p-avatar
+                    [label]="category.name?.charAt(0)"
+                    shape="circle"
+                    styleClass="bg-purple-100 text-purple-700">
+                  </p-avatar>
+                  <span class="font-medium text-900">{{ category.name }}</span>
+                </div>
+              </td>
+              <td class="col-type">
                 <p-tag [value]="getTypeLabel(category.type)" [severity]="getTypeSeverity(category.type)"></p-tag>
               </td>
-              <td class="text-600">{{ category.description || '-' }}</td>
+              <td class="col-description text-600">{{ category.description || '-' }}</td>
               <td style="text-align: center;">
                 <p-tag 
                   [value]="category.isActive ? 'Active' : 'Inactive'" 
@@ -75,16 +125,27 @@
               <td colspan="5" class="empty-state">
                 <i class="pi pi-inbox block mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
                 <p>Aucune catégorie trouvée.</p>
+                <button *ngIf="hasActiveFilter" class="reset-link" (click)="clearFilters()">
+                  Réinitialiser les filtres
+                </button>
               </td>
             </tr>
           </ng-template>
         </p-table>
+
+        <p-paginator
+          [rows]="pageSize"
+          [totalRecords]="filteredCategories.length"
+          [rowsPerPageOptions]="[10, 20, 50]"
+          (onPageChange)="onPageChange($event)"
+          styleClass="p-paginator-sm border-top-1 border-gray-200">
+        </p-paginator>
       </ng-template>
     </p-card>
   </div>
 </div>
 
-<p-dialog [(visible)]="categoryDialog" [modal]="true" [style]="{ width: '520px' }" [header]="isEdit ? 'Modifier catégorie' : 'Nouvelle catégorie'">
+<p-dialog [(visible)]="categoryDialog" [modal]="true" [style]="{ width: '520px' }" [contentStyle]="{'overflow-y':'auto','max-height':'70vh'}" [header]="isEdit ? 'Modifier catégorie' : 'Nouvelle catégorie'">
   <div class="dialog-body">
     <div class="field">
       <label class="field-label">Nom</label>
@@ -97,6 +158,7 @@
         optionLabel="label"
         optionValue="value"
         [(ngModel)]="categoryForm.type"
+        appendTo="body"
         styleClass="w-full">
       </p-select>
     </div>
@@ -115,6 +177,7 @@
         optionLabel="label"
         optionValue="value"
         [(ngModel)]="categoryForm.isActive"
+        appendTo="body"
         styleClass="w-full">
       </p-select>
     </div>

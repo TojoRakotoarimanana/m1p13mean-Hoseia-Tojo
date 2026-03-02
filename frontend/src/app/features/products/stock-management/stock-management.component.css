@@ -268,4 +268,20 @@
   .mp-wrapper { padding: 0 1rem 3rem; }
   .page-header-inner { flex-direction: column; gap: 0.75rem; }
   .summary-chips { margin-left: 0; }
+  .mp-filters-card { flex-direction: column; align-items: stretch; }
+  .mp-filter-search { width: 100%; }
+  .btn-filter { width: 100%; justify-content: center; }
+
+  /* Masquer la colonne Seuil alerte à 768px */
+  .col-threshold { display: none; }
+}
+
+@media (max-width: 640px) {
+  /* Masquer aussi la colonne Catégorie à 640px */
+  .col-category { display: none; }
+}
+
+@media (max-width: 480px) {
+  .mp-wrapper { padding: 0 0.75rem 2.5rem; }
+  .page-title { font-size: 1.25rem; }
 }

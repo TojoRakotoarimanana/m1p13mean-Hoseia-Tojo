@@ -30,8 +30,8 @@
           <ng-template pTemplate="header">
             <tr>
               <th>Utilisateur</th>
-              <th>Email</th>
-              <th>Téléphone</th>
+              <th class="col-email">Email</th>
+              <th class="col-phone">Téléphone</th>
               <th style="width: 150px; text-align: center;">Statut</th>
               <th style="width: 120px; text-align: right;">Actions</th>
             </tr>
@@ -40,16 +40,16 @@
             <tr class="data-row">
               <td>
                 <div class="flex align-items-center gap-2">
-                  <p-avatar 
-                    [label]="user.firstName?.charAt(0) || user.email?.charAt(0)" 
+                  <p-avatar
+                    [label]="user.firstName?.charAt(0) || user.email?.charAt(0)"
                     shape="circle"
                     styleClass="bg-blue-100 text-blue-700">
                   </p-avatar>
                   <span class="font-medium text-900">{{ user.firstName }} {{ user.lastName }}</span>
                 </div>
               </td>
-              <td class="text-600">{{ user.email }}</td>
-              <td class="text-600">{{ user.phone || '-' }}</td>
+              <td class="col-email text-600">{{ user.email }}</td>
+              <td class="col-phone text-600">{{ user.phone || '-' }}</td>
               <td style="text-align: center;">
                 <p-tag 
                   [value]="user.isActive ? 'Actif' : 'En attente'" 

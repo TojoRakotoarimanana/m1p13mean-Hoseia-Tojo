@@ -9,6 +9,7 @@ import { RegisterBoutiqueComponent } from './features/auth/register-boutique/reg
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { ShopsComponent } from './features/shops/shops.component';
 import { CategoriesComponent } from './features/categories/categories.component';
+import { AdminOrdersComponent } from './features/admin-orders/admin-orders.component';
 import { RegisterBoutiqueRequestsComponent } from './features/register-boutique-requests/register-boutique-requests.component';
 import { ShopRequestsComponent } from './features/shop-requests/shop-requests.component';
 import { MyShopComponent } from './features/my-shop/my-shop.component';
@@ -20,6 +21,7 @@ import { BoutiqueDashboardComponent } from './features/boutique-dashboard/boutiq
 import { OrderDetailComponent } from './features/orders/order-detail/order-detail.component';
 import { ShopOrdersComponent } from './features/orders/shop-orders/shop-orders.component';
 import { HomeClientComponent } from './features/home/home-client.component';
+import { UsersComponent } from './features/users/users.component';
 import { ShopsListComponent } from './features/shops/shops-list.component';
 import { ShopDetailComponent } from './features/shops/shop-detail.component';
 import { ShopDetailsComponent } from './features/catalog/shop-details/shop-details.component';
@@ -99,8 +101,10 @@ export const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent, canActivate: [adminGuard] },
 
     // Routes admin
+    { path: 'admin/users', component: UsersComponent, canActivate: [adminGuard] },
     { path: 'admin/shops', component: ShopsComponent, canActivate: [adminGuard] },
     { path: 'categories', component: CategoriesComponent, canActivate: [adminGuard] },
+    { path: 'admin/orders', component: AdminOrdersComponent, canActivate: [adminGuard] },
     { path: 'admin/register-boutique-requests', component: RegisterBoutiqueRequestsComponent, canActivate: [adminGuard] },
     { path: 'admin/shop-requests', component: ShopRequestsComponent, canActivate: [adminGuard] },
 

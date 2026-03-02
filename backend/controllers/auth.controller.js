@@ -27,3 +27,8 @@ exports.login = async (req, res) => {
     res.status(error.status || 500).json({ message: error.message || 'Erreur serveur lors de la connexion.' });
   }
 };
+
+exports.me = (req, res) => {
+  const { _id, firstName, lastName, email, phone, address, role } = req.user;
+  res.json({ success: true, user: { id: _id, firstName, lastName, email, phone, address, role } });
+};

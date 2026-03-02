@@ -14,15 +14,18 @@
     flex: 1;
     overflow-y: auto;
     background: #ffffff;
+    display: flex;
+    flex-direction: column;
 }
 
 .app-layout.with-sidebar .main-content {
     margin-left: 280px;
-    margin-top: 64px;
+    margin-top: 70px;
     background: #f9fafb;
 }
 
 .page-content {
+    flex: 1;
     padding: 2rem;
 }
 
@@ -33,4 +36,16 @@
 
 .app-layout:not(.with-sidebar) .page-content {
     padding: 0;
+}
+
+/* ── Mobile: remove sidebar margin, reduce page padding ── */
+@media (max-width: 768px) {
+    .app-layout.with-sidebar .main-content {
+        margin-left: 0;
+        margin-top: 70px;
+    }
+
+    .page-content {
+        padding: 1rem;
+    }
 }

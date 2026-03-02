@@ -43,6 +43,7 @@ import { NotificationService } from '../../../core/services/notification.service
 export class RegisterBoutiqueComponent {
   stepIndex = 0;
   isLoading = false;
+  registrationSuccess = false;
 
   readonly days: Array<keyof RegisterBoutiqueComponent['hoursData']> = [
     'monday',
@@ -210,10 +211,9 @@ export class RegisterBoutiqueComponent {
     };
 
     this.authService.registerBoutique(payload).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.isLoading = false;
-        this.notificationService.success(response.message || 'Votre demande a été envoyée avec succès', 'Inscription réussie');
-        this.router.navigate(['/login'])
+        this.registrationSuccess = true;
       },
       error: (error) => {
         this.isLoading = false;
